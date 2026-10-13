@@ -1,0 +1,21 @@
+services:
+  android-builder:
+    build:
+      context: .
+      dockerfile: Dockerfile.android
+      args:
+        FLUTTER_VERSION: ${FLUTTER_VERSION:-stable}
+    working_dir: /workspace
+    volumes:
+      - .:/workspace
+    command:
+      - bash
+      - -lc
+      - >-
+        if [ ! -f pubspec.yaml ]; then
+          echo "Flutter source not found: pubspec.yaml must be present in the frontend directory." >&2;
+          exit 1;
+        fi;
+        flutter pub get &&
+        flutter build apk --release &&
+        flutter build appbundle --release

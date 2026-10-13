@@ -1,19 +1,21 @@
+import 'package:flutter/foundation.dart';
+
 class AppConfig {
   const AppConfig({
     required this.baseUrl,
-    required this.apiTimeoutSeconds,
+    this.apiTimeoutSeconds = 20,
   });
 
   final String baseUrl;
   final int apiTimeoutSeconds;
 
-  static const AppConfig production = AppConfig(
-    baseUrl: 'http://127.0.0.1:8010',
-    apiTimeoutSeconds: 20,
-  );
+  static const _configuredBaseUrl = String.fromEnvironment('API_BASE_URL');
 
-  static const AppConfig development = AppConfig(
-    baseUrl: 'http://127.0.2.2:8010',
-    apiTimeoutSeconds: 20,
+  static final current = AppConfig(
+    baseUrl: _configuredBaseUrl.isNotEmpty
+        ? _configuredBaseUrl
+        : defaultTargetPlatform == TargetPlatform.android
+            ? 'http://10.0.2.2:8010'
+            : 'http://127.0.0.1:8010',
   );
 }

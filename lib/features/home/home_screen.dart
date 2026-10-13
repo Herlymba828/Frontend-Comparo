@@ -7,9 +7,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Comparateur Prix'),
-      ),
+      appBar: AppBar(title: const Text('Comparateur Prix')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -24,7 +22,12 @@ class HomeScreen extends StatelessWidget {
               onSubmitted: (value) {
                 final query = value.trim();
                 if (query.isNotEmpty) {
-                  context.push('/search?query=$query');
+                  context.push(
+                    Uri(
+                      path: '/search',
+                      queryParameters: {'query': query},
+                    ).toString(),
+                  );
                 } else {
                   context.push('/search');
                 }

@@ -7,15 +7,18 @@ fiche produit, comparaison des offres et lecture hors ligne du cache.
 conserver la cible iOS, mais aucun artefact ni aucune recette iOS ne bloque
 la livraison Android ; ceux-ci nécessitent une étape distincte sur macOS/Xcode.
 
-**État du projet :** le projet Flutter est déjà créé dans ce dossier :
-`pubspec.yaml`, `lib/main.dart`, `test/widget_test.dart` et les plateformes
-Flutter sont présents. L’interface est encore le compteur de démonstration ;
-aucun parcours métier du comparateur n’est implémenté. Flutter 3.47.7/Dart
-3.13.5, Chrome et les outils Android sont disponibles. Après installation
-des Android SDK Command-line Tools et du NDK 28.2.13676358, `flutter analyze`,
-`flutter test` et `flutter build apk --debug` passent. `flutter doctor`
-conserve un avertissement parce que le chemin du SDK contient un espace ; le
-build debug confirme que ce chemin n’empêche pas la construction actuelle.
+**État du projet :** le projet Flutter est structuré dans ce dossier et son
+code initial a été poussé sur `Herlymba828/Frontend-Comparo`. L’application
+dispose d’un démarrage Riverpod, d’un thème, du routage accueil/recherche/fiche,
+d’un client HTTP configurable et d’une recherche catalogue connectée au
+contrat Django. La recherche et ses modèles sont le premier incrément métier ;
+pagination UI, fiche vivante, comparaison et cache hors ligne restent à faire.
+Flutter 3.47.7/Dart 3.13.5, Chrome et les outils Android sont disponibles.
+Après installation des Android SDK Command-line Tools et du NDK 28.2.13676358,
+`flutter analyze`, `flutter test` et `flutter build apk --debug` passent.
+`flutter doctor` conserve un avertissement parce que le chemin du SDK contient
+un espace ; le build debug confirme que ce chemin n’empêche pas la construction
+actuelle.
 Les cinq spécifications version 0.1 restent des documents de travail « à
 valider » ; ce plan organise leur réalisation sans valider implicitement les
 choix encore ouverts.
@@ -75,26 +78,19 @@ MVP.
 - Les lectures produit, offre, observation et disponibilité sont publiques.
   Les observations publiques sont limitées aux prix publiés ; les listes
   publiques d’offres aux offres actives.
-- **Blocage de comparaison vérifié :** le `PriceListSerializer` des
-  observations n’expose pas le vendeur ; `PriceOfferListSerializer` fournit
-  seulement l’identifiant marchand et omet quantité, unité et localisation.
-  Le détail d’offre expose davantage d’informations, mais son chargement
-  individuel n’est pas un contrat de comparaison à grande échelle.
-  `/api/comparison/sessions/` exige une authentification et retourne des
-  sessions existantes : ce n’est pas une API publique de comparaison à la
-  demande. Un contrat de lecture public enrichi ou un endpoint dédié est donc
-  nécessaire avant le parcours consommateur.
-- Le contrat actuel ne garantit pas une équivalence normalisée de variante,
-  format, quantité ou unité entre produits. Une catégorie commune ne suffit
-  pas à qualifier deux produits de comparables.
+- Le backend expose désormais
+  `/api/comparison/products/{product_id}/offers/` comme contrat public enrichi
+  de comparaison. Le frontend doit utiliser ce endpoint plutôt que les listes
+  d’observations/offres seules ou les sessions de comparaison authentifiées.
+- Le backend limite la comparabilité au produit demandé et à ses équivalences
+  strictes directes ; le frontend ne doit jamais déduire l’équivalence d’une
+  catégorie ou d’un nom identique.
 - La liste publique de disponibilité est filtrable par `product`, `merchant`,
   `status`, `location`; elle inclut statut, `is_available`, quantité et date
   d’observation, mais pas les événements d’audit.
-- Les exemples de routes et réponses présents dans les documents doivent être
-  vérifiés contre les serializers et tests backend avant de figer les modèles
-  Flutter.
 - Les choix Riverpod, go_router et Dio sont confirmés en P0.5 ; les
-  dépendances ne sont pas encore ajoutées au projet.
+  dépendances sont installées. `json_annotation`, `json_serializable` et
+  `build_runner` sont également en place pour les modèles JSON.
 - Le jeu de données de recette et certaines formes d’erreur restent à
   formaliser.
 - `compose.android.yaml` peut préparer l’outillage Android ; le projet Flutter
@@ -112,7 +108,7 @@ MVP.
 | Contrat API | Routes Django actuelles, pas les exemples `/api/v1/`; lecture publique et forme testées sur les ressources MVP | P0.2 documenter le contrat courant ; toute nouvelle version d’API reste une décision backend |
 | Comparaison publique | Endpoint dédié choisi ; réponse paginée publique pour les offres admissibles du produit et de ses équivalences strictes directes | P0.3/P0.4 implémentés et couverts ; pas de rang entre devises différentes ni de promotion déclarée applicable sans validation de ses conditions |
 | Équivalence | Liens explicites `ProductEquivalence.is_strict=true`, jamais `substitute`; conversion par équivalence exacte vers l’unité de base ; filtre de lieu textuel | Toute nouvelle forme d’équivalence ou de conversion requiert une règle dédiée et des tests |
-| Architecture Flutter | Riverpod, go_router, Dio, json_serializable + build_runner ; Drift/SQLite pour le cache structuré ; flutter_secure_storage pour secrets/tokens et shared_preferences pour préférences non sensibles | Choix confirmés en P0.5 ; ajout et configuration des dépendances prévus en P1.3/P2/P5 |
+| Architecture Flutter | Riverpod, go_router, Dio, json_serializable + build_runner ; Drift/SQLite pour le cache structuré ; flutter_secure_storage pour secrets/tokens et shared_preferences pour préférences non sensibles | Choix confirmés en P0.5 ; Riverpod/go_router/Dio/json_serializable configurés, cache et stockage sécurisé restent à implémenter |
 | Cache | Dernières recherches/résultats, fiches et offres ; expiration à 7 jours, données expirées visibles hors ligne comme anciennes/non vérifiées, actualisation au retour réseau | Politique confirmée en P0.6 ; `cachedAtUtc` et `lastAccessedAtUtc` distincts des dates métier |
 | Plafond cache | 100 Mio ; éviction LRU, puis plus ancien en cas d’égalité ; effacement manuel des données hors ligne | Politique confirmée en P0.6 ; les préférences et secrets/tokens sont exclus de cet effacement |
 | Design et formats | Material 3 accessible, couleur semence bleue ; format régional `fr-FR`, devise fournie par chaque offre, sans conversion | Choix confirmés en P0.7 ; conserver le regroupement séparé par devise |
@@ -223,11 +219,12 @@ la taille de l’équipe et les décisions bloquantes ne sont pas connues.
   `analysis_options.yaml`, `lib/`, `test/` et plateformes) ; ne pas recréer le
   projet. Ajouter `integration_test/` et compléter la configuration uniquement
   lorsque les tâches de recette en auront besoin. Constat : Flutter 3.47.7,
-  contrainte Dart `^3.13.5`, écran compteur dans `lib/main.dart`, test widget
-  de compteur et aucune dépendance applicative tierce. Les Android SDK
+  contrainte Dart `^3.13.5`, shell applicatif comparateur et tests Flutter.
+  Les dépendances applicatives de navigation, d’état, HTTP et JSON sont
+  installées. Les Android SDK
   Command-line Tools et le NDK sont maintenant installés ; `flutter analyze`,
   `flutter test` et un build APK debug passent depuis le dossier frontend.
-- [ ] **P1.2** Remplacer le démarrage de démonstration (`lib/main.dart`) par
+- [x] **P1.2** Remplacer le démarrage de démonstration (`lib/main.dart`) par
   l’entrée de l’application comparateur ; créer `lib/app/bootstrap.dart`,
   `lib/app/app.dart`, la configuration par environnement et la composition
   centralisée des dépendances, sans surarchitecture.
@@ -246,11 +243,11 @@ initiale fonctionnelle et contrôles statiques sans erreur.
 
 ### Phase 2 — Fondations données et API
 
-- [ ] **P2.1** Implémenter `lib/core/config/` et
+- [x] **P2.1** Implémenter `lib/core/config/` et
   `lib/core/network/api_client.dart` avec Dio, une URL d’API configurable,
   HTTPS en production, délais définis, annulation si disponible et
   journalisation sans données sensibles.
-- [ ] **P2.2** Implémenter `lib/core/errors/` pour normaliser connectivité,
+- [x] **P2.2** Implémenter `lib/core/errors/` pour normaliser connectivité,
   timeout, erreurs HTTP, validation et réponses invalides en conservant la
   sémantique réellement renvoyée par Django.
 - [ ] **P2.3** Ajouter dans les domaines catalogue/prix les modèles Dart typés
@@ -290,6 +287,13 @@ dépendance HTTP directe depuis les widgets.
 
 **Gate de sortie :** un utilisateur peut chercher et filtrer le catalogue ;
 une liste vide et une erreur réseau sont clairement distinctes.
+
+**Avancement du premier incrément API/recherche :** le modèle sérialisé de
+liste produit, le client Dio configurable, le repository du catalogue et la
+recherche par `q` avec les états initial, chargement, résultats, aucun résultat
+et erreur sont implémentés. Le client utilise actuellement la première page
+(20 résultats) ; filtres, tri, pagination interactive, catégories, détail,
+comparaison et cache restent dans leurs tâches respectives.
 
 ### Phase 4 — Parcours US2 : fiche produit et comparaison
 

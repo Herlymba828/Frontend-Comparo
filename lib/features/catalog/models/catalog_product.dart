@@ -8,11 +8,20 @@ class CatalogCategory {
     required this.id,
     required this.name,
     required this.slug,
+    this.iconUrl,
+    this.sortOrder,
+    this.isActive,
+    this.children = const [],
   });
 
   final int id;
   final String name;
   final String slug;
+  final String? iconUrl;
+  final int? sortOrder;
+  final bool? isActive;
+  @JsonKey(defaultValue: <CatalogCategory>[])
+  final List<CatalogCategory> children;
 
   factory CatalogCategory.fromJson(Map<String, dynamic> json) =>
       _$CatalogCategoryFromJson(json);
@@ -61,6 +70,26 @@ class CatalogUnit {
 }
 
 @JsonSerializable(fieldRename: FieldRename.snake)
+class CatalogFormat {
+  const CatalogFormat({
+    required this.id,
+    required this.name,
+    this.quantity,
+    this.description,
+  });
+
+  final int id;
+  final String name;
+  final String? quantity;
+  final String? description;
+
+  factory CatalogFormat.fromJson(Map<String, dynamic> json) =>
+      _$CatalogFormatFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CatalogFormatToJson(this);
+}
+
+@JsonSerializable(fieldRename: FieldRename.snake)
 class CatalogProduct {
   const CatalogProduct({
     required this.id,
@@ -74,10 +103,14 @@ class CatalogProduct {
     this.category,
     this.brand,
     this.defaultUnit,
+    this.defaultFormat,
     this.imageUrl,
+    this.description,
     this.priceSnapshot,
     this.priceSnapshotCurrency,
     this.priceSnapshotUpdatedAt,
+    this.createdAt,
+    this.updatedAt,
   });
 
   final int id;
@@ -88,12 +121,16 @@ class CatalogProduct {
   final CatalogCategory? category;
   final CatalogBrand? brand;
   final CatalogUnit? defaultUnit;
+  final CatalogFormat? defaultFormat;
   final String? imageUrl;
+  final String? description;
 
   // Keep decimal values as strings to avoid binary floating-point rounding.
   final String? priceSnapshot;
   final String? priceSnapshotCurrency;
   final DateTime? priceSnapshotUpdatedAt;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
   final String availability;
   final bool isActive;
   final bool isVerified;

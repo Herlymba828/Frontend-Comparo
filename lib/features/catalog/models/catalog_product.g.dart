@@ -11,6 +11,14 @@ CatalogCategory _$CatalogCategoryFromJson(Map<String, dynamic> json) =>
       id: (json['id'] as num).toInt(),
       name: json['name'] as String,
       slug: json['slug'] as String,
+      iconUrl: json['icon_url'] as String?,
+      sortOrder: (json['sort_order'] as num?)?.toInt(),
+      isActive: json['is_active'] as bool?,
+      children:
+          (json['children'] as List<dynamic>?)
+              ?.map((e) => CatalogCategory.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
     );
 
 Map<String, dynamic> _$CatalogCategoryToJson(CatalogCategory instance) =>
@@ -18,6 +26,10 @@ Map<String, dynamic> _$CatalogCategoryToJson(CatalogCategory instance) =>
       'id': instance.id,
       'name': instance.name,
       'slug': instance.slug,
+      'icon_url': instance.iconUrl,
+      'sort_order': instance.sortOrder,
+      'is_active': instance.isActive,
+      'children': instance.children,
     };
 
 CatalogBrand _$CatalogBrandFromJson(Map<String, dynamic> json) => CatalogBrand(
@@ -50,6 +62,22 @@ Map<String, dynamic> _$CatalogUnitToJson(CatalogUnit instance) =>
       'unit_type': instance.unitType,
     };
 
+CatalogFormat _$CatalogFormatFromJson(Map<String, dynamic> json) =>
+    CatalogFormat(
+      id: (json['id'] as num).toInt(),
+      name: json['name'] as String,
+      quantity: json['quantity'] as String?,
+      description: json['description'] as String?,
+    );
+
+Map<String, dynamic> _$CatalogFormatToJson(CatalogFormat instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
+      'quantity': instance.quantity,
+      'description': instance.description,
+    };
+
 CatalogProduct _$CatalogProductFromJson(Map<String, dynamic> json) =>
     CatalogProduct(
       id: (json['id'] as num).toInt(),
@@ -69,12 +97,24 @@ CatalogProduct _$CatalogProductFromJson(Map<String, dynamic> json) =>
       defaultUnit: json['default_unit'] == null
           ? null
           : CatalogUnit.fromJson(json['default_unit'] as Map<String, dynamic>),
+      defaultFormat: json['default_format'] == null
+          ? null
+          : CatalogFormat.fromJson(
+              json['default_format'] as Map<String, dynamic>,
+            ),
       imageUrl: json['image_url'] as String?,
+      description: json['description'] as String?,
       priceSnapshot: json['price_snapshot'] as String?,
       priceSnapshotCurrency: json['price_snapshot_currency'] as String?,
       priceSnapshotUpdatedAt: json['price_snapshot_updated_at'] == null
           ? null
           : DateTime.parse(json['price_snapshot_updated_at'] as String),
+      createdAt: json['created_at'] == null
+          ? null
+          : DateTime.parse(json['created_at'] as String),
+      updatedAt: json['updated_at'] == null
+          ? null
+          : DateTime.parse(json['updated_at'] as String),
     );
 
 Map<String, dynamic> _$CatalogProductToJson(CatalogProduct instance) =>
@@ -87,11 +127,15 @@ Map<String, dynamic> _$CatalogProductToJson(CatalogProduct instance) =>
       'category': instance.category,
       'brand': instance.brand,
       'default_unit': instance.defaultUnit,
+      'default_format': instance.defaultFormat,
       'image_url': instance.imageUrl,
+      'description': instance.description,
       'price_snapshot': instance.priceSnapshot,
       'price_snapshot_currency': instance.priceSnapshotCurrency,
       'price_snapshot_updated_at': instance.priceSnapshotUpdatedAt
           ?.toIso8601String(),
+      'created_at': instance.createdAt?.toIso8601String(),
+      'updated_at': instance.updatedAt?.toIso8601String(),
       'availability': instance.availability,
       'is_active': instance.isActive,
       'is_verified': instance.isVerified,

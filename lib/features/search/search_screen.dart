@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/errors/api_exception.dart';
 import '../catalog/data/catalog_providers.dart';
 import '../catalog/models/catalog_product.dart';
+import '../catalog/models/catalog_search_request.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
   const SearchScreen({super.key, this.initialQuery = ''});
@@ -48,7 +49,13 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final results = _query.isEmpty ? null : ref.watch(searchProductsProvider(_query));
+    final results = _query.isEmpty
+        ? null
+        : ref.watch(
+            searchProductsProvider(
+              CatalogSearchRequest(query: _query),
+            ),
+          );
 
     return Scaffold(
       appBar: AppBar(title: const Text('Recherche')),
@@ -83,8 +90,11 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                       message: error is ApiException
                           ? error.userMessage
                           : 'Une erreur inattendue est survenue.',
-                      onRetry: () =>
-                          ref.invalidate(searchProductsProvider(_query)),
+                      onRetry: () => ref.invalidate(
+                        searchProductsProvider(
+                          CatalogSearchRequest(query: _query),
+                        ),
+                      ),
                     ),
                     data: (page) => page.results.isEmpty
                         ? const _EmptyResults()

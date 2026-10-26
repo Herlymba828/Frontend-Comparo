@@ -1,4 +1,4 @@
-package com.example.frontend
+package com.nexorion_security.comparateurprix
 
 import io.flutter.embedding.android.FlutterActivity
 

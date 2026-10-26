@@ -4,7 +4,10 @@ import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:frontend/core/errors/api_exception.dart';
+import 'package:frontend/core/storage/cache_storage.dart';
+import 'package:frontend/core/storage/offline_cache.dart';
 import 'package:frontend/features/catalog/data/catalog_repository.dart';
+import 'package:frontend/features/catalog/models/catalog_search_request.dart';
 
 void main() {
   test(
@@ -14,17 +17,72 @@ void main() {
       final repository = CatalogRepository(
         Dio(BaseOptions(baseUrl: 'http://localhost:8010/'))
           ..httpClientAdapter = adapter,
+        cache: OfflineCache(storage: MemoryCacheStorage()),
       );
 
-      final page = await repository.searchProducts('café noir');
+      final result = await repository.searchProducts('café noir');
 
-      expect(page.results.single.name, 'Café noir');
+      expect(result.value.results.single.name, 'Café noir');
       expect(adapter.request!.uri.path, '/api/catalog/products/');
       expect(adapter.request!.queryParameters, {
         'q': 'café noir',
         'page': 1,
         'page_size': 20,
       });
+    },
+  );
+
+  test(
+    'search sends active filters, ordering and the requested page',
+    () async {
+      final adapter = _ResponseAdapter(_productPage);
+      final repository = CatalogRepository(
+        Dio(BaseOptions(baseUrl: 'http://localhost:8010/'))
+          ..httpClientAdapter = adapter,
+        cache: OfflineCache(storage: MemoryCacheStorage()),
+      );
+
+      await repository.searchProducts(
+        const CatalogSearchRequest(
+          query: 'café',
+          category: 'boissons',
+          available: true,
+          verified: true,
+          ordering: '-price_snapshot',
+          page: 2,
+          pageSize: 20,
+        ),
+      );
+
+      expect(adapter.request!.queryParameters, {
+        'q': 'café',
+        'page': 2,
+        'page_size': 20,
+        'category': 'boissons',
+        'available': 'true',
+        'verified': 'true',
+        'ordering': '-price_snapshot',
+      });
+    },
+  );
+
+  test(
+    'falls back to the last cached response when the API is unavailable',
+    () async {
+      final dio = Dio(BaseOptions(baseUrl: 'http://localhost:8010/'));
+      dio.httpClientAdapter = _ResponseAdapter(_productPage);
+      final repository = CatalogRepository(
+        dio,
+        cache: OfflineCache(storage: MemoryCacheStorage()),
+      );
+
+      final fresh = await repository.searchProducts('café noir');
+      dio.httpClientAdapter = _ResponseAdapter({}, statusCode: 503);
+      final cached = await repository.searchProducts('café noir');
+
+      expect(fresh.isFromCache, isFalse);
+      expect(cached.isFromCache, isTrue);
+      expect(cached.value.results.single.name, 'Café noir');
     },
   );
 
@@ -42,6 +100,7 @@ void main() {
       final repository = CatalogRepository(
         Dio(BaseOptions(baseUrl: 'http://localhost:8010/'))
           ..httpClientAdapter = adapter,
+        cache: OfflineCache(storage: MemoryCacheStorage()),
       );
 
       await expectLater(

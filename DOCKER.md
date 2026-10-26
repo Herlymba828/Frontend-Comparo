@@ -25,7 +25,20 @@ SDK version, for example by setting `FLUTTER_VERSION` before building. The
 current default uses Flutter's stable channel because the architecture
 documents do not specify an SDK version.
 
+The release build requires `API_BASE_URL` (public HTTPS URL) and reads the
+signing credentials from the host environment, never from the image:
+
+```powershell
+$env:API_BASE_URL = "https://api.example.com"
+$env:ANDROID_KEYSTORE_PATH = "/workspace/android/release.keystore"  # ignored by git
+$env:ANDROID_KEYSTORE_PASSWORD = "…"
+$env:ANDROID_KEY_ALIAS = "…"
+$env:ANDROID_KEY_PASSWORD = "…"
+docker compose -f compose.android.yaml run --rm android-builder
+```
+
+Without `ANDROID_KEYSTORE_PATH` the artifacts are signed with the debug key and
+must not be published.
+
 iOS builds are not supported by this Linux image. Flutter iOS release builds
-require macOS and Xcode; run those on a Mac or a macOS CI runner. Android
-release signing credentials must be supplied securely at build time and must
-not be committed to the repository.
+require macOS and Xcode; run those on a Mac or a macOS CI runner.

@@ -8,6 +8,16 @@ services:
     working_dir: /workspace
     volumes:
       - .:/workspace
+    # Valeurs lues depuis l'environnement de l'hôte, jamais écrites dans
+    # l'image. Sans ANDROID_KEYSTORE_PATH, la release est signée en debug et
+    # n'est pas publiable. Le keystore doit être accessible dans /workspace
+    # (ex. android/release.keystore, ignoré par git).
+    environment:
+      - API_BASE_URL
+      - ANDROID_KEYSTORE_PATH
+      - ANDROID_KEYSTORE_PASSWORD
+      - ANDROID_KEY_ALIAS
+      - ANDROID_KEY_PASSWORD
     command:
       - bash
       - -lc
@@ -16,6 +26,10 @@ services:
           echo "Flutter source not found: pubspec.yaml must be present in the frontend directory." >&2;
           exit 1;
         fi;
+        if [ -z "$$API_BASE_URL" ]; then
+          echo "API_BASE_URL is required for release builds (public HTTPS URL)." >&2;
+          exit 1;
+        fi;
         flutter pub get &&
-        flutter build apk --release &&
-        flutter build appbundle --release
+        flutter build apk --release --dart-define=API_BASE_URL="$$API_BASE_URL" &&
+        flutter build appbundle --release --dart-define=API_BASE_URL="$$API_BASE_URL"

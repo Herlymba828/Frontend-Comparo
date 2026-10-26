@@ -20,26 +20,26 @@ class CatalogSearchRequest {
   final int pageSize;
 
   CatalogSearchRequest withPage(int page) => CatalogSearchRequest(
-        query: query,
-        category: category,
-        brand: brand,
-        available: available,
-        verified: verified,
-        ordering: ordering,
-        page: page,
-        pageSize: pageSize,
-      );
+    query: query,
+    category: category,
+    brand: brand,
+    available: available,
+    verified: verified,
+    ordering: ordering,
+    page: page,
+    pageSize: pageSize,
+  );
 
   Map<String, dynamic> toQueryParameters() => {
-        'q': query,
-        'page': page,
-        'page_size': pageSize,
-        if (category != null && category!.isNotEmpty) 'category': category,
-        if (brand != null && brand!.isNotEmpty) 'brand': brand,
-        if (available) 'available': 'true',
-        if (verified) 'verified': 'true',
-        if (ordering != null && ordering!.isNotEmpty) 'ordering': ordering,
-      };
+    'q': query,
+    'page': page,
+    'page_size': pageSize,
+    if (category != null && category!.isNotEmpty) 'category': category,
+    if (brand != null && brand!.isNotEmpty) 'brand': brand,
+    if (available) 'available': 'true',
+    if (verified) 'verified': 'true',
+    if (ordering != null && ordering!.isNotEmpty) 'ordering': ordering,
+  };
 
   @override
   bool operator ==(Object other) =>
@@ -55,13 +55,13 @@ class CatalogSearchRequest {
 
   @override
   int get hashCode => Object.hash(
-        query,
-        category,
-        brand,
-        available,
-        verified,
-        ordering,
-        page,
-        pageSize,
-      );
+    query,
+    category,
+    brand,
+    available,
+    verified,
+    ordering,
+    page,
+    pageSize,
+  );
 }

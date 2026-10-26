@@ -7,6 +7,7 @@ Dio createApiClient(AppConfig config) {
   if (baseUrl.isEmpty) {
     throw ArgumentError.value(config.baseUrl, 'baseUrl', 'Must not be empty');
   }
+  config.validate();
 
   final timeout = Duration(seconds: config.apiTimeoutSeconds);
   return Dio(

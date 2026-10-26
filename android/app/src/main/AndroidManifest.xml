@@ -1,8 +1,18 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- L'API est indispensable en release : sans cette permission (jusqu'ici
+         présente seulement dans les manifestes debug/profile), l'APK publié ne
+         pouvait joindre aucun serveur. -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- Pas de sauvegarde/transfert automatique : les jetons chiffrés par le
+         Keystore seraient illisibles après restauration, et le cache hors
+         ligne contient l'historique de recherche. -->
     <application
-        android:label="frontend"
+        android:label="Comparateur Prix"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:allowBackup="false"
+        android:fullBackupContent="false"
+        android:dataExtractionRules="@xml/data_extraction_rules">
         <activity
             android:name=".MainActivity"
             android:exported="true"

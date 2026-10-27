@@ -6,6 +6,22 @@ import '../../core/theme/app_theme.dart';
 import '../catalog/models/catalog_product.dart';
 import 'data/alert_repository.dart';
 
+// Same format as the API (`threshold_amount`: 12 digits, 2 decimals, >= 0.01).
+final _thresholdPattern = RegExp(r'^\d{1,10}(\.\d{1,2})?$');
+
+/// Error message for an alert threshold typed by the user, or null if valid.
+String? validateAlertThreshold(String? value) {
+  final normalized = (value ?? '').trim().replaceAll(',', '.');
+  final amount = double.tryParse(normalized);
+  if (amount == null || !amount.isFinite || amount <= 0) {
+    return 'Saisissez un montant positif.';
+  }
+  if (!_thresholdPattern.hasMatch(normalized)) {
+    return 'Au plus 2 décimales et 10 chiffres avant la virgule.';
+  }
+  return null;
+}
+
 class CreatePriceAlertDialog extends ConsumerStatefulWidget {
   const CreatePriceAlertDialog({required this.product, super.key});
 
@@ -98,20 +114,8 @@ class _CreatePriceAlertDialogState
                     labelText: 'Prix seuil',
                     suffixText: _currency,
                   ),
-                  validator: (value) {
-                    if (!_requiresThreshold) {
-                      return null;
-                    }
-                    final normalized = (value ?? '').trim().replaceAll(
-                      ',',
-                      '.',
-                    );
-                    final amount = double.tryParse(normalized);
-                    if (amount == null || !amount.isFinite || amount <= 0) {
-                      return 'Saisissez un montant positif.';
-                    }
-                    return null;
-                  },
+                  validator: (value) =>
+                      _requiresThreshold ? validateAlertThreshold(value) : null,
                 ),
               ],
               const SizedBox(height: AppSpacing.space8),

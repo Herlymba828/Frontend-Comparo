@@ -314,4 +314,11 @@ doivent se baser sur `error.code` et `error.fields`, et non sur le texte
   équivalences strictes directes ; il ne calcule pas de classement organique et
   ne convertit pas les devises.
 - Ne pas interpréter `price_snapshot` comme une observation contextualisée ni
-  comme preuve d’équivalence; ce champ est un instantané de catalogue.
+  comme preuve d’équivalence; ce champ est un instantané de catalogue. Le
+  backend le recalcule comme le prix admissible le plus bas (publié, exposé,
+  non expiré) dans `price_snapshot_currency` : il peut monter ou devenir `null`.
+- Alertes (`/api/alerts/`) : `threshold_amount` ≥ 0,01 avec au plus 2 décimales
+  (12 chiffres), `threshold_currency` en 3 lettres, `notify_channels` parmi
+  `in_app`, `push`, `sms`, `email`. Une alerte identique déjà active ou en
+  pause renvoie 400 avec `detail`. Les alertes de prix ne considèrent que les
+  prix admissibles dans la devise du seuil.

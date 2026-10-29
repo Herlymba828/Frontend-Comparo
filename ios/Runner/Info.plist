@@ -68,5 +68,15 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Votre position sert à afficher les magasins proches et leur distance, et à retrouver le magasin où vous relevez un prix. Elle n’est pas conservée.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>L’appareil photo sert à photographier l’étiquette d’un prix pour qu’il soit vérifié.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Vous pouvez joindre une photo de l’étiquette d’un prix déjà prise.</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>tel</string>
+	</array>
 </dict>
 </plist>

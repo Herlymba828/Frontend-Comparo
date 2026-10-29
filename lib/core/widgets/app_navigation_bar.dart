@@ -8,6 +8,8 @@ class AppNavigationBar extends StatelessWidget {
 
   final int currentIndex;
 
+  static const _paths = ['/', '/search', '/cart', '/account'];
+
   @override
   Widget build(BuildContext context) {
     return DecoratedBox(
@@ -20,7 +22,7 @@ class AppNavigationBar extends StatelessWidget {
           if (index == currentIndex) {
             return;
           }
-          context.go(index == 0 ? '/' : '/search');
+          context.go(_paths[index]);
         },
         destinations: const [
           NavigationDestination(
@@ -29,6 +31,16 @@ class AppNavigationBar extends StatelessWidget {
             label: 'Accueil',
           ),
           NavigationDestination(icon: Icon(Icons.search), label: 'Recherche'),
+          NavigationDestination(
+            icon: Icon(Icons.shopping_basket_outlined),
+            selectedIcon: Icon(Icons.shopping_basket),
+            label: 'Panier',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.person_outline),
+            selectedIcon: Icon(Icons.person),
+            label: 'Compte',
+          ),
         ],
       ),
     );

@@ -75,10 +75,17 @@ class AuthRepository {
           data: {'refresh': refreshToken},
         );
       }
+    } on DioException {
+      // Offline or token already revoked: the session ends on this device
+      // anyway; the server-side token expires on its own.
     } finally {
       await _tokenStorage.clear();
     }
   }
+
+  /// Forgets the tokens of this device without calling the API (they were
+  /// revoked by the server, e.g. after a password change).
+  Future<void> forgetSession() => _tokenStorage.clear();
 
   Future<AuthUser> _authenticate({
     required String path,

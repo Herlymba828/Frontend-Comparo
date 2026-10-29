@@ -13,6 +13,7 @@ import '../catalog/data/catalog_providers.dart';
 import '../catalog/models/catalog_product.dart';
 import '../catalog/models/catalog_product_page.dart';
 import '../catalog/models/catalog_search_request.dart';
+import '../stores/stores_screen.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
   const SearchScreen({super.key, this.initialQuery = '', this.initialCategory});
@@ -494,9 +495,21 @@ class _ProductTile extends StatelessWidget {
                     ),
                   ],
                   const SizedBox(height: AppSpacing.space8),
-                  PriceTag(
-                    label: formatPrice(price, currency),
-                    muted: !hasPrice,
+                  Row(
+                    children: [
+                      Flexible(
+                        child: PriceTag(
+                          label: formatPrice(price, currency),
+                          muted: !hasPrice,
+                        ),
+                      ),
+                      const Spacer(),
+                      NearbyStoresButton(
+                        productId: product.id,
+                        productName: product.name,
+                        compact: true,
+                      ),
+                    ],
                   ),
                   const SizedBox(height: AppSpacing.space8),
                   Text(

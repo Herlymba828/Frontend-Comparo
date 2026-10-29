@@ -270,9 +270,14 @@ class AppTheme {
         checkmarkColor: AppColors.accent,
         side: const BorderSide(color: AppColors.ink, width: 1.2),
         shape: const StadiumBorder(),
-        labelStyle: const TextStyle(
+        labelStyle: TextStyle(
           fontFamily: AppFonts.body,
-          color: AppColors.ink,
+          // A selected chip is ink-filled: its label must turn light.
+          color: WidgetStateColor.resolveWith(
+            (states) => states.contains(WidgetState.selected)
+                ? AppColors.surface
+                : AppColors.ink,
+          ),
           fontSize: 13,
           fontWeight: FontWeight.w600,
         ),

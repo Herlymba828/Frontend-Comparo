@@ -20,15 +20,26 @@ class AlertRepository {
 
   Future<List<PriceAlert>> getAlerts() async {
     try {
-      final response = await _client.get<dynamic>('api/alerts/');
-      final data = response.data;
-      final records = data is List
-          ? data
-          : data is Map
-          ? data['results']
-          : null;
-      if (records is! List) {
-        throw const ApiException(kind: ApiErrorKind.invalidResponse);
+      final records = <dynamic>[];
+      // Every page: the 21st alert must be listed (and cancellable) too.
+      for (var page = 1; page <= 10; page++) {
+        final response = await _client.get<dynamic>(
+          'api/alerts/',
+          queryParameters: {'page_size': 100, 'page': page},
+        );
+        final data = response.data;
+        final batch = data is List
+            ? data
+            : data is Map
+            ? data['results']
+            : null;
+        if (batch is! List) {
+          throw const ApiException(kind: ApiErrorKind.invalidResponse);
+        }
+        records.addAll(batch);
+        if (data is! Map || data['next'] == null) {
+          break;
+        }
       }
       return records
           .map(

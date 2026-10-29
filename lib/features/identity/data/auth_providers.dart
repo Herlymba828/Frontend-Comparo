@@ -38,6 +38,13 @@ class AuthSessionController extends AsyncNotifier<AuthUser?> {
     state = AsyncData(user);
   }
 
+  /// The server revoked every session (password changed): sign out here.
+  Future<void> endRevokedSession() async {
+    await ref.read(authRepositoryProvider).forgetSession();
+    state = const AsyncData(null);
+    await ref.read(catalogRepositoryProvider).clearOfflineCache();
+  }
+
   Future<void> logout() async {
     try {
       await ref.read(authRepositoryProvider).logout();

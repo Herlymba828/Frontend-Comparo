@@ -3,6 +3,9 @@
          présente seulement dans les manifestes debug/profile), l'APK publié ne
          pouvait joindre aucun serveur. -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- "Magasins près de moi": distance to the stores selling a product. -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <!-- Pas de sauvegarde/transfert automatique : les jetons chiffrés par le
          Keystore seraient illisibles après restauration, et le cache hors
          ligne contient l'historique de recherche. -->
@@ -50,6 +53,15 @@
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
+        </intent>
+        <!-- url_launcher: directions in a maps app, call a store. -->
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="https"/>
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.DIAL"/>
+            <data android:scheme="tel"/>
         </intent>
     </queries>
 </manifest>

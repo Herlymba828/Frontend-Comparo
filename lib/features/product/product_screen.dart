@@ -12,8 +12,10 @@ import '../alerts/create_price_alert_dialog.dart';
 import '../availability/models/merchant_availability.dart';
 import '../catalog/data/catalog_providers.dart';
 import '../catalog/models/catalog_product.dart';
+import '../commerce/commerce_repository.dart';
 import '../comparison/models/comparison_offer.dart';
 import '../identity/data/auth_providers.dart';
+import '../stores/stores_screen.dart';
 
 class ProductScreen extends ConsumerStatefulWidget {
   const ProductScreen({super.key, required this.productId});
@@ -59,6 +61,7 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
       appBar: AppBar(
         title: const Text('Fiche produit'),
         actions: [
+          NearbyStoresButton(productId: id),
           IconButton(
             tooltip: 'Mes alertes',
             onPressed: () => context.push('/alerts'),
@@ -106,10 +109,34 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                   if (productResult.isFromCache) const SizedBox(height: 12),
                   _ProductHero(product: productResult.value),
                   const SizedBox(height: AppSpacing.space12),
-                  OutlinedButton.icon(
-                    onPressed: () => _startPriceAlert(productResult.value),
-                    icon: const Icon(Icons.notifications_active_outlined),
-                    label: const Text('Suivre le prix'),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: FilledButton.icon(
+                          onPressed: () => context.push(
+                            '/product/${productResult.value.id}/stores'
+                            '?name=${Uri.encodeComponent(productResult.value.name)}',
+                          ),
+                          icon: const Icon(Icons.location_on_outlined),
+                          label: const Text(
+                            'Où acheter',
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.space8),
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () =>
+                              _startPriceAlert(productResult.value),
+                          icon: const Icon(Icons.notifications_active_outlined),
+                          label: const Text(
+                            'Suivre le prix',
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 20),
                   Text(
@@ -770,6 +797,13 @@ class _OfferCard extends StatelessWidget {
                   .toList(),
             ),
           ],
+          if (comparable) ...[
+            const SizedBox(height: 10),
+            Align(
+              alignment: Alignment.centerRight,
+              child: _AddToCartButton(offer: offer),
+            ),
+          ],
         ],
       ),
     );
@@ -937,6 +971,76 @@ class _Badge extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// Adds one unit of this offer to the cart (sign-in required).
+class _AddToCartButton extends ConsumerStatefulWidget {
+  const _AddToCartButton({required this.offer});
+
+  final ComparisonOffer offer;
+
+  @override
+  ConsumerState<_AddToCartButton> createState() => _AddToCartButtonState();
+}
+
+class _AddToCartButtonState extends ConsumerState<_AddToCartButton> {
+  bool _adding = false;
+
+  Future<void> _add() async {
+    final user = await ref.read(authSessionProvider.future);
+    if (!mounted) {
+      return;
+    }
+    if (user == null) {
+      context.push('/auth');
+      return;
+    }
+    setState(() => _adding = true);
+    final messenger = ScaffoldMessenger.of(context);
+    final router = GoRouter.of(context);
+    try {
+      await ref
+          .read(commerceRepositoryProvider)
+          .addToCart(
+            productId: widget.offer.product,
+            quantity: '1',
+            offerId: widget.offer.id,
+          );
+      ref.invalidate(cartProvider);
+      messenger.showSnackBar(
+        SnackBar(
+          content: const Text('Ajouté au panier.'),
+          action: SnackBarAction(
+            label: 'Voir le panier',
+            onPressed: () => router.push('/cart'),
+          ),
+        ),
+      );
+    } catch (error) {
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(
+            error is ApiException
+                ? error.userMessage
+                : 'Impossible d’ajouter cette offre au panier.',
+          ),
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _adding = false);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FilledButton.icon(
+      onPressed: _adding ? null : _add,
+      icon: const Icon(Icons.add_shopping_cart),
+      label: const Text('Ajouter au panier'),
     );
   }
 }

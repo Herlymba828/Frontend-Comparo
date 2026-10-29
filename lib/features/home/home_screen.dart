@@ -6,9 +6,11 @@ import '../../core/formatters/price_formatter.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/app_navigation_bar.dart';
 import '../../core/widgets/market_widgets.dart';
+import '../../core/widgets/space_scaffold.dart';
 import '../catalog/data/catalog_providers.dart';
 import '../catalog/models/catalog_product.dart';
 import '../catalog/models/catalog_search_request.dart';
+import '../stores/stores_screen.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -68,6 +70,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ],
         ),
         actions: [
+          const SpaceSwitcher(current: AppSpace.customer),
           IconButton(
             tooltip: 'Mes alertes',
             onPressed: () => context.push('/alerts'),
@@ -517,6 +520,17 @@ class _CatalogProductCard extends StatelessWidget {
                 fit: StackFit.expand,
                 children: [
                   ProductArtwork(url: product.imageUrl, unitSize: 96),
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: Padding(
+                      padding: const EdgeInsets.all(AppSpacing.space4),
+                      child: NearbyStoresButton(
+                        productId: product.id,
+                        productName: product.name,
+                        compact: true,
+                      ),
+                    ),
+                  ),
                   Align(
                     alignment: Alignment.topLeft,
                     child: Padding(

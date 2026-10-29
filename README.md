@@ -52,9 +52,30 @@ maquette Figma v2 : fond papier chaud, encre vert profond, kraft, terracotta et
 lime, prix sur étiquettes kraft perforées, badges en tampon et motif wax
 (`lib/core/widgets/market_widgets.dart`) en l’absence d’image produit. Les
 polices (Bricolage Grotesque, Big Shoulders Display, Caveat, Inter) sont
-embarquées dans `assets/fonts/` sous licence SIL OFL. Les écrans
-actuels couvrent l’accueil, la recherche, la comparaison des offres,
-l’inscription, la connexion et le suivi des alertes de prix. La disponibilité
+embarquées dans `assets/fonts/` sous licence SIL OFL.
+
+Écrans (barre du bas : Accueil, Recherche, Panier, Compte) :
+
+- **Client** : accueil, recherche, fiche produit et comparaison (ajout d’une
+  offre au panier), panier (`/cart`), commande en livraison ou retrait
+  (`/checkout`, adresses), mes commandes (`/orders`) avec paiement, relance,
+  annulation, suivi de livraison et code de retrait, notifications, alertes de
+  prix, profil et sécurité (mot de passe, appareils connectés), aide et
+  réclamations (`/support`).
+- **Communauté** : relevés de prix (`/contributions`) — confirmer ou
+  contester ceux des autres ; relever un prix en magasin
+  (`/contributions/new`) : magasin trouvé par la position (après accord) ou
+  par recherche, produit suggéré, prix contrôlé, photo et erreur d’affichage
+  facultatives.
+- **Marchand** (`/merchant`) : ouverture de boutique, commandes reçues
+  (préparer le retrait, vérifier le code client, confier à un coursier,
+  rembourser), offres (soumission puis publication), stock, points de retrait.
+- **Coursier** (`/courier`, rôle `courier`) : mes courses, courses ouvertes de
+  mes zones, prise en charge, statut, position, preuve de livraison,
+  disponibilité.
+
+Les appels réseau passent par `lib/core/network/json_api.dart` (erreurs
+converties en `ApiException`). La disponibilité
 des images, prix, catégories, offres et alertes dépend des réponses réelles de
 l’API ; aucune donnée de catalogue n’est fabriquée par l’interface.
 

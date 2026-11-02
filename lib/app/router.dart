@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
 import '../features/account/account_screen.dart';
+import '../features/account/channels_screen.dart';
 import '../features/account/contributions_screen.dart';
 import '../features/account/support_screen.dart';
 import '../features/alerts/alerts_screen.dart';
@@ -93,6 +94,10 @@ class AppRouter {
       GoRoute(
         path: '/account/profile',
         builder: (context, state) => const ProfileScreen(),
+      ),
+      GoRoute(
+        path: '/account/channels',
+        builder: (context, state) => const ChannelsScreen(),
       ),
       GoRoute(
         path: '/notifications',

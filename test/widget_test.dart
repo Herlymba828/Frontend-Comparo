@@ -708,6 +708,7 @@ class _FakeAlertRepository extends AlertRepository {
     String? thresholdAmount,
     String thresholdCurrency = 'XAF',
     bool repeat = false,
+    List<String> notifyChannels = const ['in_app'],
   }) async {
     createdProductId = productId;
     createdTriggerType = triggerType;

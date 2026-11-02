@@ -112,6 +112,12 @@ class _AccountMenu extends ConsumerWidget {
           'Profil et sécurité',
           '/account/profile',
         ),
+        entry(
+          Icons.forum_outlined,
+          'Canaux de notification',
+          '/account/channels',
+          subtitle: 'Telegram, WhatsApp, SMS',
+        ),
         ListTile(
           leading: const Icon(Icons.logout, color: AppColors.terracotta),
           title: const Text('Se déconnecter'),

@@ -16,6 +16,7 @@ import '../commerce/commerce_repository.dart';
 import '../comparison/models/comparison_offer.dart';
 import '../identity/data/auth_providers.dart';
 import '../stores/stores_screen.dart';
+import 'product_share.dart';
 
 class ProductScreen extends ConsumerStatefulWidget {
   const ProductScreen({super.key, required this.productId});
@@ -62,6 +63,12 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
         title: const Text('Fiche produit'),
         actions: [
           NearbyStoresButton(productId: id),
+          if (productAsync.value?.value case final product?)
+            IconButton(
+              tooltip: 'Partager',
+              onPressed: () => shareProduct(product),
+              icon: const Icon(Icons.share_outlined),
+            ),
           IconButton(
             tooltip: 'Mes alertes',
             onPressed: () => context.push('/alerts'),

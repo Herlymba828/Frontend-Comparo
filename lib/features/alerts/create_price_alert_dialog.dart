@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/errors/api_exception.dart';
 import '../../core/theme/app_theme.dart';
+import '../account/channels_repository.dart';
 import '../catalog/models/catalog_product.dart';
 import 'data/alert_repository.dart';
 
@@ -22,6 +23,13 @@ String? validateAlertThreshold(String? value) {
   return null;
 }
 
+/// Channels of a new alert: always the app, plus the one picked (empty means
+/// the user's usual channels).
+List<String> alertNotifyChannels(String channel) => [
+  'in_app',
+  if (channel.isNotEmpty) channel,
+];
+
 class CreatePriceAlertDialog extends ConsumerStatefulWidget {
   const CreatePriceAlertDialog({required this.product, super.key});
 
@@ -38,6 +46,7 @@ class _CreatePriceAlertDialogState
   late final TextEditingController _thresholdController;
   late final String _currency;
   String _triggerType = 'price_drop';
+  String _channel = '';
   bool _repeat = false;
   bool _isSaving = false;
   String? _errorMessage;
@@ -62,6 +71,10 @@ class _CreatePriceAlertDialogState
 
   @override
   Widget build(BuildContext context) {
+    // Without a linked channel (or offline) the choice simply does not appear.
+    final linked = (ref.watch(messagingChannelsProvider).value ?? const [])
+        .where((channel) => channel.isLinked)
+        .toList();
     return AlertDialog(
       title: Text('Suivre ${widget.product.name}'),
       content: Form(
@@ -116,6 +129,29 @@ class _CreatePriceAlertDialogState
                   ),
                   validator: (value) =>
                       _requiresThreshold ? validateAlertThreshold(value) : null,
+                ),
+              ],
+              if (linked.isNotEmpty) ...[
+                const SizedBox(height: AppSpacing.space12),
+                DropdownButtonFormField<String>(
+                  initialValue: _channel,
+                  decoration: const InputDecoration(
+                    labelText: 'Me prévenir sur',
+                  ),
+                  items: [
+                    const DropdownMenuItem(
+                      value: '',
+                      child: Text('Mes canaux habituels'),
+                    ),
+                    for (final channel in linked)
+                      DropdownMenuItem(
+                        value: channel.channel,
+                        child: Text(channel.label),
+                      ),
+                  ],
+                  onChanged: _isSaving
+                      ? null
+                      : (value) => setState(() => _channel = value ?? ''),
                 ),
               ],
               const SizedBox(height: AppSpacing.space8),
@@ -177,6 +213,7 @@ class _CreatePriceAlertDialogState
             thresholdAmount: threshold,
             thresholdCurrency: _currency,
             repeat: _repeat,
+            notifyChannels: alertNotifyChannels(_channel),
           );
       ref.invalidate(userAlertsProvider);
       if (mounted) {

@@ -64,6 +64,7 @@ class AlertRepository {
     String? thresholdAmount,
     String thresholdCurrency = 'XAF',
     bool repeat = false,
+    List<String> notifyChannels = const ['in_app'],
   }) async {
     try {
       final response = await _client.post<Map<String, dynamic>>(
@@ -74,7 +75,7 @@ class AlertRepository {
           ?(thresholdAmount == null ? null : 'threshold_amount'):
               thresholdAmount,
           'threshold_currency': thresholdCurrency,
-          'notify_channels': ['in_app'],
+          'notify_channels': notifyChannels,
           'repeat': repeat,
         },
       );

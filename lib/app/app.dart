@@ -11,6 +11,8 @@ class ComparateurPrixApp extends StatelessWidget {
     return MaterialApp.router(
       title: 'Comparateur Prix',
       theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
+      themeMode: ThemeMode.system,
       routerConfig: AppRouter.router,
       debugShowCheckedModeBanner: false,
     );

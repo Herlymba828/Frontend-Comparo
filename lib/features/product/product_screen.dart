@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/errors/api_exception.dart';
+import '../../core/theme/app_tokens.dart';
 import '../catalog/data/catalog_providers.dart';
 import '../catalog/models/catalog_product.dart';
 import '../comparison/models/comparison_offer.dart';
@@ -138,7 +139,10 @@ class _ProductHero extends StatelessWidget {
                           if (product.brand != null)
                             Chip(label: Text(product.brand!.name)),
                           if (product.isVerified)
-                            const Chip(label: Text('Vérifié')),
+                            const Chip(
+                              avatar: Icon(Icons.verified_outlined),
+                              label: Text('Vérifié'),
+                            ),
                         ],
                       ),
                     ],
@@ -294,14 +298,7 @@ class _OfferCard extends StatelessWidget {
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             const SizedBox(height: 6),
-            Text(
-              offer.isCurrentlyValid ? 'Offre actuellement valide' : 'Offre hors période',
-              style: TextStyle(
-                color: offer.isCurrentlyValid
-                    ? Theme.of(context).colorScheme.primary
-                    : Theme.of(context).colorScheme.error,
-              ),
-            ),
+            _OfferValidity(isValid: offer.isCurrentlyValid),
             if (normalized != null && normalized.isNotEmpty) ...[
               const SizedBox(height: 8),
               Text(
@@ -333,6 +330,35 @@ class _OfferCard extends StatelessWidget {
   }
 }
 
+/// Offer validity: a label and an icon, never colour alone (DOC-FE-UX-001 §5.3).
+class _OfferValidity extends StatelessWidget {
+  const _OfferValidity({required this.isValid});
+
+  final bool isValid;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final color = isValid ? scheme.primary : scheme.error;
+    return Row(
+      children: [
+        Icon(
+          isValid ? Icons.check_circle_outline : Icons.schedule,
+          size: AppSize.icon,
+          color: color,
+        ),
+        const SizedBox(width: AppSpace.s2),
+        Flexible(
+          child: Text(
+            isValid ? 'Offre actuellement valide' : 'Offre hors période',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: color),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class _ProductImage extends StatelessWidget {
   const _ProductImage({this.url});
 
@@ -340,19 +366,20 @@ class _ProductImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final placeholder = Theme.of(context).colorScheme.surfaceContainerHigh;
     if (url == null || url!.isEmpty) {
-      return const DecoratedBox(
-        decoration: BoxDecoration(color: Color(0xFFEFEFEF)),
-        child: Icon(Icons.shopping_bag_outlined),
+      return ColoredBox(
+        color: placeholder,
+        child: const Icon(Icons.shopping_bag_outlined),
       );
     }
 
     return Image.network(
       url!,
       fit: BoxFit.cover,
-      errorBuilder: (context, error, stackTrace) => const DecoratedBox(
-        decoration: BoxDecoration(color: Color(0xFFEFEFEF)),
-        child: Icon(Icons.broken_image_outlined),
+      errorBuilder: (context, error, stackTrace) => ColoredBox(
+        color: placeholder,
+        child: const Icon(Icons.broken_image_outlined),
       ),
     );
   }

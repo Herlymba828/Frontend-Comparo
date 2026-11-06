@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/widgets/async_views.dart';
-import 'merchant_repository.dart';
+import '../../core/json/json_reader.dart';
+import '../../core/json/named_ref.dart';
+import '../../core/network/json_api.dart';
 
 /// Catalog product search field (opens a search dialog).
 class ProductPickerField extends ConsumerWidget {
@@ -50,9 +52,16 @@ class _ProductSearchDialogState extends ConsumerState<_ProductSearchDialog> {
   Future<void> _search(String query) async {
     setState(() => _loading = true);
     try {
-      final results = await ref
-          .read(merchantRepositoryProvider)
-          .searchProducts(query.trim());
+      final results =
+          (await ref
+                  .read(jsonApiProvider)
+                  .getPage(
+                    'api/catalog/products/',
+                    (json) =>
+                        NamedRef(json.requireInt('id'), json.string('name')),
+                    query: {'q': query.trim(), 'page_size': 20},
+                  ))
+              .items;
       if (mounted) {
         setState(() => _results = results);
       }

@@ -1,7 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+export '../../core/json/named_ref.dart';
+
 import '../../core/errors/api_exception.dart';
 import '../../core/json/json_reader.dart';
+import '../../core/json/named_ref.dart';
 import '../../core/network/json_api.dart';
 import '../account/account_repository.dart';
 import '../commerce/commerce_models.dart';
@@ -80,6 +83,8 @@ class ShopPrice {
     required this.quantity,
     required this.unit,
     required this.status,
+    this.priceTypeId,
+    this.unitId,
   });
 
   final int id;
@@ -91,6 +96,13 @@ class ShopPrice {
   final String unit;
   final String status;
 
+  /// Needed to submit a replacing price (PJ-017).
+  final int? priceTypeId;
+  final int? unitId;
+
+  bool get canBeReplaced =>
+      status == 'published' && priceTypeId != null && unitId != null;
+
   factory ShopPrice.fromJson(Map<String, dynamic> json) => ShopPrice(
     id: json.requireInt('id'),
     productId: json.requireInt('product'),
@@ -100,6 +112,8 @@ class ShopPrice {
     quantity: json.string('quantity', '1'),
     unit: json.string('unit_symbol'),
     status: json.string('status', 'draft'),
+    priceTypeId: json.mapOrNull('price_type')?.intOrNull('id'),
+    unitId: json.intOrNull('unit'),
   );
 }
 
@@ -125,13 +139,6 @@ class StockLine {
     status: json.string('status', 'unknown'),
     quantity: json.stringOrNull('quantity_available'),
   );
-}
-
-class NamedRef {
-  const NamedRef(this.id, this.name);
-
-  final int id;
-  final String name;
 }
 
 final merchantRepositoryProvider = Provider<MerchantRepository>(
@@ -288,6 +295,7 @@ class MerchantRepository {
     required String amount,
     required String quantity,
     String label = '',
+    int? supersedesId,
   }) async {
     // A device clock a few minutes ahead would date the price in the future.
     final now = DateTime.now().toUtc().subtract(const Duration(minutes: 5));
@@ -307,6 +315,8 @@ class MerchantRepository {
             'unit_id': unitId,
             'observed_at': now.toIso8601String(),
             'source_label': 'Espace marchand',
+            // A modified price keeps the old one in the history (PJ-017).
+            'supersedes_id': ?supersedesId,
           },
         );
     // Kept until the offer exists: a retry after a failed second call reuses

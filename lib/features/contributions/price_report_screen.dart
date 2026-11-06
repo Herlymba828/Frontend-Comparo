@@ -13,6 +13,7 @@ import '../../core/widgets/market_widgets.dart';
 import '../account/account_repository.dart';
 import 'price_input.dart';
 import 'price_report_repository.dart';
+import 'report_outbox.dart';
 import 'report_store_step.dart';
 
 /// Report a price seen on a shelf: store, product, price, optional photo.
@@ -217,6 +218,20 @@ class _PriceReportFormState extends ConsumerState<PriceReportForm> {
     if (!mounted) {
       return;
     }
+    if (failure != null && isOfflineError(failure)) {
+      // No network at the market: the report waits on the phone (PJ-027).
+      await ref.read(reportOutboxProvider.notifier).enqueue(draft);
+      if (!mounted) {
+        return;
+      }
+      setState(() => _saving = false);
+      _resetAfterSuccess(
+        message:
+            'Pas de réseau : relevé gardé sur le téléphone. Il partira '
+            'tout seul au retour du réseau (voir « Mes relevés »).',
+      );
+      return;
+    }
     // Stop the progress indicator before any dialog opens.
     setState(() => _saving = false);
     switch (failure) {
@@ -233,7 +248,7 @@ class _PriceReportFormState extends ConsumerState<PriceReportForm> {
     }
   }
 
-  void _resetAfterSuccess() {
+  void _resetAfterSuccess({String? message}) {
     // Reset first: it empties the fields, then the defaults are set again.
     _form.currentState?.reset();
     setState(() {
@@ -252,8 +267,9 @@ class _PriceReportFormState extends ConsumerState<PriceReportForm> {
     _productFocus.requestFocus();
     showInfo(
       context,
-      'Relevé enregistré, merci ! Il sera publié après vérification. '
-      'Vous pouvez relever un autre prix dans ce magasin.',
+      message ??
+          'Relevé enregistré, merci ! Il sera publié après vérification. '
+              'Vous pouvez relever un autre prix dans ce magasin.',
     );
   }
 

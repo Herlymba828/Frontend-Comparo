@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_theme.dart';
-import '../../core/widgets/app_navigation_bar.dart';
 import '../../core/widgets/async_views.dart';
 import '../../core/widgets/space_scaffold.dart';
 import '../identity/data/auth_providers.dart';
@@ -22,7 +21,6 @@ class AccountScreen extends ConsumerWidget {
         title: const Text('Mon compte'),
         actions: const [SpaceSwitcher(current: AppSpace.customer)],
       ),
-      bottomNavigationBar: const AppNavigationBar(currentIndex: 3),
       body: SignedInGate(
         signInMessage:
             'Connectez-vous pour gérer vos commandes et votre compte.',
@@ -81,12 +79,24 @@ class _AccountMenu extends ConsumerWidget {
                 ),
         ),
         entry(Icons.trending_down, 'Mes alertes de prix', '/alerts'),
+        entry(
+          Icons.savings_outlined,
+          'Mes budgets',
+          '/account/budgets',
+          subtitle: 'Estimer le coût de mes achats prévus',
+        ),
         _Header('Communauté'),
         entry(
           Icons.add_a_photo_outlined,
           'Relevés de prix',
           '/contributions',
           subtitle: 'Partager un prix, vérifier ceux des autres',
+        ),
+        entry(
+          Icons.chat_outlined,
+          'Assistant prix',
+          '/assistant',
+          subtitle: 'Prix, comparaison, commandes, conseiller',
         ),
         entry(Icons.support_agent, 'Aide et réclamations', '/support'),
         _Header('Mes espaces'),

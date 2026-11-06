@@ -18,9 +18,21 @@ const moderationTabs = [
     selectedIcon: Icons.pending_actions,
   ),
   SpaceTab('Mes décisions', Icons.history, '/moderation/decided'),
+  SpaceTab(
+    'Anomalies',
+    Icons.report_problem_outlined,
+    '/moderation/anomalies',
+    selectedIcon: Icons.report_problem,
+  ),
+  SpaceTab(
+    'Boutiques',
+    Icons.storefront_outlined,
+    '/moderation/shops',
+    selectedIcon: Icons.storefront,
+  ),
 ];
 
-/// Moderation space: reports to decide, and the moderator's decisions.
+/// Moderation space: price reports, anomalies and shops to verify.
 class ModerationShell extends StatelessWidget {
   const ModerationShell({
     super.key,

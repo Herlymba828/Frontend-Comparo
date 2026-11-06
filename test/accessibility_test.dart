@@ -2,6 +2,9 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import 'support/no_evolution.dart';
+
 import 'package:frontend/app/app.dart';
 import 'package:frontend/app/router.dart';
 import 'package:frontend/core/widgets/market_widgets.dart';
@@ -33,6 +36,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          noPriceEvolution,
           catalogRepositoryProvider.overrideWithValue(_A11yRepository()),
           connectivityServiceProvider.overrideWithValue(_OnlineConnectivity()),
         ],

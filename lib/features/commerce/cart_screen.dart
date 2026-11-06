@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/formatters/price_formatter.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/widgets/app_navigation_bar.dart';
 import '../../core/widgets/async_views.dart';
 import '../../core/widgets/market_widgets.dart';
 import 'commerce_models.dart';
@@ -17,7 +16,6 @@ class CartScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Mon panier')),
-      bottomNavigationBar: const AppNavigationBar(currentIndex: 2),
       body: SignedInGate(
         signInMessage: 'Connectez-vous pour remplir votre panier.',
         builder: (user) => const _CartBody(),
@@ -98,6 +96,12 @@ class _CartBodyState extends ConsumerState<_CartBody> {
                           )
                         : const Icon(Icons.lock_outline),
                     label: const Text('Passer la commande'),
+                  ),
+                  const SizedBox(height: AppSpacing.space8),
+                  OutlinedButton.icon(
+                    onPressed: () => context.push('/cart/optimise'),
+                    icon: const Icon(Icons.compare_arrows),
+                    label: const Text('Comparer entre marchands'),
                   ),
                   const SizedBox(height: AppSpacing.space8),
                   TextButton(

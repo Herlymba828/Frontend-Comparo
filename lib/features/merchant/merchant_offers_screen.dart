@@ -6,7 +6,7 @@ import '../../core/theme/app_theme.dart';
 import '../../core/widgets/async_views.dart';
 import '../../core/widgets/market_widgets.dart';
 import 'merchant_repository.dart';
-import 'product_picker_field.dart';
+import '../catalog/product_picker_field.dart';
 
 /// The shop's prices and the offers customers can order.
 class MerchantOffersScreen extends ConsumerStatefulWidget {
@@ -121,6 +121,12 @@ class MerchantOffersScreenState extends ConsumerState<MerchantOffersScreen> {
                             const Text(
                               'Validation par un modérateur en cours.',
                             ),
+                          if (price.canBeReplaced)
+                            OutlinedButton.icon(
+                              onPressed: () => _replace(price),
+                              icon: const Icon(Icons.edit_outlined),
+                              label: const Text('Modifier le prix'),
+                            ),
                           if (offer != null &&
                               !offer.isActive &&
                               price.status == 'published')
@@ -141,6 +147,76 @@ class MerchantOffersScreenState extends ConsumerState<MerchantOffersScreen> {
         ),
       ),
     );
+  }
+
+  /// A new price replaces this one once validated; the old one stays in the
+  /// price history.
+  Future<void> _replace(ShopPrice price) async {
+    final controller = TextEditingController(
+      text: price.amount.replaceAll(RegExp(r'\.0+$'), ''),
+    );
+    final amount = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Nouveau prix : ${price.productName}'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TextField(
+              controller: controller,
+              autofocus: true,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText:
+                    'Prix pour ${formatQuantity(price.quantity)} ${price.unit}',
+                suffixText: price.currency,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.space8),
+            const Text(
+              'L’ancien prix reste dans l’historique. Le nouveau est vérifié '
+              'avant d’être affiché.',
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Annuler'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, controller.text.trim()),
+            child: const Text('Envoyer'),
+          ),
+        ],
+      ),
+    );
+    controller.dispose();
+    if (amount == null || amount.isEmpty || !mounted) {
+      return;
+    }
+    try {
+      await ref
+          .read(merchantRepositoryProvider)
+          .createOffer(
+            shopId: widget.shopId,
+            productId: price.productId,
+            priceTypeId: price.priceTypeId!,
+            unitId: price.unitId!,
+            amount: amount.replaceAll(',', '.'),
+            quantity: price.quantity,
+            supersedesId: price.id,
+          );
+      _refresh();
+      if (mounted) {
+        showInfo(context, 'Nouveau prix envoyé pour validation.');
+      }
+    } catch (error) {
+      if (mounted) {
+        showApiError(context, error);
+      }
+    }
   }
 
   Future<void> _publish(ShopOffer offer) async {

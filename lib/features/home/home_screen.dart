@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/formatters/price_formatter.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/widgets/app_navigation_bar.dart';
 import '../../core/widgets/market_widgets.dart';
 import '../../core/widgets/space_scaffold.dart';
 import '../catalog/data/catalog_providers.dart';
@@ -92,7 +91,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: const AppNavigationBar(currentIndex: 0),
       body: Center(
         child: LayoutBuilder(
           builder: (context, constraints) {

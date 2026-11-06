@@ -10,6 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'support/no_evolution.dart';
+
 import 'package:frontend/app/app.dart';
 import 'package:frontend/app/router.dart';
 import 'package:frontend/features/catalog/data/catalog_providers.dart';
@@ -36,6 +38,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          noPriceEvolution,
           catalogRepositoryProvider.overrideWithValue(_FakeCatalogRepository()),
         ],
         child: const ComparateurPrixApp(),
@@ -54,7 +57,10 @@ void main() {
     AppRouter.router.go('/');
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [catalogRepositoryProvider.overrideWithValue(repository)],
+        overrides: [
+          noPriceEvolution,
+          catalogRepositoryProvider.overrideWithValue(repository),
+        ],
         child: const ComparateurPrixApp(),
       ),
     );
@@ -78,7 +84,10 @@ void main() {
     AppRouter.router.go('/');
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [catalogRepositoryProvider.overrideWithValue(repository)],
+        overrides: [
+          noPriceEvolution,
+          catalogRepositoryProvider.overrideWithValue(repository),
+        ],
         child: const ComparateurPrixApp(),
       ),
     );
@@ -100,6 +109,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          noPriceEvolution,
           catalogRepositoryProvider.overrideWithValue(
             _HomeFixtureCatalogRepository(),
           ),
@@ -123,7 +133,10 @@ void main() {
     AppRouter.router.go('/');
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [catalogRepositoryProvider.overrideWithValue(repository)],
+        overrides: [
+          noPriceEvolution,
+          catalogRepositoryProvider.overrideWithValue(repository),
+        ],
         child: const ComparateurPrixApp(),
       ),
     );
@@ -150,6 +163,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          noPriceEvolution,
           catalogRepositoryProvider.overrideWithValue(_FakeCatalogRepository()),
         ],
         child: const ComparateurPrixApp(),
@@ -177,6 +191,7 @@ void main() {
       MaterialApp(
         home: ProviderScope(
           overrides: [
+            noPriceEvolution,
             catalogRepositoryProvider.overrideWithValue(
               _FakeCatalogRepository(),
             ),
@@ -215,6 +230,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          noPriceEvolution,
           catalogRepositoryProvider.overrideWithValue(_FakeCatalogRepository()),
           authRepositoryProvider.overrideWithValue(authRepository),
           alertRepositoryProvider.overrideWithValue(alertRepository),
@@ -254,6 +270,7 @@ void main() {
       MaterialApp(
         home: ProviderScope(
           overrides: [
+            noPriceEvolution,
             catalogRepositoryProvider.overrideWithValue(
               _FakeCatalogRepository(includeCurrency: false),
             ),
@@ -275,6 +292,7 @@ void main() {
       MaterialApp(
         home: ProviderScope(
           overrides: [
+            noPriceEvolution,
             catalogRepositoryProvider.overrideWithValue(
               _FakeCatalogRepository(includePrice: false),
             ),
@@ -317,7 +335,10 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         home: ProviderScope(
-          overrides: [catalogRepositoryProvider.overrideWithValue(repository)],
+          overrides: [
+            noPriceEvolution,
+            catalogRepositoryProvider.overrideWithValue(repository),
+          ],
           child: const SearchScreen(),
         ),
       ),
@@ -346,6 +367,7 @@ void main() {
       MaterialApp(
         home: ProviderScope(
           overrides: [
+            noPriceEvolution,
             catalogRepositoryProvider.overrideWithValue(
               _FakeCatalogRepository(),
             ),
@@ -366,7 +388,10 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         home: ProviderScope(
-          overrides: [catalogRepositoryProvider.overrideWithValue(repository)],
+          overrides: [
+            noPriceEvolution,
+            catalogRepositoryProvider.overrideWithValue(repository),
+          ],
           child: const ProductScreen(productId: '15'),
         ),
       ),

@@ -133,7 +133,11 @@ class _FakeReports implements PriceReportRepository {
   }) async => check;
 
   @override
-  Future<int> submit(PriceReportDraft draft) async {
+  Future<int> submit(
+    PriceReportDraft draft, {
+    String? clientReference,
+    DateTime? observedAt,
+  }) async {
     drafts.add(draft);
     final error = submitError;
     if (error != null) {

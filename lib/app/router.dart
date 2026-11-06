@@ -1,11 +1,16 @@
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
+import '../core/widgets/app_navigation_bar.dart';
+
 import '../features/account/account_screen.dart';
 import '../features/account/channels_screen.dart';
 import '../features/account/contributions_screen.dart';
 import '../features/account/support_screen.dart';
 import '../features/alerts/alerts_screen.dart';
+import '../features/assistant/assistant_screen.dart';
+import '../features/budget/budgets_screen.dart';
+import '../features/commerce/basket_optimisation_screen.dart';
 import '../features/commerce/cart_screen.dart';
 import '../features/commerce/checkout_screen.dart';
 import '../features/commerce/order_detail_screen.dart';
@@ -23,7 +28,9 @@ import '../features/merchant/merchant_order_screen.dart';
 import '../features/merchant/merchant_orders_screen.dart';
 import '../features/merchant/merchant_shell.dart';
 import '../features/merchant/merchant_shop_screen.dart';
+import '../features/merchant/merchant_stats_screen.dart';
 import '../features/merchant/merchant_stock_screen.dart';
+import '../features/moderation/moderation_review_screens.dart';
 import '../features/moderation/moderation_screen.dart';
 import '../features/product/product_screen.dart';
 import '../features/search/search_screen.dart';
@@ -48,17 +55,31 @@ class AppRouter {
       // ── Shared ────────────────────────────────────────────────────────
       GoRoute(path: '/auth', builder: (context, state) => const AuthScreen()),
       // ── Customer ──────────────────────────────────────────────────────
-      GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
+      ShellRoute(
+        builder: (context, state, child) =>
+            CustomerShell(location: state.uri.path, child: child),
+        routes: [
+          _tab('/', const HomeScreen()),
+          GoRoute(
+            path: '/search',
+            pageBuilder: (context, state) => NoTransitionPage(
+              child: SearchScreen(
+                initialQuery: state.uri.queryParameters['query'] ?? '',
+                initialCategory: state.uri.queryParameters['category'],
+              ),
+            ),
+          ),
+          _tab('/cart', const CartScreen()),
+          _tab('/account', const AccountScreen()),
+        ],
+      ),
+      GoRoute(
+        path: '/assistant',
+        builder: (context, state) => const AssistantScreen(),
+      ),
       GoRoute(
         path: '/alerts',
         builder: (context, state) => const AlertsScreen(),
-      ),
-      GoRoute(
-        path: '/search',
-        builder: (context, state) => SearchScreen(
-          initialQuery: state.uri.queryParameters['query'] ?? '',
-          initialCategory: state.uri.queryParameters['category'],
-        ),
       ),
       GoRoute(
         path: '/product/:id',
@@ -74,7 +95,10 @@ class AppRouter {
           productName: state.uri.queryParameters['name'],
         ),
       ),
-      GoRoute(path: '/cart', builder: (context, state) => const CartScreen()),
+      GoRoute(
+        path: '/cart/optimise',
+        builder: (context, state) => const BasketOptimisationScreen(),
+      ),
       GoRoute(
         path: '/checkout',
         builder: (context, state) => const CheckoutScreen(),
@@ -88,12 +112,16 @@ class AppRouter {
         builder: (context, state) => OrderDetailScreen(orderId: _id(state)),
       ),
       GoRoute(
-        path: '/account',
-        builder: (context, state) => const AccountScreen(),
-      ),
-      GoRoute(
         path: '/account/profile',
         builder: (context, state) => const ProfileScreen(),
+      ),
+      GoRoute(
+        path: '/account/budgets',
+        builder: (context, state) => const BudgetsScreen(),
+      ),
+      GoRoute(
+        path: '/account/budgets/:id',
+        builder: (context, state) => BudgetScreen(budgetId: _id(state)),
       ),
       GoRoute(
         path: '/account/channels',
@@ -149,6 +177,10 @@ class AppRouter {
         ],
       ),
       GoRoute(
+        path: '/merchant/stats',
+        builder: (context, state) => const MerchantStatsScreen(),
+      ),
+      GoRoute(
         path: '/merchant/orders/:id',
         builder: (context, state) => MerchantOrderScreen(orderId: _id(state)),
       ),
@@ -193,6 +225,8 @@ class AppRouter {
         routes: [
           _tab('/moderation/pending', const ModerationQueueScreen()),
           _tab('/moderation/decided', const ModerationDecisionsScreen()),
+          _tab('/moderation/anomalies', const ModerationAnomaliesScreen()),
+          _tab('/moderation/shops', const ModerationShopsScreen()),
         ],
       ),
     ],

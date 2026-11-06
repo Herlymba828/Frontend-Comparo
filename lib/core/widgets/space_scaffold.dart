@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/identity/data/auth_providers.dart';
 import '../../features/identity/models/auth_user.dart';
-import '../theme/app_theme.dart';
+import 'app_navigation_bar.dart';
 import 'async_views.dart';
 
 /// The spaces of the app, one per role: each has its own screens and
@@ -45,33 +45,15 @@ List<AppSpace> spacesOf(AuthUser user) => [
     if (space.isOpenTo(user)) space,
 ];
 
-/// One destination of a space's navigation bar.
-class SpaceTab {
-  const SpaceTab(this.label, this.icon, this.path, {this.selectedIcon});
-
-  final String label;
-  final IconData icon;
-  final IconData? selectedIcon;
-  final String path;
-}
+/// One destination of a space's navigation.
+typedef SpaceTab = NavItem;
 
 /// Index of the tab showing [location] (the longest matching path wins).
-int spaceTabIndex(List<SpaceTab> tabs, String location) {
-  var best = 0;
-  var bestLength = -1;
-  for (var i = 0; i < tabs.length; i++) {
-    final path = tabs[i].path;
-    final matches = location == path || location.startsWith('$path/');
-    if (matches && path.length > bestLength) {
-      best = i;
-      bestLength = path.length;
-    }
-  }
-  return best;
-}
+int spaceTabIndex(List<SpaceTab> tabs, String location) =>
+    navIndexFor(tabs, location);
 
 /// Frame of a role space: title, space switcher, the role gate and the
-/// space's own navigation bar around the current tab ([child]).
+/// space's own navigation (bar or rail) around the current tab ([child]).
 class SpaceScaffold extends StatelessWidget {
   const SpaceScaffold({
     super.key,
@@ -93,7 +75,10 @@ class SpaceScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final index = spaceTabIndex(tabs, location);
-    return Scaffold(
+    return AdaptiveNavigation(
+      items: tabs,
+      selectedIndex: index,
+      showNavigation: showTabs,
       appBar: AppBar(
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -105,7 +90,7 @@ class SpaceScaffold extends StatelessWidget {
         actions: [SpaceSwitcher(current: space)],
       ),
       // isOpenTo, not SignedInGate.role: admins enter the moderation space.
-      body: SignedInGate(
+      child: SignedInGate(
         signInMessage:
             'Connectez-vous pour accéder à votre ${space.label.toLowerCase()}.',
         builder: (user) => space.isOpenTo(user)
@@ -115,33 +100,6 @@ class SpaceScaffold extends StatelessWidget {
                 title: 'Cet espace est réservé à un autre profil.',
               ),
       ),
-      bottomNavigationBar: showTabs
-          ? DecoratedBox(
-              decoration: const BoxDecoration(
-                border: Border(
-                  top: BorderSide(color: AppColors.ink, width: 1.5),
-                ),
-              ),
-              child: NavigationBar(
-                selectedIndex: index,
-                onDestinationSelected: (i) {
-                  if (i != index) {
-                    context.go(tabs[i].path);
-                  }
-                },
-                destinations: [
-                  for (final tab in tabs)
-                    NavigationDestination(
-                      icon: Icon(tab.icon),
-                      selectedIcon: tab.selectedIcon == null
-                          ? null
-                          : Icon(tab.selectedIcon),
-                      label: tab.label,
-                    ),
-                ],
-              ),
-            )
-          : null,
     );
   }
 }

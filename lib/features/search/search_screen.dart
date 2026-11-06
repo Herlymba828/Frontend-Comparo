@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/voice/voice_service.dart';
+
 import '../../core/errors/api_exception.dart';
 import '../../core/formatters/price_formatter.dart';
 import '../../core/storage/repository_result.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/widgets/app_navigation_bar.dart';
 import '../../core/widgets/cache_status_banner.dart';
 import '../../core/widgets/market_widgets.dart';
 import '../catalog/data/catalog_providers.dart';
@@ -58,6 +59,24 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  /// Dictated words are shown in the field first: the user checks the
+  /// transcription before searching (PJ-026).
+  Future<void> _dictate() async {
+    final heard = await ref.read(voiceServiceProvider).listen();
+    if (!mounted) {
+      return;
+    }
+    if (heard == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Je n’ai rien entendu. Vérifiez le micro.'),
+        ),
+      );
+      return;
+    }
+    _controller.text = heard;
   }
 
   void _submitSearch(String value) {
@@ -116,7 +135,6 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Recherche de produit')),
-      bottomNavigationBar: const AppNavigationBar(currentIndex: 1),
       body: Column(
         children: [
           Padding(
@@ -134,10 +152,20 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 labelText: 'Produit',
                 hintText: 'Ex : iPhone, lait, aspirateur',
                 prefixIcon: const Icon(Icons.search),
-                suffixIcon: IconButton(
-                  tooltip: 'Rechercher',
-                  onPressed: () => _submitSearch(_controller.text),
-                  icon: const Icon(Icons.arrow_forward),
+                suffixIcon: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      tooltip: 'Dicter la recherche',
+                      onPressed: _dictate,
+                      icon: const Icon(Icons.mic_none),
+                    ),
+                    IconButton(
+                      tooltip: 'Rechercher',
+                      onPressed: () => _submitSearch(_controller.text),
+                      icon: const Icon(Icons.arrow_forward),
+                    ),
+                  ],
                 ),
               ),
             ),

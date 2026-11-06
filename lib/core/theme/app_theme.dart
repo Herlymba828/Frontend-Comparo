@@ -301,6 +301,27 @@ class AppTheme {
           borderRadius: BorderRadius.all(Radius.circular(20)),
         ),
       ),
+      // Wide screens: the same look as the bottom bar, on the side.
+      navigationRailTheme: const NavigationRailThemeData(
+        backgroundColor: AppColors.surface,
+        indicatorColor: AppColors.accent,
+        indicatorShape: StadiumBorder(
+          side: BorderSide(color: AppColors.ink, width: 1.2),
+        ),
+        selectedIconTheme: IconThemeData(color: AppColors.ink),
+        unselectedIconTheme: IconThemeData(color: AppColors.textSecondary),
+        selectedLabelTextStyle: TextStyle(
+          fontFamily: AppFonts.display,
+          color: AppColors.ink,
+          fontSize: 12,
+          fontWeight: FontWeight.w800,
+        ),
+        unselectedLabelTextStyle: TextStyle(
+          color: AppColors.textSecondary,
+          fontSize: 12,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: AppColors.surface,
         surfaceTintColor: Colors.transparent,

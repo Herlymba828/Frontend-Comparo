@@ -6,7 +6,7 @@ import '../../core/errors/api_exception.dart';
 import '../../core/formatters/price_formatter.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/cache_status_banner.dart';
-import '../../core/widgets/app_navigation_bar.dart';
+import '../../core/voice/voice_service.dart';
 import '../../core/widgets/market_widgets.dart';
 import '../alerts/create_price_alert_dialog.dart';
 import '../availability/models/merchant_availability.dart';
@@ -16,6 +16,7 @@ import '../commerce/commerce_repository.dart';
 import '../comparison/models/comparison_offer.dart';
 import '../identity/data/auth_providers.dart';
 import '../stores/stores_screen.dart';
+import 'price_evolution.dart';
 import 'product_share.dart';
 
 class ProductScreen extends ConsumerStatefulWidget {
@@ -65,6 +66,24 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
           NearbyStoresButton(productId: id),
           if (productAsync.value?.value case final product?)
             IconButton(
+              tooltip: 'Écouter',
+              onPressed: () => ref
+                  .read(voiceServiceProvider)
+                  .speak(
+                    productSpeech(
+                      product.name,
+                      product.priceSnapshot == null
+                          ? null
+                          : formatPrice(
+                              product.priceSnapshot,
+                              product.priceSnapshotCurrency,
+                            ),
+                    ),
+                  ),
+              icon: const Icon(Icons.volume_up_outlined),
+            ),
+          if (productAsync.value?.value case final product?)
+            IconButton(
               tooltip: 'Partager',
               onPressed: () => shareProduct(product),
               icon: const Icon(Icons.share_outlined),
@@ -76,7 +95,6 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: const AppNavigationBar(currentIndex: 1),
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 640),
@@ -245,6 +263,8 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                             );
                     },
                   ),
+                  const SizedBox(height: AppSpacing.space24),
+                  PriceEvolutionSection(productId: id),
                   const SizedBox(height: AppSpacing.space24),
                   _AvailabilitySection(productId: id),
                   const SizedBox(height: AppSpacing.space24),

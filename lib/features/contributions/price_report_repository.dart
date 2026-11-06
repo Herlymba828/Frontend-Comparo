@@ -323,8 +323,14 @@ class PriceReportRepository {
     },
   );
 
-  /// Sends the report; returns the id of the created contribution.
-  Future<int> submit(PriceReportDraft draft) async {
+  /// Sends the report; returns the id of the created contribution. A report
+  /// kept offline carries its [clientReference] (a replay never makes a copy)
+  /// and the moment it was seen ([observedAt]).
+  Future<int> submit(
+    PriceReportDraft draft, {
+    String? clientReference,
+    DateTime? observedAt,
+  }) async {
     final gps = draft.locationMethod == LocationMethod.gps;
     try {
       return await _api.postForm(
@@ -345,6 +351,8 @@ class PriceReportRepository {
           'display_error': draft.displayError,
           'confirm_outlier': draft.confirmOutlier,
           'notes': draft.notes,
+          'client_reference': clientReference,
+          'observed_at': observedAt?.toUtc().toIso8601String(),
         },
         files: {
           if (draft.photo != null)

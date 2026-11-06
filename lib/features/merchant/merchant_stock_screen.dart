@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/async_views.dart';
 import 'merchant_repository.dart';
-import 'product_picker_field.dart';
+import '../catalog/product_picker_field.dart';
 
 /// Stock declared per product (reserved at order time).
 const _stockStatuses = {

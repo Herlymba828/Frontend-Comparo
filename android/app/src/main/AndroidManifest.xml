@@ -6,6 +6,8 @@
     <!-- "Magasins près de moi": distance to the stores selling a product. -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <!-- Voice search and dictation (PJ-026), asked when first used. -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <!-- Pas de sauvegarde/transfert automatique : les jetons chiffrés par le
          Keystore seraient illisibles après restauration, et le cache hors
          ligne contient l'historique de recherche. -->
@@ -50,6 +52,13 @@
 
          In particular, this is used by the Flutter engine in io.flutter.plugin.text.ProcessTextPlugin. -->
     <queries>
+        <!-- Reading aloud (PJ-025) and dictation (PJ-026) on the phone's engines. -->
+        <intent>
+            <action android:name="android.intent.action.TTS_SERVICE"/>
+        </intent>
+        <intent>
+            <action android:name="android.speech.RecognitionService"/>
+        </intent>
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>

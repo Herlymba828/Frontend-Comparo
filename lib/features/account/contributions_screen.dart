@@ -6,6 +6,7 @@ import '../../core/formatters/price_formatter.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/async_views.dart';
 import '../../core/widgets/market_widgets.dart';
+import '../contributions/report_outbox_card.dart';
 import 'account_repository.dart';
 import 'email_verification_dialog.dart';
 import 'report_photo_dialog.dart';
@@ -35,10 +36,17 @@ class ContributionsScreen extends ConsumerWidget {
         ),
         body: SignedInGate(
           signInMessage: 'Connectez-vous pour partager et vérifier des prix.',
-          builder: (user) => const TabBarView(
+          builder: (user) => const Column(
             children: [
-              _ContributionList(toVerify: true),
-              _ContributionList(toVerify: false),
+              ReportOutboxCard(),
+              Expanded(
+                child: TabBarView(
+                  children: [
+                    _ContributionList(toVerify: true),
+                    _ContributionList(toVerify: false),
+                  ],
+                ),
+              ),
             ],
           ),
         ),

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/files/protected_file.dart';
 import '../../core/formatters/price_formatter.dart';
 import '../../core/json/json_reader.dart';
 import '../../core/network/json_api.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/async_views.dart';
 import '../../core/widgets/market_widgets.dart';
+import '../merchant/merchant_repository.dart' show ShopDocument;
 
 /// A price far from its product's recent prices (PJ-020): a signal, not a
 /// verdict.
@@ -62,6 +64,7 @@ const anomalyTypeLabels = {
   'duplicate': 'Doublon suspect',
   'pattern_break': 'Rupture de tendance',
   'context_conflict': 'Conflit de contexte',
+  'user_report': 'Signalé par des consommateurs',
 };
 
 const severityLabels = {
@@ -116,6 +119,14 @@ final shopsToVerifyProvider = FutureProvider.autoDispose<List<PendingShop>>(
       .watch(jsonApiProvider)
       .getAll('api/merchants/to_verify/', PendingShop.fromJson),
 );
+
+/// The verification documents a shop sent (moderators only).
+final pendingShopDocumentsProvider = FutureProvider.autoDispose
+    .family<List<ShopDocument>, int>(
+      (ref, shopId) => ref
+          .watch(jsonApiProvider)
+          .getAll('api/merchants/$shopId/documents/', ShopDocument.fromJson),
+    );
 
 /// Asks a note; null when cancelled. [required] refuses an empty note.
 Future<String?> askNote(
@@ -310,6 +321,18 @@ class _ModerationShopsScreenState extends ConsumerState<ModerationShopsScreen> {
   final _busy = <int>{};
 
   Future<void> _decide(PendingShop shop, {required bool verify}) async {
+    final documents = ref.read(pendingShopDocumentsProvider(shop.id)).value;
+    if (verify && documents != null && documents.isEmpty) {
+      final ok = await confirmAction(
+        context,
+        title: 'Vérifier sans justificatif ?',
+        message: '${shop.name} n’a envoyé aucun justificatif.',
+        confirmLabel: 'Vérifier quand même',
+      );
+      if (!ok || !mounted) {
+        return;
+      }
+    }
     String? reason;
     if (!verify) {
       reason = await askNote(
@@ -380,6 +403,8 @@ class _ModerationShopsScreenState extends ConsumerState<ModerationShopsScreen> {
                       ),
                       InfoRow('E-mail', shop.email.isEmpty ? '—' : shop.email),
                       InfoRow('Ouverte le', formatDateTime(shop.createdAt)),
+                      const Divider(),
+                      _ShopDocuments(shop: shop),
                       const SizedBox(height: AppSpacing.space8),
                       Wrap(
                         spacing: AppSpacing.space8,
@@ -404,5 +429,58 @@ class _ModerationShopsScreenState extends ConsumerState<ModerationShopsScreen> {
               ),
       ),
     );
+  }
+}
+
+/// The documents a shop sent for its verification, each one openable.
+class _ShopDocuments extends ConsumerWidget {
+  const _ShopDocuments({required this.shop});
+
+  final PendingShop shop;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final provider = pendingShopDocumentsProvider(shop.id);
+    return ref
+        .watch(provider)
+        .when(
+          loading: () => const LinearProgressIndicator(),
+          error: (error, stackTrace) => Row(
+            children: [
+              Expanded(child: Text(errorText(error))),
+              TextButton(
+                onPressed: () => ref.invalidate(provider),
+                child: const Text('Réessayer'),
+              ),
+            ],
+          ),
+          data: (documents) => documents.isEmpty
+              ? const Text('Aucun justificatif envoyé.')
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Justificatifs',
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                    for (final document in documents)
+                      ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        leading: const Icon(Icons.description_outlined),
+                        title: Text(document.kindLabel),
+                        subtitle: Text(
+                          'Envoyé le ${formatDateTime(document.createdAt)}',
+                        ),
+                        trailing: const Icon(Icons.open_in_new),
+                        onTap: () => openProtectedFile(
+                          context,
+                          ref,
+                          path: document.downloadUrl,
+                          title: '${shop.name} — ${document.kindLabel}',
+                        ),
+                      ),
+                  ],
+                ),
+        );
   }
 }

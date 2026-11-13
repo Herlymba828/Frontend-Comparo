@@ -89,6 +89,39 @@ class CatalogFormat {
   Map<String, dynamic> toJson() => _$CatalogFormatToJson(this);
 }
 
+/// One point of the mini-corde of a result: a current price of the product,
+/// in its comparable group (apps/pricing/summary.py).
+@JsonSerializable(fieldRename: FieldRename.snake)
+class CurrentPrice {
+  const CurrentPrice({
+    required this.offerId,
+    required this.merchantId,
+    required this.merchantName,
+    required this.amount,
+    required this.currency,
+    required this.unitPrice,
+    required this.unit,
+    this.isBestOffer = false,
+  });
+
+  final int offerId;
+  final int merchantId;
+  final String merchantName;
+  final String amount;
+  final String currency;
+
+  /// Price per base unit ([unit]), the value placed on the corde.
+  final String unitPrice;
+  final String unit;
+  @JsonKey(defaultValue: false)
+  final bool isBestOffer;
+
+  factory CurrentPrice.fromJson(Map<String, dynamic> json) =>
+      _$CurrentPriceFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CurrentPriceToJson(this);
+}
+
 @JsonSerializable(fieldRename: FieldRename.snake)
 class CatalogProduct {
   const CatalogProduct({
@@ -111,6 +144,8 @@ class CatalogProduct {
     this.priceSnapshotUpdatedAt,
     this.createdAt,
     this.updatedAt,
+    this.offerCount = 0,
+    this.currentPrices = const [],
   });
 
   final int id;
@@ -134,6 +169,14 @@ class CatalogProduct {
   final String availability;
   final bool isActive;
   final bool isVerified;
+
+  /// Offers the public can see (lists only).
+  @JsonKey(defaultValue: 0)
+  final int offerCount;
+
+  /// Current prices for the mini-corde, cheapest first (lists only).
+  @JsonKey(defaultValue: <CurrentPrice>[])
+  final List<CurrentPrice> currentPrices;
 
   factory CatalogProduct.fromJson(Map<String, dynamic> json) =>
       _$CatalogProductFromJson(json);

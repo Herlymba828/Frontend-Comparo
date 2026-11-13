@@ -78,6 +78,29 @@ Map<String, dynamic> _$CatalogFormatToJson(CatalogFormat instance) =>
       'description': instance.description,
     };
 
+CurrentPrice _$CurrentPriceFromJson(Map<String, dynamic> json) => CurrentPrice(
+  offerId: (json['offer_id'] as num).toInt(),
+  merchantId: (json['merchant_id'] as num).toInt(),
+  merchantName: json['merchant_name'] as String,
+  amount: json['amount'] as String,
+  currency: json['currency'] as String,
+  unitPrice: json['unit_price'] as String,
+  unit: json['unit'] as String,
+  isBestOffer: json['is_best_offer'] as bool? ?? false,
+);
+
+Map<String, dynamic> _$CurrentPriceToJson(CurrentPrice instance) =>
+    <String, dynamic>{
+      'offer_id': instance.offerId,
+      'merchant_id': instance.merchantId,
+      'merchant_name': instance.merchantName,
+      'amount': instance.amount,
+      'currency': instance.currency,
+      'unit_price': instance.unitPrice,
+      'unit': instance.unit,
+      'is_best_offer': instance.isBestOffer,
+    };
+
 CatalogProduct _$CatalogProductFromJson(Map<String, dynamic> json) =>
     CatalogProduct(
       id: (json['id'] as num).toInt(),
@@ -115,6 +138,12 @@ CatalogProduct _$CatalogProductFromJson(Map<String, dynamic> json) =>
       updatedAt: json['updated_at'] == null
           ? null
           : DateTime.parse(json['updated_at'] as String),
+      offerCount: (json['offer_count'] as num?)?.toInt() ?? 0,
+      currentPrices:
+          (json['current_prices'] as List<dynamic>?)
+              ?.map((e) => CurrentPrice.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
     );
 
 Map<String, dynamic> _$CatalogProductToJson(CatalogProduct instance) =>
@@ -139,4 +168,6 @@ Map<String, dynamic> _$CatalogProductToJson(CatalogProduct instance) =>
       'availability': instance.availability,
       'is_active': instance.isActive,
       'is_verified': instance.isVerified,
+      'offer_count': instance.offerCount,
+      'current_prices': instance.currentPrices,
     };

@@ -12,6 +12,7 @@ import '../../core/widgets/cache_status_banner.dart';
 import '../../core/widgets/market_widgets.dart';
 import '../catalog/data/catalog_providers.dart';
 import '../catalog/models/catalog_product.dart';
+import '../comparison/price_rope.dart';
 import '../catalog/models/catalog_product_page.dart';
 import '../catalog/models/catalog_search_request.dart';
 import '../stores/stores_screen.dart';
@@ -539,6 +540,13 @@ class _ProductTile extends StatelessWidget {
                       ),
                     ],
                   ),
+                  if (product.currentPrices.length >= 2) ...[
+                    const SizedBox(height: AppSpacing.space8),
+                    PriceRope(
+                      prices: product.currentPrices,
+                      offerCount: product.offerCount,
+                    ),
+                  ],
                   const SizedBox(height: AppSpacing.space8),
                   Text(
                     [

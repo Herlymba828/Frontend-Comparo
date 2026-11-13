@@ -63,6 +63,7 @@ class BasketSolution {
     required this.deliveryTotal,
     required this.paymentFees,
     required this.total,
+    this.savings,
   });
 
   final String kind;
@@ -71,6 +72,10 @@ class BasketSolution {
   final String deliveryTotal;
   final String paymentFees;
   final String total;
+
+  /// Saved against the dearest store holding the whole list; null when no
+  /// store holds it all.
+  final String? savings;
 
   bool get isSplit => kind == 'split';
 
@@ -81,6 +86,40 @@ class BasketSolution {
     deliveryTotal: json.string('delivery_total', '0'),
     paymentFees: json.string('payment_fees', '0'),
     total: json.string('total', '0'),
+    savings: json.stringOrNull('savings'),
+  );
+}
+
+/// What the whole list would cost at one store, and what it lacks there.
+class StoreTotal {
+  const StoreTotal({
+    required this.merchantId,
+    required this.merchantName,
+    required this.productsTotal,
+    required this.deliveryFee,
+    required this.total,
+    required this.foundCount,
+    required this.missing,
+  });
+
+  final int merchantId;
+  final String merchantName;
+  final String productsTotal;
+  final String deliveryFee;
+  final String total;
+  final int foundCount;
+  final List<String> missing;
+
+  bool get isComplete => missing.isEmpty;
+
+  factory StoreTotal.fromJson(Map<String, dynamic> json) => StoreTotal(
+    merchantId: json.requireInt('merchant_id'),
+    merchantName: json.string('merchant_name'),
+    productsTotal: json.string('products_total', '0'),
+    deliveryFee: json.string('delivery_fee', '0'),
+    total: json.string('total', '0'),
+    foundCount: json.intOrNull('found_count') ?? 0,
+    missing: json.strings('missing'),
   );
 }
 
@@ -89,17 +128,25 @@ class BasketOptimisation {
     required this.solutions,
     required this.unavailable,
     required this.withoutOffer,
+    this.stores = const [],
+    this.mostExpensiveTotal,
   });
 
   final List<BasketSolution> solutions;
   final List<String> unavailable;
   final List<String> withoutOffer;
 
+  /// Each store holding part of the list, complete ones first.
+  final List<StoreTotal> stores;
+  final String? mostExpensiveTotal;
+
   factory BasketOptimisation.fromJson(Map<String, dynamic> json) =>
       BasketOptimisation(
         solutions: json.maps('solutions').map(BasketSolution.fromJson).toList(),
         unavailable: json.strings('unavailable'),
         withoutOffer: json.strings('without_offer'),
+        stores: json.maps('stores').map(StoreTotal.fromJson).toList(),
+        mostExpensiveTotal: json.stringOrNull('most_expensive_total'),
       );
 }
 
@@ -215,6 +262,10 @@ class _BasketOptimisationScreenState
                     ),
                     const SizedBox(height: AppSpacing.space12),
                   ],
+                  if (result.stores.isNotEmpty) ...[
+                    _StoresCard(stores: result.stores),
+                    const SizedBox(height: AppSpacing.space12),
+                  ],
                   if (result.unavailable.isNotEmpty)
                     Text(
                       'Sans offre aujourd’hui : '
@@ -262,6 +313,13 @@ class _SolutionCard extends StatelessWidget {
         InfoRow('Livraison', formatPrice(solution.deliveryTotal, 'XAF')),
         InfoRow('Frais de paiement', formatPrice(solution.paymentFees, 'XAF')),
         InfoRow('Total', formatPrice(solution.total, 'XAF')),
+        if (solution.savings case final savings?
+            when (double.tryParse(savings) ?? 0) > 0)
+          InfoRow(
+            'Économie',
+            '${formatPrice(savings, 'XAF')} par rapport à la boutique '
+                'la plus chère',
+          ),
         const Divider(),
         for (final merchant in solution.merchants) ...[
           Text(
@@ -281,6 +339,45 @@ class _SolutionCard extends StatelessWidget {
             ),
           ),
         ],
+      ],
+    );
+  }
+}
+
+/// The whole list, store by store: its total there and what it lacks.
+class _StoresCard extends StatelessWidget {
+  const _StoresCard({required this.stores});
+
+  final List<StoreTotal> stores;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    return SectionCard(
+      title: 'Par boutique',
+      children: [
+        for (final store in stores)
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: Icon(
+              store.isComplete
+                  ? Icons.check_circle_outline
+                  : Icons.remove_circle_outline,
+              color: store.isComplete
+                  ? AppColors.primary
+                  : AppColors.textSecondary,
+            ),
+            title: Text(store.merchantName),
+            subtitle: Text(
+              store.isComplete
+                  ? 'Toute la liste'
+                  : 'Manque : ${store.missing.join(', ')}',
+            ),
+            trailing: Text(
+              formatPrice(store.total, 'XAF'),
+              style: textTheme.titleSmall,
+            ),
+          ),
       ],
     );
   }

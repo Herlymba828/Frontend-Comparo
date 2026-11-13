@@ -5,6 +5,7 @@ import '../core/widgets/app_navigation_bar.dart';
 
 import '../features/account/account_screen.dart';
 import '../features/account/channels_screen.dart';
+import '../features/account/complaint_screen.dart';
 import '../features/account/contributions_screen.dart';
 import '../features/account/support_screen.dart';
 import '../features/alerts/alerts_screen.dart';
@@ -22,6 +23,7 @@ import '../features/courier/courier_profile_screen.dart';
 import '../features/courier/courier_shell.dart';
 import '../features/home/home_screen.dart';
 import '../features/identity/auth_screen.dart';
+import '../features/identity/password_reset_screen.dart';
 import '../features/merchant/merchant_complaints_screen.dart';
 import '../features/merchant/merchant_offers_screen.dart';
 import '../features/merchant/merchant_order_screen.dart';
@@ -54,6 +56,12 @@ class AppRouter {
     routes: [
       // ── Shared ────────────────────────────────────────────────────────
       GoRoute(path: '/auth', builder: (context, state) => const AuthScreen()),
+      GoRoute(
+        path: '/auth/reset',
+        builder: (context, state) => PasswordResetScreen(
+          initialEmail: state.uri.queryParameters['email'] ?? '',
+        ),
+      ),
       // ── Customer ──────────────────────────────────────────────────────
       ShellRoute(
         builder: (context, state, child) =>
@@ -139,6 +147,10 @@ class AppRouter {
       GoRoute(
         path: '/support/tickets/:id',
         builder: (context, state) => TicketScreen(ticketId: _id(state)),
+      ),
+      GoRoute(
+        path: '/support/complaints/:id',
+        builder: (context, state) => ComplaintScreen(complaintId: _id(state)),
       ),
       GoRoute(
         path: '/contributions',

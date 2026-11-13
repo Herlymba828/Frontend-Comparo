@@ -89,6 +89,11 @@ class ApiException implements Exception {
   String get userMessage {
     if (statusCode == 429) {
       final wait = retryAfterSeconds;
+      // Without Retry-After it is a business lock (too many wrong codes),
+      // whose text says how long to wait.
+      if (wait == null && detail != null) {
+        return detail!;
+      }
       return wait == null
           ? 'Trop de demandes : patientez un instant avant de réessayer.'
           : 'Trop de demandes : réessayez dans $wait s.';

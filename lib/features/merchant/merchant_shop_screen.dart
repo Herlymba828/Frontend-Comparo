@@ -6,6 +6,7 @@ import '../../core/widgets/async_views.dart';
 import '../commerce/commerce_repository.dart';
 import '../stores/stores_repository.dart';
 import 'merchant_repository.dart';
+import 'shop_files_section.dart';
 
 /// Shop settings and pickup locations.
 class MerchantShopScreen extends ConsumerWidget {
@@ -62,6 +63,10 @@ class MerchantShopScreen extends ConsumerWidget {
             ),
           ],
         ),
+        const SizedBox(height: AppSpacing.space12),
+        ShopLogoCard(shop: shop),
+        const SizedBox(height: AppSpacing.space12),
+        ShopDocumentsCard(shop: shop),
         const SizedBox(height: AppSpacing.space12),
         SectionCard(
           title: 'Points de retrait',

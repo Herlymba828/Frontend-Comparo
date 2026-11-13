@@ -252,6 +252,10 @@ final complaintsProvider = FutureProvider.autoDispose<List<Complaint>>(
   (ref) => ref.watch(accountRepositoryProvider).getComplaints(),
 );
 
+final complaintProvider = FutureProvider.autoDispose.family<Complaint, int>(
+  (ref, id) => ref.watch(accountRepositoryProvider).getComplaint(id),
+);
+
 /// Mine ([toVerify] = false) or pending ones of other people to check.
 final contributionsProvider = FutureProvider.autoDispose
     .family<List<Contribution>, bool>(
@@ -354,6 +358,9 @@ class AccountRepository {
     Complaint.fromJson,
     query: {'scope': 'filed'},
   );
+
+  Future<Complaint> getComplaint(int id) =>
+      _api.getOne('api/disputes/$id/', Complaint.fromJson);
 
   Future<void> fileComplaint({
     required String type,

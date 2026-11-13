@@ -159,6 +159,21 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                   )
                 : Text(_isSignUp ? 'Créer mon compte' : 'Se connecter'),
           ),
+          if (!_isSignUp)
+            TextButton(
+              onPressed: _isSubmitting
+                  ? null
+                  : () => context.push(
+                      Uri(
+                        path: '/auth/reset',
+                        queryParameters: {
+                          if (_emailController.text.trim().isNotEmpty)
+                            'email': _emailController.text.trim(),
+                        },
+                      ).toString(),
+                    ),
+              child: const Text('Mot de passe oublié ?'),
+            ),
           TextButton(
             onPressed: _isSubmitting
                 ? null

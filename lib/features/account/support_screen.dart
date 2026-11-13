@@ -408,7 +408,6 @@ class _ComplaintsTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final repo = ref.read(accountRepositoryProvider);
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
@@ -452,32 +451,13 @@ class _ComplaintsTab extends ConsumerWidget {
                           subtitle: Text(
                             '${complaint.number} · '
                             '${complaintTypeLabels[complaint.type] ?? complaint.type}\n'
-                            'Déposée le ${formatDateTime(complaint.filedAt)}'
-                            '${complaint.isOpen ? '\nTouchez pour la retirer.' : ''}',
+                            'Déposée le ${formatDateTime(complaint.filedAt)}',
                           ),
                           isThreeLine: true,
                           trailing: StatusStamp(complaint.status),
-                          onTap: complaint.isOpen
-                              ? () async {
-                                  final ok = await confirmAction(
-                                    context,
-                                    title: 'Retirer la réclamation ?',
-                                    message: 'Elle ne sera plus examinée.',
-                                    confirmLabel: 'Retirer',
-                                  );
-                                  if (!ok) {
-                                    return;
-                                  }
-                                  try {
-                                    await repo.withdrawComplaint(complaint.id);
-                                    ref.invalidate(complaintsProvider);
-                                  } catch (error) {
-                                    if (context.mounted) {
-                                      showApiError(context, error);
-                                    }
-                                  }
-                                }
-                              : null,
+                          onTap: () => context.push(
+                            '/support/complaints/${complaint.id}',
+                          ),
                         ),
                       ),
                   ],

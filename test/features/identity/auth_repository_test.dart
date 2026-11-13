@@ -44,6 +44,38 @@ void main() {
     },
   );
 
+  test('a forgotten password asks for a code then sets the new one', () async {
+    final requests = <RequestOptions>[];
+    final storage = _MemoryTokenStorage();
+    final repository = AuthRepository(
+      _client((options) {
+        requests.add(options);
+        return {'detail': 'ok'};
+      }),
+      storage,
+    );
+
+    await repository.requestPasswordReset(' client@example.com ');
+    await repository.confirmPasswordReset(
+      email: 'client@example.com',
+      code: ' 123456 ',
+      newPassword: 'nouveau-secret',
+    );
+
+    expect(requests.map((request) => request.path), [
+      'api/auth/password/reset/',
+      'api/auth/password/reset/confirm/',
+    ]);
+    expect(requests.first.data, {'email': 'client@example.com'});
+    expect(requests.last.data, {
+      'email': 'client@example.com',
+      'code': '123456',
+      'new_password': 'nouveau-secret',
+    });
+    // No session is opened: the user signs in with the new password.
+    expect(storage.accessToken, isNull);
+  });
+
   test('invalid authentication payload is rejected', () async {
     final repository = AuthRepository(
       _client((options) => {'access': 'access-only'}),

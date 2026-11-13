@@ -83,6 +83,31 @@ class AuthRepository {
     }
   }
 
+  /// Asks for a reset code by e-mail. The API answers the same way whether
+  /// the account exists or not.
+  Future<void> requestPasswordReset(String email) =>
+      _send('api/auth/password/reset/', {'email': email.trim()});
+
+  /// Sets the new password with the e-mailed code. The user then signs in
+  /// again: every session was closed by the server.
+  Future<void> confirmPasswordReset({
+    required String email,
+    required String code,
+    required String newPassword,
+  }) => _send('api/auth/password/reset/confirm/', {
+    'email': email.trim(),
+    'code': code.trim(),
+    'new_password': newPassword,
+  });
+
+  Future<void> _send(String path, Map<String, Object> data) async {
+    try {
+      await _client.post<dynamic>(path, data: data);
+    } on DioException catch (error) {
+      throw ApiException.fromDio(error);
+    }
+  }
+
   /// Forgets the tokens of this device without calling the API (they were
   /// revoked by the server, e.g. after a password change).
   Future<void> forgetSession() => _tokenStorage.clear();

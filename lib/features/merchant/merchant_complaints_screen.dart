@@ -6,6 +6,7 @@ import '../../core/theme/app_theme.dart';
 import '../../core/widgets/async_views.dart';
 import '../../core/widgets/market_widgets.dart';
 import '../account/account_repository.dart';
+import '../disputes/complaint_attachments.dart';
 import 'merchant_repository.dart';
 
 /// Complaints filed against the shop (the ones the merchant filed as a
@@ -147,6 +148,11 @@ class _MerchantComplaintScreenState
                   const SizedBox(height: AppSpacing.space4),
                   Text(complaint.description),
                 ],
+              ),
+              const SizedBox(height: AppSpacing.space12),
+              ComplaintAttachmentsCard(
+                complaintId: complaint.id,
+                isOpen: complaint.isOpen,
               ),
               const SizedBox(height: AppSpacing.space12),
               SectionCard(

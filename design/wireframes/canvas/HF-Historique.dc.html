@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Comparo — Historique et tendance</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/wf/tokens.css">
+<link rel="stylesheet" href="ds/wf/components/bundle.css">
+<link rel="stylesheet" href="hf.css">
+<script src="ds/wf/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&amp;family=Manrope:wght@400..800&amp;display=swap">
+<style>body{margin:0}a{color:inherit;text-decoration:none}</style>
+</helmet>
+<div class="scr">
+  <div class="hdr">
+    <a href="HF-Fiche.dc.html" class="back" aria-label="Retour"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg></a>
+    <div style="display: flex; flex-direction: column;"><span class="title">Historique</span><span class="caption muted">Riz parfumé 5 kg</span></div>
+  </div>
+  <div class="body-pad">
+    <div style="display: flex; gap: 8px;"><span class="chip">30 j</span><span class="chip chip-on">90 j</span><span class="chip">1 an</span></div>
+    <div class="card-lg" style="display: flex; flex-direction: column; gap: 12px; padding: 18px;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div style="display: flex; flex-direction: column;"><span class="label muted">TENDANCE SUR 90 JOURS</span><span class="big">En baisse</span></div>
+        <span class="pill pill-good"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7l7 7 4-4 5 5M20 10v5h-5"></path></svg>−[X] %</span>
+      </div>
+      <svg width="310" height="140" viewBox="0 0 310 140" role="img" aria-label="Courbe du prix moyen sur 90 jours, en baisse">
+        <path d="M0 35 H310 M0 75 H310 M0 115 H310" stroke="var(--line-soft)" stroke-width="1"></path>
+        <path d="M0 40 L40 46 L80 38 L120 52 L160 60 L200 58 L240 80 L280 86 L310 92 L310 140 L0 140 Z" fill="var(--teal)" opacity="0.15"></path>
+        <path d="M0 40 L40 46 L80 38 L120 52 L160 60 L200 58 L240 80 L280 86 L310 92" fill="none" stroke="var(--teal)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"></path>
+        <circle cx="310" cy="92" r="5" fill="var(--teal)"></circle>
+      </svg>
+      <span class="caption muted">Prix moyen, toutes offres comparables · [N] relevés · calculé le [date]</span>
+    </div>
+    <div class="card-lg" style="display: flex; flex-direction: column; gap: 10px; padding: 18px;">
+      <span class="subtitle">Le prix actuel est bas</span>
+      <div style="position: relative; height: 10px; border-radius: 999px; background: linear-gradient(90deg, var(--primary) 0 33%, var(--accent) 33% 66%, var(--fill-200) 66%);" role="img" aria-label="Prix actuel dans la zone basse de la fourchette habituelle">
+        <span style="position: absolute; left: 22%; top: -5px; width: 20px; height: 20px; margin-left: -10px; border-radius: 50%; background: var(--paper); box-shadow: var(--shadow-2), inset 0 0 0 4px var(--ink);"></span>
+      </div>
+      <div style="display: flex; justify-content: space-between;"><span class="caption muted">Bas · [MIN]</span><span class="caption muted">Habituel</span><span class="caption muted">Haut · [MAX]</span></div>
+    </div>
+    <span class="caption muted" style="display: flex; gap: 6px; align-items: flex-start;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" style="flex: none; margin-top: 2px;"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5M12 8h.01"></path></svg>Une tendance décrit le passé ; ce n'est pas une prévision.</span>
+  </div>
+  <div class="foot"><a href="HF-Prevision.dc.html" class="btn2">Voir la prévision (bêta)</a></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic { renderVals() { return {}; } }
+</script>
+</body>
+</html>

@@ -1,0 +1,245 @@
+/* Comparo — généré depuis tokens.json par tools/tokens.py. Ne pas modifier à la main. */
+:root {
+  /* Primitives : palette brute, ne pas utiliser directement dans un écran */
+  --sage-0: #ffffff;
+  --sage-25: #fafbf5;
+  --sage-40: #f3f6ee;
+  --sage-50: #eff2e6;
+  --sage-60: #eef3ea;
+  --sage-100: #e2e7da;
+  --sage-150: #dde4d2;
+  --sage-300: #b9c8bd;
+  --sage-350: #a8b8ad;
+  --sage-450: #7f9486;
+  --sage-500: #76877b;
+  --sage-700: #52645a;
+  --sage-800: #2b3c32;
+  --sage-830: #26352c;
+  --sage-850: #1f2d25;
+  --sage-900: #16221b;
+  --sage-950: #0f1813;
+  --forest-800: #20392d;
+  --forest-850: #1d3428;
+  --forest-950: #0d2417;
+  --green-50: #e3f1e7;
+  --green-400: #5cc98b;
+  --green-600: #24834b;
+  --green-900: #1c3a29;
+  --lemon-300: #d7e96b;
+  --lemon-350: #cfe262;
+  --lemon-950: #1a2a10;
+  --teal-200: #7fd9d3;
+  --teal-400: #3cc0ba;
+  --teal-500: #29a6a1;
+  --teal-700: #1b706c;
+  --red-300: #ff9b91;
+  --red-700: #b3261e;
+  --earth-700: #7a4f12;
+  --violet-700: #5b3f8c;
+  --brick-700: #9b3a26;
+}
+:root, [data-theme="light"] {
+  /* Sémantiques */
+  --canvas: var(--sage-25);
+  --paper: var(--sage-0);
+  --fill-100: var(--sage-50);
+  --fill-200: var(--sage-150);
+  --line: var(--sage-500);
+  --line-soft: var(--sage-100);
+  --ink: var(--forest-800);
+  --ink-muted: var(--sage-700);
+  --primary: var(--green-600);
+  --on-primary: var(--sage-0);
+  --primary-soft: var(--green-50);
+  --accent: var(--lemon-300);
+  --on-accent: var(--forest-800);
+  --slate: var(--forest-800);
+  --on-slate: var(--sage-40);
+  --slate-muted: var(--sage-300);
+  --teal: var(--teal-500);
+  --teal-ink: var(--teal-700);
+  --danger: var(--red-700);
+  --focus: var(--teal-700);
+  --note: var(--sage-700);
+  /* Composant */
+  --price-best-bg: var(--accent);
+  --price-best-fg: var(--on-accent);
+  --price-tag-bg: var(--fill-100);
+  --corde-string: var(--line);
+  --proof-high: var(--primary);
+  --proof-medium: var(--accent);
+  --proof-low: var(--line);
+  --brand-mark-1: var(--primary);
+  --brand-mark-2: var(--teal-ink);
+  --brand-mark-3: var(--earth-700);
+  --brand-mark-4: var(--violet-700);
+  --brand-mark-5: var(--brick-700);
+  --on-brand-mark: var(--sage-0);
+  --proof-medium-fg: var(--on-accent);
+  --save-bg: var(--accent);
+  --save-fg: var(--on-accent);
+  --badge-beta-bg: var(--accent);
+  --badge-beta-fg: var(--on-accent);
+  --badge-promo-bg: var(--accent);
+  --badge-promo-fg: var(--on-accent);
+  --badge-count-bg: var(--accent);
+  --badge-count-fg: var(--on-accent);
+  --nav-indicator: var(--accent);
+  --section-knot: var(--primary);
+  --slate-highlight: var(--accent);
+  --camera-frame: var(--accent);
+  --camera-action-bg: var(--accent);
+  --camera-action-fg: var(--on-accent);
+  --price-input-bg: var(--accent);
+  --price-input-fg: var(--on-accent);
+  --warning-bg: var(--accent);
+  --warning-fg: var(--on-accent);
+  --highlight-bg: var(--accent);
+  --highlight-fg: var(--on-accent);
+  --highlight-ring: var(--accent);
+  --notify-dot: var(--accent);
+  --avatar-bg: var(--accent);
+  --avatar-fg: var(--on-accent);
+  --link-on-dark: var(--accent);
+  --range-low: var(--primary);
+  --range-mid: var(--accent);
+  --range-high: var(--fill-200);
+  --logo-tag: var(--accent);
+  --skeleton: var(--fill-100);
+  --illu-lemon: var(--accent);
+  --illu-teal: var(--teal);
+  --illu-green: var(--primary);
+  --illu-soft: var(--primary-soft);
+  --illu-paper: var(--paper);
+  --illu-shade: var(--fill-200);
+  --illu-line: var(--ink);
+  --on-primary-overlay: rgba(255,255,255,0.18);
+  --shadow-1: 0 1px 2px rgba(32,57,45,0.08), 0 2px 8px rgba(32,57,45,0.06);
+  --shadow-2: 0 8px 24px rgba(32,57,45,0.14);
+}
+[data-theme="dark"] {
+  /* Sémantiques */
+  --canvas: var(--sage-950);
+  --paper: var(--sage-900);
+  --fill-100: var(--sage-850);
+  --fill-200: var(--sage-800);
+  --line: var(--sage-450);
+  --line-soft: var(--sage-830);
+  --ink: var(--sage-60);
+  --ink-muted: var(--sage-350);
+  --primary: var(--green-400);
+  --on-primary: var(--forest-950);
+  --primary-soft: var(--green-900);
+  --accent: var(--lemon-350);
+  --on-accent: var(--lemon-950);
+  --slate: var(--forest-850);
+  --on-slate: var(--sage-60);
+  --slate-muted: var(--sage-350);
+  --teal: var(--teal-400);
+  --teal-ink: var(--teal-200);
+  --danger: var(--red-300);
+  --focus: var(--teal-200);
+  --note: var(--sage-350);
+  /* Composant */
+  --price-best-bg: var(--accent);
+  --price-best-fg: var(--on-accent);
+  --price-tag-bg: var(--fill-100);
+  --corde-string: var(--line);
+  --proof-high: var(--primary);
+  --proof-medium: var(--accent);
+  --proof-low: var(--line);
+  --brand-mark-1: var(--primary);
+  --brand-mark-2: var(--teal-ink);
+  --brand-mark-3: var(--earth-700);
+  --brand-mark-4: var(--violet-700);
+  --brand-mark-5: var(--brick-700);
+  --on-brand-mark: var(--sage-0);
+  --proof-medium-fg: var(--on-accent);
+  --save-bg: var(--accent);
+  --save-fg: var(--on-accent);
+  --badge-beta-bg: var(--accent);
+  --badge-beta-fg: var(--on-accent);
+  --badge-promo-bg: var(--accent);
+  --badge-promo-fg: var(--on-accent);
+  --badge-count-bg: var(--accent);
+  --badge-count-fg: var(--on-accent);
+  --nav-indicator: var(--accent);
+  --section-knot: var(--primary);
+  --slate-highlight: var(--accent);
+  --camera-frame: var(--accent);
+  --camera-action-bg: var(--accent);
+  --camera-action-fg: var(--on-accent);
+  --price-input-bg: var(--accent);
+  --price-input-fg: var(--on-accent);
+  --warning-bg: var(--accent);
+  --warning-fg: var(--on-accent);
+  --highlight-bg: var(--accent);
+  --highlight-fg: var(--on-accent);
+  --highlight-ring: var(--accent);
+  --notify-dot: var(--accent);
+  --avatar-bg: var(--accent);
+  --avatar-fg: var(--on-accent);
+  --link-on-dark: var(--accent);
+  --range-low: var(--primary);
+  --range-mid: var(--accent);
+  --range-high: var(--fill-200);
+  --logo-tag: var(--accent);
+  --skeleton: var(--fill-100);
+  --illu-lemon: var(--accent);
+  --illu-teal: var(--teal);
+  --illu-green: var(--primary);
+  --illu-soft: var(--primary-soft);
+  --illu-paper: var(--paper);
+  --illu-shade: var(--fill-200);
+  --illu-line: var(--ink);
+  --on-primary-overlay: rgba(255,255,255,0.18);
+  --shadow-1: 0 1px 2px rgba(0,0,0,0.4);
+  --shadow-2: 0 8px 24px rgba(0,0,0,0.5);
+}
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-card: 16px;
+  --radius-lg: 20px;
+  --radius-pill: 999px;
+  --border-hairline: 1px;
+  --border-strong: 2px;
+  --target-min: 44px;
+  --target-primary: 48px;
+  --icon-sm: 16px;
+  --icon-md: 20px;
+  --icon-lg: 24px;
+  --thumb-md: 48px;
+  --thumb-lg: 56px;
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 320ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-exit: cubic-bezier(0.3, 0, 1, 1);
+  --z-raised: 1;
+  --z-toast: 5;
+  --z-overlay: 20;
+  --z-overlay-control: 21;
+  --bp-phone: 390px;
+  --bp-compact: 900px;
+  --font-display: "Bricolage Grotesque", system-ui, sans-serif;
+  --font-sans: Manrope, system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+.display { font-family: var(--font-display); font-size: 30px; line-height: 34px; font-weight: 800; }
+.title { font-family: var(--font-display); font-size: 20px; line-height: 26px; font-weight: 600; }
+.subtitle { font-family: var(--font-sans); font-size: 16px; line-height: 22px; font-weight: 600; }
+.body { font-family: var(--font-sans); font-size: 15px; line-height: 22px; font-weight: 400; }
+.caption { font-family: var(--font-sans); font-size: 13px; line-height: 18px; font-weight: 400; }
+.label { font-family: var(--font-sans); font-size: 12px; line-height: 16px; font-weight: 600; letter-spacing: 0.02em; }
+.price-lg { font-family: var(--font-display); font-size: 30px; line-height: 32px; font-weight: 800; }
+.price { font-family: var(--font-display); font-size: 19px; line-height: 22px; font-weight: 700; }
+.unit-price { font-family: var(--font-sans); font-size: 12px; line-height: 16px; font-weight: 500; }
+.annotation { font-family: var(--font-mono); font-size: 12px; line-height: 16px; font-weight: 400; }

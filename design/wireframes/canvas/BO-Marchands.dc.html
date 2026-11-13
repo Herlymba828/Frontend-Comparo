@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Comparo Admin — Vérification des marchands</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/wf/tokens.css">
+<link rel="stylesheet" href="ds/wf/components/bundle.css">
+<link rel="stylesheet" href="hf.css">
+<script src="ds/wf/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&amp;family=Manrope:wght@400..800&amp;display=swap">
+<style>body{margin:0}a{color:inherit;text-decoration:none}.doc{display:flex;gap:10px;align-items:center;padding:12px;border-radius:12px;background:var(--canvas)}</style>
+</helmet>
+<div class="web">
+  <nav class="side" aria-label="Back-office">
+    <span style="font: 800 22px var(--font-display); padding: 0 12px 16px;">Comparo <span class="caption muted">admin</span></span>
+    <a href="BO-Validation.dc.html">Validation des prix</a>
+    <a href="BO-Marchands.dc.html" class="on">Marchands <span class="pill pill-mid" style="margin-left: auto;">[N]</span></a>
+    <a href="BO-Catalogue.dc.html">Catalogue</a>
+    <a href="BO-Anomalies.dc.html">Anomalies et dossiers</a>
+    <a href="BO-Litiges.dc.html">Litiges et support</a>
+  </nav>
+  <main class="main">
+    <h1 style="margin: 0; font: 800 28px/32px var(--font-display);">Vérification des marchands</h1>
+    <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start;">
+      <div class="card" style="flex: 1 1 320px; min-width: 0; padding: 4px 16px;">
+        <div class="li" style="background: var(--primary-soft); margin: 0 -16px; padding: 12px 16px;"><span style="display: flex; flex-direction: column; flex-grow: 1;"><span class="body" style="font-weight: 700;">[Épicerie du carrefour]</span><span class="caption muted">Boutique · Libreville · hier</span></span><span class="pill pill-mid">En examen</span></div>
+        <div class="li"><span style="display: flex; flex-direction: column; flex-grow: 1;"><span class="body" style="font-weight: 700;">[Grossiste A]</span><span class="caption muted">Grossiste · Owendo · lundi</span></span><span class="pill pill-neutral">À examiner</span></div>
+        <div class="li"><span style="display: flex; flex-direction: column; flex-grow: 1;"><span class="body" style="font-weight: 700;">[Étal B]</span><span class="caption muted">Marché · Libreville · lundi</span></span><span class="pill pill-bad">Incomplet</span></div>
+      </div>
+      <div class="card-lg" style="flex: 2 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 16px; padding: 20px;">
+        <div class="row"><span style="width: 56px; height: 56px; border-radius: 16px; background: var(--fill-100); flex: none;"></span><span style="display: flex; flex-direction: column; flex-grow: 1;"><span class="title">[Épicerie du carrefour]</span><span class="caption muted">[Gérant] · [téléphone] · [e-mail]</span></span></div>
+        <span class="label muted">PIÈCES JUSTIFICATIVES</span>
+        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px;">
+          <div class="doc"><span style="width: 36px; height: 44px; border-radius: 6px; background: var(--fill-200);"></span><span style="display: flex; flex-direction: column;"><span class="caption" style="font-weight: 700;">RCCM</span><span class="caption link">Ouvrir</span></span></div>
+          <div class="doc"><span style="width: 36px; height: 44px; border-radius: 6px; background: var(--fill-200);"></span><span style="display: flex; flex-direction: column;"><span class="caption" style="font-weight: 700;">Pièce d'identité</span><span class="caption link">Ouvrir</span></span></div>
+        </div>
+        <span class="label muted">NIVEAU DE VÉRIFICATION</span>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;"><span class="chip">Basique</span><span class="chip chip-on">Documents vérifiés</span><span class="chip">Visite sur place</span></div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;"><button type="button" class="btn" style="padding: 0 24px;">Vérifier le commerce</button><button type="button" class="btn2" style="padding: 0 20px;">Demander un complément</button><button type="button" class="btn2" style="padding: 0 20px; color: var(--danger);">Refuser avec motif</button></div>
+      </div>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":800}}'>
+class Component extends DCLogic { renderVals() { return {}; } }
+</script>
+</body>
+</html>

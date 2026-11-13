@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Comparo — Optimiser le panier</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/wf/tokens.css">
+<link rel="stylesheet" href="ds/wf/components/bundle.css">
+<link rel="stylesheet" href="hf.css">
+<script src="ds/wf/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&amp;family=Manrope:wght@400..800&amp;display=swap">
+<style>body{margin:0}a{color:inherit;text-decoration:none}.sol{display:flex;flex-direction:column;gap:10px;padding:16px;border-radius:20px;background:var(--paper);box-shadow:var(--shadow-1)}.ln{display:flex;justify-content:space-between}</style>
+</helmet>
+<div class="scr">
+  <div class="hdr"><a href="HF-Panier.dc.html" class="back" aria-label="Retour"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg></a><span class="title">Optimiser le panier</span><span class="pill pill-mid" style="margin-left: auto;">Bêta</span></div>
+  <div class="body-pad">
+    <span class="body muted">3 façons d'acheter votre liste. Le total inclut produits et frais connus.</span>
+    <div class="sol" style="box-shadow: inset 0 0 0 2px var(--primary), var(--shadow-1);">
+      <div class="row"><span class="p-tag">LE MOINS CHER</span><span class="caption muted" style="margin-left: auto;">2 vendeurs</span></div>
+      <div class="ln"><span class="body">Produits</span><span class="body" style="font-weight: 700;">[X] FCFA</span></div>
+      <div class="ln"><span class="body">Livraison</span><span class="body" style="font-weight: 700;">[Y] FCFA</span></div>
+      <div class="ln" style="padding-top: 8px; border-top: 1px solid var(--line-soft);"><span class="subtitle">Total</span><span class="ptag" style="font-size: 24px; line-height: 30px;">[T] FCFA</span></div>
+    </div>
+    <div class="sol">
+      <div class="row"><span class="pill pill-good">Un seul arrêt</span><span class="caption muted" style="margin-left: auto;">1 vendeur</span></div>
+      <div class="ln"><span class="subtitle">Total</span><span class="ptag">[T] FCFA</span></div>
+      <span class="caption muted">+[Δ] FCFA, mais tout au même endroit</span>
+    </div>
+    <div class="sol">
+      <div class="row"><span class="pill pill-neutral">Le plus proche</span><span class="caption muted" style="margin-left: auto;">1 vendeur · [Zone]</span></div>
+      <div class="ln"><span class="subtitle">Total</span><span class="ptag">[T] FCFA</span></div>
+    </div>
+  </div>
+  <div class="foot"><a href="HF-Commande.dc.html" class="btn">Choisir « Le moins cher »</a></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic { renderVals() { return {}; } }
+</script>
+</body>
+</html>

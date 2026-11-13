@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Comparo — Mes relevés</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/wf/tokens.css">
+<link rel="stylesheet" href="ds/wf/components/bundle.css">
+<link rel="stylesheet" href="hf.css">
+<script src="ds/wf/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&amp;family=Manrope:wght@400..800&amp;display=swap">
+<style>body{margin:0}a{color:inherit;text-decoration:none}</style>
+</helmet>
+<div class="scr">
+  <div class="hdr"><a href="HF-Profil.dc.html" class="back" aria-label="Retour"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg></a><span class="title">Mes relevés</span></div>
+  <div class="body-pad">
+    <div class="card-lg" style="display: flex; gap: 14px; align-items: center; padding: 18px; background: var(--primary); color: var(--on-primary); box-shadow: none;">
+      <span style="display: flex; flex-direction: column; flex-grow: 1;"><span class="label">CE MOIS-CI</span><span class="huge">[N]</span><span class="caption">relevés acceptés · [N] personnes aidées</span></span>
+      <svg width="64" height="48" viewBox="0 0 64 48" aria-hidden="true"><path d="M14 6 h44 a4 4 0 0 1 4 4 v28 a4 4 0 0 1 -4 4 h-44 l-12 -18 z" fill="var(--accent)"></path><circle cx="12" cy="24" r="4" fill="var(--primary)"></circle></svg>
+    </div>
+    <div style="display: flex; gap: 8px;"><span class="chip chip-on">Tous</span><span class="chip">En attente</span><span class="chip">Acceptés</span><span class="chip">Refusés</span></div>
+    <div class="card" style="padding: 0 16px;">
+      <div class="li"><span class="thumb" style="width: 40px; height: 40px;"><svg viewBox="0 0 48 48" width="78%" height="78%" aria-hidden="true"><path d="M13 13 Q24 8 35 13 L38 40 Q24 45 10 40 Z" fill="var(--accent)" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"></path><path d="M15 14 Q24 18 33 14" fill="none" stroke="var(--ink)" stroke-width="2"></path><rect x="17" y="24" width="14" height="9" rx="2" fill="var(--primary)"></rect></svg></span><span style="display: flex; flex-direction: column; flex-grow: 1;"><span class="body" style="font-weight: 700;">Riz brisé 1 kg · [PRIX]</span><span class="caption muted">Marché · aujourd'hui</span></span><span class="pill pill-neutral">En attente</span></div>
+      <div class="li"><span class="thumb" style="width: 40px; height: 40px;"><svg viewBox="0 0 48 48" width="78%" height="78%" aria-hidden="true"><rect x="12" y="15" width="24" height="27" rx="5" fill="var(--teal)" stroke="var(--ink)" stroke-width="2"></rect><rect x="20" y="8" width="8" height="7" rx="1.5" fill="var(--primary)" stroke="var(--ink)" stroke-width="2"></rect><path d="M30 18 h4 a3 3 0 0 1 3 3 v6" fill="none" stroke="var(--ink)" stroke-width="2"></path><rect x="16" y="26" width="16" height="8" rx="2" fill="var(--accent)"></rect></svg></span><span style="display: flex; flex-direction: column; flex-grow: 1;"><span class="body" style="font-weight: 700;">Huile 1 L · [PRIX]</span><span class="caption muted">[Commerce] · hier</span></span><span class="pill pill-good">Accepté</span></div>
+      <div class="li"><span class="thumb" style="width: 40px; height: 40px;"><svg viewBox="0 0 48 48" width="78%" height="78%" aria-hidden="true"><path d="M12 16 L24 10 L36 16 V38 L24 44 L12 38 Z" fill="var(--paper)" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"></path><path d="M12 16 L24 22 L36 16 M24 22 V44" fill="none" stroke="var(--ink)" stroke-width="2"></path><rect x="15" y="26" width="6" height="6" fill="var(--primary)"></rect></svg></span><span style="display: flex; flex-direction: column; flex-grow: 1;"><span class="body" style="font-weight: 700;">Sucre 1 kg · [PRIX]</span><span class="caption muted">Doublon d'un relevé existant</span></span><span class="pill pill-bad">Refusé</span></div>
+    </div>
+  </div>
+  <div class="foot"><a href="HF-Releve.dc.html" class="btn">Relever un nouveau prix</a></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic { renderVals() { return {}; } }
+</script>
+</body>
+</html>

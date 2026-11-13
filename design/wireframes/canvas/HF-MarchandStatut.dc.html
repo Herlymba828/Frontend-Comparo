@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Comparo — Vérification du commerce</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/wf/tokens.css">
+<link rel="stylesheet" href="ds/wf/components/bundle.css">
+<link rel="stylesheet" href="hf.css">
+<script src="ds/wf/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&amp;family=Manrope:wght@400..800&amp;display=swap">
+<style>body{margin:0}a{color:inherit;text-decoration:none}</style>
+</helmet>
+<div class="scr">
+  <div class="hdr"><span class="title">Mon commerce</span></div>
+  <div class="body-pad">
+    <div class="card-lg" style="display: flex; flex-direction: column; gap: 6px; padding: 18px; background: var(--accent); color: var(--on-accent); box-shadow: none;">
+      <span class="label">VÉRIFICATION EN COURS</span>
+      <span class="big">[Nom du commerce]</span>
+      <span class="caption">Réponse sous 2 jours ouvrés en moyenne.</span>
+    </div>
+    <div class="card-lg" style="padding: 18px;">
+      <div class="row"><span class="step step-done">✓</span><span class="body" style="font-weight: 700;">Informations du commerce</span></div>
+      <div class="vline"></div>
+      <div class="row"><span class="step step-done">✓</span><span class="body" style="font-weight: 700;">Pièces justificatives envoyées</span></div>
+      <div class="vline"></div>
+      <div class="row"><span class="step step-now">3</span><span style="display: flex; flex-direction: column;"><span class="body" style="font-weight: 700;">Examen par l'équipe</span><span class="caption muted">Commencé hier</span></span></div>
+      <div class="vline"></div>
+      <div class="row"><span class="step step-next">4</span><span class="body muted">Commerce vérifié · publication des prix</span></div>
+    </div>
+    <span class="label muted">EN ATTENDANT</span>
+    <a href="HF-PointsDeVente.dc.html" class="card row" style="padding: 14px;"><span style="display: flex; flex-direction: column; flex-grow: 1;"><span class="body" style="font-weight: 700;">Ajouter vos points de vente</span><span class="caption muted">Adresse, horaires, position</span></span><span class="muted">›</span></a>
+    <a href="HF-Publier.dc.html" class="card row" style="padding: 14px;"><span style="display: flex; flex-direction: column; flex-grow: 1;"><span class="body" style="font-weight: 700;">Préparer vos premiers prix</span><span class="caption muted">Publiés dès la vérification</span></span><span class="muted">›</span></a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic { renderVals() { return {}; } }
+</script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Comparo — Prévision</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/wf/tokens.css">
+<link rel="stylesheet" href="ds/wf/components/bundle.css">
+<link rel="stylesheet" href="hf.css">
+<script src="ds/wf/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&amp;family=Manrope:wght@400..800&amp;display=swap">
+<style>body{margin:0}a{color:inherit;text-decoration:none}</style>
+</helmet>
+<div class="scr">
+  <div class="hdr">
+    <a href="HF-Historique.dc.html" class="back" aria-label="Retour"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg></a>
+    <div style="display: flex; flex-direction: column;"><span class="title">Prévision</span><span class="caption muted">Riz parfumé 5 kg</span></div>
+    <span class="pill pill-mid" style="margin-left: auto;">Bêta</span>
+  </div>
+  <div class="body-pad">
+    <div class="card-lg" style="display: flex; flex-direction: column; gap: 6px; padding: 18px;">
+      <span class="label muted">DANS 30 JOURS, PROBABLEMENT</span>
+      <span class="huge">[PRIX] FCFA</span>
+      <span class="body muted">entre [BAS] et [HAUT] FCFA (intervalle à 80 %)</span>
+    </div>
+    <div class="card-lg" style="padding: 18px;">
+      <svg width="310" height="150" viewBox="0 0 310 150" role="img" aria-label="Prix observés puis prévision avec un intervalle qui s'élargit">
+        <path d="M0 40 H310 M0 80 H310 M0 120 H310" stroke="var(--line-soft)" stroke-width="1"></path>
+        <path d="M0 60 L40 66 L80 58 L120 72 L160 76" fill="none" stroke="var(--ink)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
+        <path d="M160 76 L310 50 L310 120 L160 76 Z" fill="var(--teal)" opacity="0.18"></path>
+        <path d="M160 76 L310 84" fill="none" stroke="var(--teal)" stroke-width="3" stroke-dasharray="6 6" stroke-linecap="round"></path>
+        <path d="M160 10 V140" stroke="var(--line)" stroke-width="1" stroke-dasharray="3 4"></path>
+      </svg>
+      <div style="display: flex; justify-content: space-between;"><span class="caption muted">Observé</span><span class="caption muted">Aujourd'hui</span><span class="caption muted">Prévu</span></div>
+    </div>
+    <x-import component-from-global-scope="Wf.Gauge" kind="trust" level="medium" label="CONFIANCE DE LA PRÉVISION">Fondée sur [N] relevés de [N] vendeurs sur 6 mois.</x-import>
+    <div class="card" style="display: flex; gap: 10px; padding: 14px; background: var(--fill-100); box-shadow: none;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" style="flex: none;"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5M12 8h.01"></path></svg>
+      <span class="caption">Estimation non garantie. Sans assez de données, aucune prévision n'est affichée.</span>
+    </div>
+  </div>
+  <div class="foot"><a href="HF-CreerAlerte.dc.html" class="btn">M'alerter si le prix baisse</a></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic { renderVals() { return {}; } }
+</script>
+</body>
+</html>

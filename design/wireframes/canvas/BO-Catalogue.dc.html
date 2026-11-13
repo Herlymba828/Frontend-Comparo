@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Comparo Admin — Catalogue</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/wf/tokens.css">
+<link rel="stylesheet" href="ds/wf/components/bundle.css">
+<link rel="stylesheet" href="hf.css">
+<script src="ds/wf/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&amp;family=Manrope:wght@400..800&amp;display=swap">
+<style>body{margin:0}a{color:inherit;text-decoration:none}</style>
+</helmet>
+<div class="web">
+  <nav class="side" aria-label="Back-office">
+    <span style="font: 800 22px var(--font-display); padding: 0 12px 16px;">Comparo <span class="caption muted">admin</span></span>
+    <a href="BO-Validation.dc.html">Validation des prix</a>
+    <a href="BO-Marchands.dc.html">Marchands</a>
+    <a href="BO-Catalogue.dc.html" class="on">Catalogue</a>
+    <a href="BO-Anomalies.dc.html">Anomalies et dossiers</a>
+    <a href="BO-Litiges.dc.html">Litiges et support</a>
+  </nav>
+  <main class="main">
+    <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between;">
+      <h1 style="margin: 0; font: 800 28px/32px var(--font-display);">Catalogue</h1>
+      <div style="display: flex; gap: 8px;"><button type="button" class="btn2 btn-sm" style="padding: 0 14px;">Unités et équivalences</button><button type="button" class="btn btn-sm" style="padding: 0 16px;">+ Nouveau produit</button></div>
+    </div>
+    <div style="display: flex; flex-wrap: wrap; gap: 8px;"><div class="inp inp-ph" style="flex: 1 1 280px; border-radius: 999px;">Rechercher un produit, une marque, un code-barres</div><span class="chip chip-on">Tous</span><span class="chip">À vérifier · [N]</span><span class="chip">Doublons possibles · [N]</span></div>
+    <div class="card scroll-x" style="padding: 4px 8px;">
+      <table class="tbl">
+        <thead><tr><th>Produit</th><th>Catégorie</th><th>Format</th><th>Offres</th><th>Équivalences</th><th>Statut</th><th></th></tr></thead>
+        <tbody>
+          <tr><td><span style="display: flex; gap: 10px; align-items: center;"><span class="thumb" style="width: 36px; height: 36px;"><svg viewBox="0 0 48 48" width="78%" height="78%" aria-hidden="true"><path d="M13 13 Q24 8 35 13 L38 40 Q24 45 10 40 Z" fill="var(--accent)" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"></path><path d="M15 14 Q24 18 33 14" fill="none" stroke="var(--ink)" stroke-width="2"></path><rect x="17" y="24" width="14" height="9" rx="2" fill="var(--primary)"></rect></svg></span><b>Riz parfumé · [Marque]</b></span></td><td>Épicerie › Riz</td><td>5 kg</td><td>[N]</td><td>2 strictes · 1 substitut</td><td><span class="pill pill-good">Vérifié</span></td><td class="link">Modifier</td></tr>
+          <tr><td><span style="display: flex; gap: 10px; align-items: center;"><span class="thumb" style="width: 36px; height: 36px;"><svg viewBox="0 0 48 48" width="78%" height="78%" aria-hidden="true"><path d="M13 13 Q24 8 35 13 L38 40 Q24 45 10 40 Z" fill="var(--accent)" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"></path><path d="M15 14 Q24 18 33 14" fill="none" stroke="var(--ink)" stroke-width="2"></path><rect x="17" y="24" width="14" height="9" rx="2" fill="var(--primary)"></rect></svg></span><b>Riz parfum 5kg</b></span></td><td>Épicerie › Riz</td><td>5 kg</td><td>1</td><td>—</td><td><span class="pill pill-mid">Doublon possible</span></td><td class="link">Fusionner</td></tr>
+          <tr><td><span style="display: flex; gap: 10px; align-items: center;"><span class="thumb" style="width: 36px; height: 36px;"><svg viewBox="0 0 48 48" width="78%" height="78%" aria-hidden="true"><rect x="12" y="15" width="24" height="27" rx="5" fill="var(--teal)" stroke="var(--ink)" stroke-width="2"></rect><rect x="20" y="8" width="8" height="7" rx="1.5" fill="var(--primary)" stroke="var(--ink)" stroke-width="2"></rect><path d="M30 18 h4 a3 3 0 0 1 3 3 v6" fill="none" stroke="var(--ink)" stroke-width="2"></path><rect x="16" y="26" width="16" height="8" rx="2" fill="var(--accent)"></rect></svg></span><b>Huile végétale · [Marque]</b></span></td><td>Épicerie › Huiles</td><td>1 L</td><td>[N]</td><td>1 stricte</td><td><span class="pill pill-neutral">À vérifier</span></td><td class="link">Vérifier</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":800}}'>
+class Component extends DCLogic { renderVals() { return {}; } }
+</script>
+</body>
+</html>

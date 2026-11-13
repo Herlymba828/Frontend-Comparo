@@ -19,9 +19,9 @@ import 'package:frontend/features/catalog/models/catalog_product.dart';
 import 'package:frontend/features/comparison/models/comparison_offer.dart';
 import 'package:frontend/features/comparison/models/comparison_offer_page.dart';
 
-/// Règle du tampon « Meilleur prix vérifié » : prix unitaire normalisé le plus
-/// bas parmi au moins deux offres vérifiées, valides, récentes, non
-/// promotionnelles et normalisées dans le même groupe de comparaison.
+/// Le tampon « Meilleur prix vérifié » suit `is_best_offer`, choisi par le
+/// serveur (apps/comparison/ranking.py, contrat P0.4) : l'app ne le recalcule
+/// plus. La ligne de preuve affiche le verdict et la phrase de l'API.
 void main() {
   Future<String?> sealedMerchant(
     WidgetTester tester,
@@ -61,39 +61,107 @@ void main() {
     return 'unknown';
   }
 
-  testWidgets('compares unit prices, not totals of different quantities', (
-    tester,
-  ) async {
-    final merchant = await sealedMerchant(tester, [
-      _offer('Petit sac', amount: '6900', quantity: '5', unitPrice: '1380'),
-      _offer('Grand sac', amount: '25000', quantity: '25', unitPrice: '1000'),
-    ]);
-
-    expect(merchant, 'Grand sac');
-  });
-
-  testWidgets('ignores promotions, stale prices and unverified prices', (
-    tester,
-  ) async {
+  testWidgets('the seal follows the offer the server chose', (tester) async {
+    // The cheaper promotion is ranked first but does not get the label.
     final merchant = await sealedMerchant(tester, [
       _offer('Promo', unitPrice: '900', promotion: true),
-      _offer('Ancien', unitPrice: '950', freshness: 'old'),
-      _offer('Non vérifié', unitPrice: '980', level: 'none'),
-      _offer('Expiré', unitPrice: '990', freshness: 'expire'),
-      _offer('Vérifié A', unitPrice: '1200', level: 'auto'),
-      _offer('Vérifié B', unitPrice: '1100', freshness: 'very_recent'),
+      _offer('Vérifié', unitPrice: '1100', best: true),
     ]);
 
-    expect(merchant, 'Vérifié B');
+    expect(merchant, 'Vérifié');
   });
 
-  testWidgets('no seal without two comparable offers', (tester) async {
+  testWidgets('no seal when the server gives none', (tester) async {
     final merchant = await sealedMerchant(tester, [
       _offer('Seul vérifié', unitPrice: '1200'),
       _offer('Sans normalisation', unitPrice: null),
     ]);
 
     expect(merchant, isNull);
+  });
+
+  testWidgets('the proof line shows the verdict and the API sentence', (
+    tester,
+  ) async {
+    await sealedMerchant(tester, [
+      _offer(
+        'Vérifié',
+        unitPrice: '1100',
+        trust: const PriceTrust(
+          freshnessLevel: 'fresh',
+          freshnessLabel: 'Très récent',
+          confidenceLevel: 'high',
+          confidenceLabel: 'Confiance élevée',
+          verdict: 'to_confirm',
+          verdictLabel: 'Prix à confirmer',
+          explanation: 'Confirmé il y a 2 h, vérifié par un modérateur.',
+        ),
+      ),
+    ]);
+
+    expect(
+      find.textContaining(
+        'Plutôt fiable · Confirmé il y a 2 h',
+        findRichText: true,
+      ),
+      findsOneWidget,
+    );
+    // The app no longer builds its own freshness and verification badges.
+    expect(find.textContaining('Fraîcheur :'), findsNothing);
+  });
+
+  test('an offer reads the ranking and trust of the API', () {
+    final offer = ComparisonOffer.fromJson({
+      'id': 1,
+      'product': 15,
+      'product_name': 'Riz',
+      'amount': '1100',
+      'currency': 'XAF',
+      'quantity': '1',
+      'is_active': true,
+      'is_promotion': false,
+      'is_currently_valid': true,
+      'comparison_reasons': <String>[],
+      'rank': 1,
+      'is_best_offer': true,
+      'offer_status': 'current',
+      'last_confirmed_at': '2026-11-13T08:00:00Z',
+      'trust': {
+        'freshness_level': 'fresh',
+        'freshness_label': 'Très récent',
+        'freshness_reference_at': '2026-11-13T08:00:00Z',
+        'confidence_level': 'high',
+        'confidence_label': 'Confiance élevée',
+        'verdict': 'reliable',
+        'verdict_label': 'Prix fiable',
+        'explanation': 'Confirmé il y a 2 h, vérifié par un modérateur.',
+      },
+    });
+
+    expect(offer.rank, 1);
+    expect(offer.isBestOffer, isTrue);
+    expect(offer.offerStatus, OfferStatus.current);
+    expect(offer.trust?.verdict, 'reliable');
+    expect(offer.trust?.freshnessReferenceAt, isNotNull);
+  });
+
+  test('an older answer without ranking still reads', () {
+    final offer = ComparisonOffer.fromJson({
+      'id': 1,
+      'product': 15,
+      'product_name': 'Riz',
+      'amount': '1100',
+      'currency': 'XAF',
+      'quantity': '1',
+      'is_active': true,
+      'is_promotion': false,
+      'is_currently_valid': true,
+      'comparison_reasons': <String>[],
+    });
+
+    expect(offer.isBestOffer, isFalse);
+    expect(offer.rank, isNull);
+    expect(offer.trust, isNull);
   });
 
   testWidgets('explains why a unit price is missing', (tester) async {
@@ -118,6 +186,8 @@ ComparisonOffer _offer(
   String quantity = '5',
   required String? unitPrice,
   bool promotion = false,
+  bool best = false,
+  PriceTrust? trust,
   String freshness = 'recent',
   String level = 'manual',
   List<String> reasons = const ['same_product'],
@@ -140,6 +210,8 @@ ComparisonOffer _offer(
   comparisonGroup: unitPrice == null
       ? null
       : const ComparisonGroup(currency: 'XAF', unitCode: 'kg'),
+  isBestOffer: best,
+  trust: trust,
 );
 
 class _Online implements ConnectivityService {

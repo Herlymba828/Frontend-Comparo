@@ -34,6 +34,32 @@ Map<String, dynamic> _$ComparisonGroupToJson(ComparisonGroup instance) =>
       'unit_code': instance.unitCode,
     };
 
+PriceTrust _$PriceTrustFromJson(Map<String, dynamic> json) => PriceTrust(
+  freshnessLevel: json['freshness_level'] as String,
+  freshnessLabel: json['freshness_label'] as String,
+  confidenceLevel: json['confidence_level'] as String,
+  confidenceLabel: json['confidence_label'] as String,
+  verdict: json['verdict'] as String,
+  verdictLabel: json['verdict_label'] as String,
+  explanation: json['explanation'] as String,
+  freshnessReferenceAt: json['freshness_reference_at'] == null
+      ? null
+      : DateTime.parse(json['freshness_reference_at'] as String),
+);
+
+Map<String, dynamic> _$PriceTrustToJson(
+  PriceTrust instance,
+) => <String, dynamic>{
+  'freshness_level': instance.freshnessLevel,
+  'freshness_label': instance.freshnessLabel,
+  'freshness_reference_at': instance.freshnessReferenceAt?.toIso8601String(),
+  'confidence_level': instance.confidenceLevel,
+  'confidence_label': instance.confidenceLabel,
+  'verdict': instance.verdict,
+  'verdict_label': instance.verdictLabel,
+  'explanation': instance.explanation,
+};
+
 ComparisonOffer _$ComparisonOfferFromJson(Map<String, dynamic> json) =>
     ComparisonOffer(
       id: (json['id'] as num).toInt(),
@@ -98,6 +124,15 @@ ComparisonOffer _$ComparisonOfferFromJson(Map<String, dynamic> json) =>
           : ComparisonGroup.fromJson(
               json['comparison_group'] as Map<String, dynamic>,
             ),
+      rank: (json['rank'] as num?)?.toInt(),
+      isBestOffer: json['is_best_offer'] as bool? ?? false,
+      offerStatus: json['offer_status'] as String?,
+      lastConfirmedAt: json['last_confirmed_at'] == null
+          ? null
+          : DateTime.parse(json['last_confirmed_at'] as String),
+      trust: json['trust'] == null
+          ? null
+          : PriceTrust.fromJson(json['trust'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$ComparisonOfferToJson(ComparisonOffer instance) =>
@@ -138,4 +173,9 @@ Map<String, dynamic> _$ComparisonOfferToJson(ComparisonOffer instance) =>
       'normalized_unit': instance.normalizedUnit,
       'comparison_group': instance.comparisonGroup,
       'comparison_reasons': instance.comparisonReasons,
+      'rank': instance.rank,
+      'is_best_offer': instance.isBestOffer,
+      'offer_status': instance.offerStatus,
+      'last_confirmed_at': instance.lastConfirmedAt?.toIso8601String(),
+      'trust': instance.trust,
     };

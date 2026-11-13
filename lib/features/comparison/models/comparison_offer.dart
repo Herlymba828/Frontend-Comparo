@@ -35,6 +35,50 @@ class ComparisonGroup {
   Map<String, dynamic> toJson() => _$ComparisonGroupToJson(this);
 }
 
+/// Trust block computed by the API next to a price (apps/pricing/trust.py):
+/// freshness, confidence, a verdict and the sentence that explains it.
+@JsonSerializable(fieldRename: FieldRename.snake)
+class PriceTrust {
+  const PriceTrust({
+    required this.freshnessLevel,
+    required this.freshnessLabel,
+    required this.confidenceLevel,
+    required this.confidenceLabel,
+    required this.verdict,
+    required this.verdictLabel,
+    required this.explanation,
+    this.freshnessReferenceAt,
+  });
+
+  /// fresh, recent or stale.
+  final String freshnessLevel;
+  final String freshnessLabel;
+  final DateTime? freshnessReferenceAt;
+
+  /// high, medium or low.
+  final String confidenceLevel;
+  final String confidenceLabel;
+
+  /// reliable, to_confirm or doubtful.
+  final String verdict;
+  final String verdictLabel;
+
+  /// "Confirmé il y a 2 h, vérifié par un modérateur."
+  final String explanation;
+
+  factory PriceTrust.fromJson(Map<String, dynamic> json) =>
+      _$PriceTrustFromJson(json);
+
+  Map<String, dynamic> toJson() => _$PriceTrustToJson(this);
+}
+
+/// Server ranking statuses (apps/comparison/ranking.py).
+abstract final class OfferStatus {
+  static const current = 'current';
+  static const expired = 'expired';
+  static const unavailable = 'unavailable';
+}
+
 @JsonSerializable(fieldRename: FieldRename.snake)
 class ComparisonOffer {
   const ComparisonOffer({
@@ -74,6 +118,11 @@ class ComparisonOffer {
     this.normalizedUnitPrice,
     this.normalizedUnit,
     this.comparisonGroup,
+    this.rank,
+    this.isBestOffer = false,
+    this.offerStatus,
+    this.lastConfirmedAt,
+    this.trust,
   });
 
   final int id;
@@ -112,6 +161,20 @@ class ComparisonOffer {
   final CatalogUnit? normalizedUnit;
   final ComparisonGroup? comparisonGroup;
   final List<String> comparisonReasons;
+
+  /// Rank inside its comparison group, cheapest first; null when the offer
+  /// is not current or its unit cannot be compared.
+  final int? rank;
+
+  /// The "meilleur prix vérifié" label, chosen by the server (contract
+  /// P0.4): the app no longer computes it.
+  @JsonKey(defaultValue: false)
+  final bool isBestOffer;
+
+  /// current, expired or unavailable ([OfferStatus]).
+  final String? offerStatus;
+  final DateTime? lastConfirmedAt;
+  final PriceTrust? trust;
 
   factory ComparisonOffer.fromJson(Map<String, dynamic> json) =>
       _$ComparisonOfferFromJson(json);

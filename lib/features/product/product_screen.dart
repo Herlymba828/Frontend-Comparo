@@ -14,6 +14,7 @@ import '../catalog/data/catalog_providers.dart';
 import '../catalog/models/catalog_product.dart';
 import '../commerce/commerce_repository.dart';
 import '../comparison/models/comparison_offer.dart';
+import '../comparison/trust_line.dart';
 import '../identity/data/auth_providers.dart';
 import '../stores/stores_screen.dart';
 import 'price_evolution.dart';
@@ -241,10 +242,7 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                                   for (final offer in group.value)
                                     _OfferCard(
                                       offer: offer,
-                                      isBest: identical(
-                                        offer,
-                                        _bestVerifiedOffer(group.value),
-                                      ),
+                                      isBest: offer.isBestOffer,
                                     ),
                                 ],
                                 if (page.next != null || page.previous != null)
@@ -777,13 +775,17 @@ class _OfferCard extends StatelessWidget {
                     : Icons.info_outline,
                 label: 'Disponibilité : $availability',
               ),
-              _Badge(icon: Icons.schedule, label: 'Fraîcheur : $freshness'),
-              _Badge(icon: Icons.update, label: 'Observé : $observedAt'),
+              // The API's trust line replaces freshness and verification.
+              if (offer.trust == null) ...[
+                _Badge(icon: Icons.schedule, label: 'Fraîcheur : $freshness'),
+                _Badge(icon: Icons.update, label: 'Observé : $observedAt'),
+              ],
               _Badge(icon: Icons.source, label: 'Source : $source'),
-              _Badge(
-                icon: Icons.verified_outlined,
-                label: 'Prix : $verification',
-              ),
+              if (offer.trust == null)
+                _Badge(
+                  icon: Icons.verified_outlined,
+                  label: 'Prix : $verification',
+                ),
               _Badge(
                 icon: offer.isActive ? Icons.check_circle : Icons.block,
                 label: offer.isActive ? 'Actif' : 'Inactif',
@@ -793,6 +795,10 @@ class _OfferCard extends StatelessWidget {
               ),
             ],
           ),
+          if (offer.trust case final trust?) ...[
+            const SizedBox(height: 8),
+            TrustLine(trust: trust),
+          ],
           if (normalizedLabel != null) ...[
             const SizedBox(height: 8),
             Text(
@@ -856,40 +862,6 @@ class _OfferCard extends StatelessWidget {
   }
 }
 
-/// Offre au plus bas prix unitaire normalisé parmi les offres d'un même
-/// `comparison_group` (même devise et même unité de base) qui sont vérifiées,
-/// actives, valides, récentes et non promotionnelles ; `null` si moins de deux
-/// offres sont ainsi comparables. Les promotions sont exclues car leurs
-/// conditions d'éligibilité ne sont pas validées (contrat P0.4). Le lieu reste
-/// affiché sur chaque offre.
-ComparisonOffer? _bestVerifiedOffer(List<ComparisonOffer> offers) {
-  ComparisonOffer? best;
-  double? bestUnitPrice;
-  var eligible = 0;
-  for (final offer in offers) {
-    final level = offer.verificationLevel?.toLowerCase();
-    final freshness = offer.freshness?.toLowerCase();
-    final unitPrice = double.tryParse(
-      (offer.normalizedUnitPrice ?? '').trim().replaceAll(',', '.'),
-    );
-    if (!offer.isActive ||
-        !offer.isCurrentlyValid ||
-        offer.isPromotion ||
-        offer.comparisonGroup == null ||
-        unitPrice == null ||
-        !_verifiedLevels.contains(level) ||
-        !_recentFreshness.contains(freshness)) {
-      continue;
-    }
-    eligible++;
-    if (bestUnitPrice == null || unitPrice < bestUnitPrice) {
-      best = offer;
-      bestUnitPrice = unitPrice;
-    }
-  }
-  return eligible >= 2 ? best : null;
-}
-
 String? _nonEmpty(String? value) {
   final trimmed = value?.trim();
   return trimmed == null || trimmed.isEmpty ? null : trimmed;
@@ -910,13 +882,6 @@ String _groupHeading(String? currency, List<ComparisonOffer> offers) {
       ? 'Prix comparés en $label'
       : 'Sans prix unitaire comparable ($label)';
 }
-
-/// Valeurs de `Price.VerificationLevel` qui attestent une vérification
-/// (`backend/apps/pricing/models.py`).
-const _verifiedLevels = {'auto', 'manual', 'official'};
-
-/// Valeurs de `Price.Freshness` considérées comme récentes.
-const _recentFreshness = {'very_recent', 'recent'};
 
 // Libellés alignés sur les choix Django (`Price.Freshness`,
 // `Price.VerificationLevel`, `Price.Availability`).

@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Comparo — Créer son commerce</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/wf/tokens.css">
+<link rel="stylesheet" href="ds/wf/components/bundle.css">
+<link rel="stylesheet" href="proto.css">
+<script src="ds/wf/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&amp;family=Manrope:wght@400..800&amp;display=swap">
+<style>body{margin:0}a{color:inherit;text-decoration:none}</style>
+</helmet>
+<div class="phone">
+<div class="scr"><div class="hdr"><button class="back" type="button" data-href="HF-Profil.dc.html" aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"></path></svg></button><span class="t-cap muted" style="font-weight:700">Étape 1 sur 2</span></div><form class="pad" novalidate=""><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px"><span style="height:6px;border-radius:999px;background:var(--primary)"></span><span style="height:6px;border-radius:999px;background:var(--fill-200)"></span></div><span style="font:800 28px/32px var(--font-display)">Présentez votre commerce</span><span class="muted">Ces informations s'affichent à côté de vos prix.</span><div class="fld"><label for="m-name">Nom commercial</label><input class="inp" placeholder="Ex. Épicerie du carrefour" value=""></div><span class="err" role="alert"></span><div class="fld"><span class="lab">Type de commerce</span><div class="chips"><span class="chip on">Boutique</span><span class="chip">Supermarché</span><span class="chip">Étal de marché</span><span class="chip">Grossiste</span></div></div><div class="fld"><label for="m-tel">Téléphone</label><input class="inp" inputmode="tel" placeholder="+241 …"></div><label class="btn2" for="m-doc" style="border-style:dashed"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"></path><circle cx="12" cy="13" r="3.5"></circle></svg>Pièce justificative (RCCM)<input type="file" hidden=""></label><button class="btn" type="submit">Envoyer ma demande</button></form></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic { renderVals() { return {}; } }
+</script>
+</body>
+</html>

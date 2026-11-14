@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Comparo — Validation des prix</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/wf/tokens.css">
+<link rel="stylesheet" href="ds/wf/components/bundle.css">
+<link rel="stylesheet" href="proto.css">
+<script src="ds/wf/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&amp;family=Manrope:wght@400..800&amp;display=swap">
+<style>body{margin:0}a{color:inherit;text-decoration:none}</style>
+</helmet>
+<div class="phone wide">
+<div class="scr"><div class="bo"><nav class="side" aria-label="Back-office"><span style="font:800 22px var(--font-display);padding:0 12px 14px">Comparo <span class="t-cap muted">admin</span></span><button type="button" data-href="BO-Validation.dc.html" class="on">Validation des prix<span class="pill p-mid">2</span></button><button type="button" data-href="BO-Marchands.dc.html" class="">Marchands<span class="pill p-mid">1</span></button><button type="button" data-href="BO-Catalogue.dc.html" class="">Catalogue</button><button type="button" data-href="BO-Anomalies.dc.html" class="">Anomalies<span class="pill p-mid">1</span></button><button type="button" data-href="BO-Litiges.dc.html" class="">Litiges et support<span class="pill p-mid">1</span></button></nav><div class="main"><div class="col" style="gap:4px"><h1 style="margin:0;font:800 28px/32px var(--font-display)">Validation des prix</h1><span class="muted">Prix soumis par les marchands et relevés terrain, en attente de publication.</span></div><div class="card tblw" style="padding:4px 8px"><table><thead><tr><th>Produit</th><th>Prix</th><th>Source</th><th>Zone</th><th>Écart à la médiane</th><th>Soumis</th><th>Action</th></tr></thead><tbody><tr><td><b>Huile végétale 1 L</b></td><td class="price" style="font-size:15px">1 900</td><td>Contributeur K. · terrain</td><td>Owendo</td><td><span class="pill p-bad">+41 %</span></td><td class="muted">il y a 40 min</td><td><div class="row" style="gap:6px"><button class="btn sm" type="button">Publier</button><button class="btn2 sm" type="button">Rejeter</button></div></td></tr><tr><td><b>Sardines à l'huile 125 g</b></td><td class="price" style="font-size:15px">470</td><td>Boutique Sainte-Anne · marchand</td><td>Owendo</td><td><span class="pill p-good">-2 %</span></td><td class="muted">il y a 1 h</td><td><div class="row" style="gap:6px"><button class="btn sm" type="button">Publier</button><button class="btn2 sm" type="button">Rejeter</button></div></td></tr></tbody></table></div><div class="card row" style="padding:14px;background:var(--fill-100);box-shadow:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5M12 8h.01"></path></svg><span class="t-cap">Publier rend le prix visible tout de suite dans la comparaison côté consommateur. Un écart supérieur à 30 % ouvre un dossier d'anomalie.</span></div></div></div></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":800}}'>
+class Component extends DCLogic { renderVals() { return {}; } }
+</script>
+</body>
+</html>

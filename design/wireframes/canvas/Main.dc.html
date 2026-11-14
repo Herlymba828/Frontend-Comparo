@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Accueil</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/wf/tokens.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit;text-decoration:none}
+.ln{display:block;height:8px;border-radius:4px;background:var(--fill-200)}
+.n{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:var(--ink);color:var(--paper);font:700 11px/1 var(--font-mono);flex:none}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; display: flex; flex-direction: column; background: var(--paper); color: var(--ink); font-family: var(--font-sans);">
+  <div style="display: flex; flex-direction: column; gap: 12px; padding: 20px 16px 16px; border-bottom: 1px solid var(--line-soft);">
+    <div style="display: flex; align-items: center; gap: 8px;"><span class="n">1</span><button type="button" style="font: 600 13px var(--font-sans); background: none; border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; color: var(--ink);">Libreville ▾</button></div>
+    <div style="display: flex; align-items: center; gap: 8px;"><span class="n">2</span><a href="Resultats.dc.html" style="flex-grow: 1; display: flex; align-items: center; height: 44px; padding: 0 16px; border: 1px solid var(--line); border-radius: 999px; color: var(--ink-muted); font-size: 15px;">Rechercher un produit</a></div>
+  </div>
+  <div style="display: flex; flex-direction: column; gap: 12px; padding: 20px 16px 0;">
+    <div style="display: flex; align-items: center; gap: 8px;"><span class="n">3</span><span class="subtitle">Catégories</span></div>
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px;">
+      <div style="display: flex; flex-direction: column; gap: 6px; align-items: center;"><div style="width: 100%; height: 64px; background: var(--fill-100); border-radius: 8px;"></div><span class="ln" style="width: 60%;"></span></div>
+      <div style="display: flex; flex-direction: column; gap: 6px; align-items: center;"><div style="width: 100%; height: 64px; background: var(--fill-100); border-radius: 8px;"></div><span class="ln" style="width: 50%;"></span></div>
+      <div style="display: flex; flex-direction: column; gap: 6px; align-items: center;"><div style="width: 100%; height: 64px; background: var(--fill-100); border-radius: 8px;"></div><span class="ln" style="width: 70%;"></span></div>
+      <div style="display: flex; flex-direction: column; gap: 6px; align-items: center;"><div style="width: 100%; height: 64px; background: var(--fill-100); border-radius: 8px;"></div><span class="ln" style="width: 55%;"></span></div>
+      <div style="display: flex; flex-direction: column; gap: 6px; align-items: center;"><div style="width: 100%; height: 64px; background: var(--fill-100); border-radius: 8px;"></div><span class="ln" style="width: 65%;"></span></div>
+      <div style="display: flex; flex-direction: column; gap: 6px; align-items: center;"><div style="width: 100%; height: 64px; background: var(--fill-100); border-radius: 8px;"></div><span class="ln" style="width: 45%;"></span></div>
+    </div>
+  </div>
+  <div style="display: flex; flex-direction: column; gap: 12px; padding: 24px 16px 0;">
+    <div style="display: flex; align-items: center; gap: 8px;"><span class="n">4</span><span class="subtitle">Consultés récemment</span></div>
+    <a href="Fiche.dc.html" style="display: flex; gap: 12px; align-items: center; padding: 12px; border: 1px solid var(--line-soft); border-radius: 8px;"><div style="width: 56px; height: 56px; background: var(--fill-100); border-radius: 4px; flex: none;"></div><div style="display: flex; flex-direction: column; gap: 8px; flex-grow: 1;"><span class="body" style="font-weight: 600;">Riz parfumé 5 kg</span><span class="ln" style="width: 40%;"></span></div></a>
+    <a href="Fiche.dc.html" style="display: flex; gap: 12px; align-items: center; padding: 12px; border: 1px solid var(--line-soft); border-radius: 8px;"><div style="width: 56px; height: 56px; background: var(--fill-100); border-radius: 4px; flex: none;"></div><div style="display: flex; flex-direction: column; gap: 8px; flex-grow: 1;"><span class="body" style="font-weight: 600;">Huile végétale 1 L</span><span class="ln" style="width: 50%;"></span></div></a>
+  </div>
+  <nav aria-label="Navigation principale" style="margin-top: auto; display: flex; border-top: 1px solid var(--line-soft);">
+    <a href="Main.dc.html" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 0;"><span style="width: 20px; height: 20px; background: var(--ink); border-radius: 4px;"></span><span class="label">Accueil</span></a>
+    <a href="Resultats.dc.html" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 0; color: var(--ink-muted);"><span style="width: 20px; height: 20px; border: 2px solid currentColor; border-radius: 4px; box-sizing: border-box;"></span><span class="label">Recherche</span></a>
+    <span style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 0; color: var(--ink-muted);"><span style="width: 20px; height: 20px; border: 2px dashed currentColor; border-radius: 4px; box-sizing: border-box;"></span><span class="label" style="display: flex; gap: 4px; align-items: center;">Alertes <span class="n" style="width: 14px; height: 14px; font-size: 9px;">5</span></span></span>
+    <a href="Profil.dc.html" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 0; color: var(--ink-muted);"><span style="width: 20px; height: 20px; border: 2px solid currentColor; border-radius: 50%; box-sizing: border-box;"></span><span class="label">Profil</span></a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

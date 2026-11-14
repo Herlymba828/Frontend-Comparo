@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Comparo — Publier un prix</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/wf/tokens.css">
+<link rel="stylesheet" href="ds/wf/components/bundle.css">
+<link rel="stylesheet" href="proto.css">
+<script src="ds/wf/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&amp;family=Manrope:wght@400..800&amp;display=swap">
+<style>body{margin:0}a{color:inherit;text-decoration:none}</style>
+</helmet>
+<div class="phone">
+<div class="scr"><div class="hdr"><button class="back" type="button" data-href="HF-MesPrix.dc.html" aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"></path></svg></button><span class="t-title">Publier un prix</span></div><form class="pad" novalidate=""><div class="fld"><label for="pub-p">Produit</label><select class="inp"><option value="riz5" selected="">Riz parfumé 5 kg · Marque A</option><option value="riz45">Riz parfumé 4,5 kg · Marque B</option><option value="rizlong">Riz long grain 5 kg · Marque C</option><option value="riz25">Riz parfumé 25 kg · Marque A</option><option value="huile1">Huile végétale 1 L · Marque D</option><option value="huile5">Huile végétale 5 L · Marque D</option><option value="sucre1">Sucre en poudre 1 kg · Marque E</option><option value="lait400">Lait en poudre 400 g · Marque F</option><option value="sardine">Sardines à l'huile 125 g · Marque G</option><option value="eau15">Eau minérale 1,5 L · Marque H</option><option value="savon">Savon de toilette 200 g · Marque I</option><option value="tomate">Concentré de tomate 400 g · Marque J</option></select></div><div class="col" style="align-items:center;gap:6px;padding:18px 16px;background:var(--paper);border-radius:20px;box-shadow:var(--shadow-1)"><label for="pub-price" class="t-lab muted">Prix affiché en boutique</label><div class="row" style="gap:8px;align-items:baseline"><input inputmode="numeric" value="4950" style="width:170px;border:0;background:none;text-align:right;font:800 44px/48px var(--font-display);color:var(--ink);outline:none" aria-describedby="pub-unit"><span style="font:800 20px var(--font-display)" class="muted">FCFA</span></div><span class="t-cap muted">soit 990 FCFA / kg</span></div><span class="err" role="alert"></span><fieldset style="border:0;padding:0;margin:0"><legend class="lab" style="font:700 12px var(--font-sans);margin-bottom:8px">Disponibilité</legend><div class="seg"><button type="button" class="on">Disponible</button><button type="button" class="">Limité</button><button type="button" class="">Épuisé</button><button type="button" class="">Inconnu</button></div></fieldset><label class="card row" style="padding:14px"><span class="tag tag-promo" style="font-size:11px">Promo</span><span class="grow" style="font-weight:600">C'est une promotion</span><input type="checkbox"></label><span class="t-cap muted" style="text-align:center">Vérifié par l'équipe avant d'être visible. Date et provenance enregistrées.</span><button class="btn" type="submit">Soumettre le prix</button></form></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic { renderVals() { return {}; } }
+</script>
+</body>
+</html>

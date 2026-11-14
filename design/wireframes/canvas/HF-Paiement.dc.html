@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Comparo — Paiement mobile money · P1</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/wf/tokens.css">
+<link rel="stylesheet" href="ds/wf/components/bundle.css">
+<link rel="stylesheet" href="proto.css">
+<script src="ds/wf/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&amp;family=Manrope:wght@400..800&amp;display=swap">
+<style>body{margin:0}a{color:inherit;text-decoration:none}</style>
+</helmet>
+<div class="phone">
+<div class="scr"><div class="hdr"><button class="back" type="button" aria-label="Retour"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg></button><div class="col grow"><span class="t-title">Paiement</span></div></div><form class="pad" novalidate=""><div class="col" style="align-items:center;gap:4px;padding:10px 0"><span class="t-lab muted">À payer</span><span class="huge">14 250 FCFA</span></div><span class="t-lab muted">Moyen de paiement</span><label class="card row" style="padding:14px;box-shadow:inset 0 0 0 2px var(--primary),var(--shadow-1)"><span class="thumb" style="width:44px;height:44px;font-size:13px">AM</span><span class="col grow"><span style="font-weight:700">Mobile money A</span><span class="t-cap muted">Confirmation sur votre téléphone</span></span><input type="radio" name="pm" value="am" checked=""></label><label class="card row" style="padding:14px;"><span class="thumb" style="width:44px;height:44px;font-size:13px">MM</span><span class="col grow"><span style="font-weight:700">Mobile money B</span><span class="t-cap muted">Confirmation sur votre téléphone</span></span><input type="radio" name="pm" value="mm"></label><label class="card row" style="padding:14px;"><span class="thumb" style="width:44px;height:44px;font-size:13px">₣</span><span class="col grow"><span style="font-weight:700">Espèces au retrait</span><span class="t-cap muted">Selon le vendeur</span></span><input type="radio" name="pm" value="cash"></label><div class="fld"><label for="pay-num">Numéro mobile money</label><input class="inp" inputmode="tel" value="+241 0X XX XX XX"></div><span class="t-cap muted" style="text-align:center">Vous validez le paiement sur votre téléphone. Aucun débit n'est fait deux fois.</span><button class="btn" type="submit">Payer 14 250 FCFA</button><button class="btn2" type="button">Simuler un paiement refusé</button></form></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic { renderVals() { return {}; } }
+</script>
+</body>
+</html>

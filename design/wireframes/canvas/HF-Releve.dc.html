@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Comparo — Relever un prix</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/wf/tokens.css">
+<link rel="stylesheet" href="ds/wf/components/bundle.css">
+<link rel="stylesheet" href="proto.css">
+<script src="ds/wf/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&amp;family=Manrope:wght@400..800&amp;display=swap">
+<style>body{margin:0}a{color:inherit;text-decoration:none}</style>
+</helmet>
+<div class="phone">
+<div class="scr"><div class="hdr"><button class="back" type="button" data-href="HF-Profil.dc.html" aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"></path></svg></button><span class="t-title grow">Relever un prix</span><button class="link t-cap" type="button" data-href="HF-MesContributions.dc.html">Mes relevés</button></div><form class="pad" novalidate=""><label for="c-photo" class="viewfinder"><span class="vf vf1"></span><span class="vf vf2"></span><span class="vf vf3"></span><span class="vf vf4"></span><span style="font:700 15px var(--font-sans)">Cadrez l'étiquette de prix</span><span class="vf-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"></path><circle cx="12" cy="13" r="3.5"></circle></svg>Prendre la photo</span><input id="c-photo" type="file" accept="image/*" capture="environment" hidden=""></label><span class="t-cap muted" style="text-align:center;margin-top:-4px">Pas de photo ? Saisissez le prix à la main.</span><div class="fld"><label for="c-p">Produit</label><select class="inp" id="c-p"><option value="riz5">Riz parfumé 5 kg</option><option value="riz45">Riz parfumé 4,5 kg</option><option value="rizlong">Riz long grain 5 kg</option><option value="riz25">Riz parfumé 25 kg</option><option value="huile1">Huile végétale 1 L</option><option value="huile5">Huile végétale 5 L</option><option value="sucre1">Sucre en poudre 1 kg</option><option value="lait400">Lait en poudre 400 g</option><option value="sardine">Sardines à l'huile 125 g</option><option value="eau15">Eau minérale 1,5 L</option><option value="savon">Savon de toilette 200 g</option><option value="tomate">Concentré de tomate 400 g</option></select></div><div class="fld"><label for="c-price">Prix écrit sur l'étiquette</label><div class="tag-wrap"><div class="tag-in"><input id="c-price" inputmode="numeric" placeholder="4 950" autocomplete="off" aria-describedby="c-hint"><span style="font:800 14px var(--font-sans)">FCFA</span></div></div><span id="c-hint" class="t-cap muted">Prix connu le plus bas : 4 950 FCFA</span></div><div id="c-warn" aria-live="polite"></div><span id="c-err" class="err" role="alert"></span><div class="fld"><label for="c-where">Où ?</label><select class="inp" id="c-where"><option>Épicerie du Rond-Point</option><option>Supérette Bel-Air</option><option>Marché central · étal 14</option><option>Dépôt Owendo Gros</option><option>Boutique Sainte-Anne</option></select></div><div class="fld"><span class="lab">Quand ?</span><div class="chips"><span class="chip on">Aujourd'hui</span><span class="chip">Hier</span></div></div><span class="t-cap muted" style="text-align:center">Vérifié avant d'apparaître dans les comparaisons. Merci !</span><button class="btn" type="submit">Envoyer le relevé</button></form></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic { renderVals() { return {}; } }
+</script>
+</body>
+</html>

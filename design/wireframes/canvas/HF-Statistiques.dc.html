@@ -2,11 +2,11 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<title>Comparo — Statistiques marchand</title>
+<title>Comparo — Statistiques · P1</title>
 <script src="./support.js"></script>
 <link rel="stylesheet" href="ds/wf/tokens.css">
 <link rel="stylesheet" href="ds/wf/components/bundle.css">
-<link rel="stylesheet" href="hf.css">
+<link rel="stylesheet" href="proto.css">
 <script src="ds/wf/components/bundle.js"></script>
 </head>
 <body>
@@ -15,38 +15,8 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&amp;family=Manrope:wght@400..800&amp;display=swap">
 <style>body{margin:0}a{color:inherit;text-decoration:none}</style>
 </helmet>
-<div class="scr">
-  <div style="display: flex; flex-direction: column; gap: 12px; padding: 20px 20px 12px;">
-    <span class="title">Statistiques</span>
-    <div style="display: flex; gap: 8px;"><span class="chip">7 j</span><span class="chip chip-on">30 j</span><span class="chip">90 j</span></div>
-  </div>
-  <div class="body-pad">
-    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px;">
-      <div class="card" style="display: flex; flex-direction: column; gap: 2px; padding: 14px;"><span class="caption muted">Vues de vos prix</span><span class="big">[N]</span><span class="caption" style="color: var(--primary); font-weight: 700;">+[X] %</span></div>
-      <div class="card" style="display: flex; flex-direction: column; gap: 2px; padding: 14px;"><span class="caption muted">Fois « meilleur prix »</span><span class="big">[N]</span><span class="caption muted">sur [N] produits</span></div>
-      <div class="card" style="display: flex; flex-direction: column; gap: 2px; padding: 14px;"><span class="caption muted">Commandes</span><span class="big">[N]</span><span class="caption muted">P1</span></div>
-      <div class="card" style="display: flex; flex-direction: column; gap: 2px; padding: 14px;"><span class="caption muted">Prix à confirmer</span><span class="big">[N]</span><a href="HF-MesPrix.dc.html" class="caption link">Confirmer</a></div>
-    </div>
-    <div class="card-lg" style="display: flex; flex-direction: column; gap: 10px; padding: 16px;">
-      <span class="subtitle">Vues par jour</span>
-      <svg width="310" height="110" viewBox="0 0 310 110" role="img" aria-label="Vues quotidiennes sur 30 jours, en hausse">
-        <path d="M0 100 H310" stroke="var(--line-soft)"></path>
-        <g fill="var(--teal)"><rect x="4" y="70" width="14" height="30" rx="3"></rect><rect x="30" y="62" width="14" height="38" rx="3"></rect><rect x="56" y="74" width="14" height="26" rx="3"></rect><rect x="82" y="56" width="14" height="44" rx="3"></rect><rect x="108" y="60" width="14" height="40" rx="3"></rect><rect x="134" y="48" width="14" height="52" rx="3"></rect><rect x="160" y="52" width="14" height="48" rx="3"></rect><rect x="186" y="40" width="14" height="60" rx="3"></rect><rect x="212" y="36" width="14" height="64" rx="3"></rect><rect x="238" y="30" width="14" height="70" rx="3"></rect><rect x="264" y="26" width="14" height="74" rx="3"></rect></g>
-        <rect x="290" y="16" width="14" height="84" rx="3" fill="var(--primary)"></rect>
-      </svg>
-    </div>
-    <div class="card" style="padding: 4px 16px;">
-      <span class="label muted" style="display: block; padding-top: 10px;">PRODUITS LES PLUS VUS</span>
-      <div class="li"><span class="body" style="flex-grow: 1; font-weight: 700;">Riz parfumé 5 kg</span><span class="p-tag">Meilleur prix</span></div>
-      <div class="li"><span class="body" style="flex-grow: 1; font-weight: 700;">Huile végétale 1 L</span><span class="caption muted">2e sur 6</span></div>
-    </div>
-  </div>
-  <nav class="tbar" style="margin-top: auto;" aria-label="Navigation marchand">
-    <a href="HF-MesPrix.dc.html"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M4 12V4h8l8 8-8 8z"></path><circle cx="8.5" cy="8.5" r="1.5"></circle></svg>Prix</a>
-    <a href="HF-Stock.dc.html"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V8l-9-5-9 5v8l9 5z"></path><path d="M3 8l9 5 9-5M12 13v8"></path></svg>Stock</a>
-    <a href="HF-CommandesRecues.dc.html"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h14v16H5z"></path><path d="M9 9h6M9 13h6"></path></svg>Commandes</a>
-    <a href="HF-Statistiques.dc.html" class="on" aria-current="page"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M5 20V10M12 20V4M19 20v-7"></path></svg>Stats</a>
-  </nav>
+<div class="phone">
+<div class="scr"><div class="col" style="gap:12px;padding:20px 20px 12px"><span class="t-title">Statistiques</span><div class="chips"><span class="chip">7 j</span><span class="chip on">30 j</span><span class="chip">90 j</span></div></div><div class="pad"><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="card col" style="padding:14px"><span class="t-cap muted">Vues de vos prix</span><span class="big">1 284</span><span class="t-cap" style="color:var(--primary);font-weight:700">+18 %</span></div><div class="card col" style="padding:14px"><span class="t-cap muted">Fois « meilleur prix »</span><span class="big">2</span><span class="t-cap muted">sur 3 produits</span></div></div><div class="card-lg col" style="padding:16px;gap:10px"><span class="t-sub">Vues par jour</span><svg width="100%" viewBox="0 0 310 110" role="img" aria-label="Vues quotidiennes, en hausse"><path d="M0 100 H310" stroke="var(--line-soft)"></path><rect x="4" y="70" width="16" height="30" rx="3" fill="var(--teal)"></rect><rect x="30" y="62" width="16" height="38" rx="3" fill="var(--teal)"></rect><rect x="56" y="74" width="16" height="26" rx="3" fill="var(--teal)"></rect><rect x="82" y="56" width="16" height="44" rx="3" fill="var(--teal)"></rect><rect x="108" y="60" width="16" height="40" rx="3" fill="var(--teal)"></rect><rect x="134" y="48" width="16" height="52" rx="3" fill="var(--teal)"></rect><rect x="160" y="52" width="16" height="48" rx="3" fill="var(--teal)"></rect><rect x="186" y="40" width="16" height="60" rx="3" fill="var(--teal)"></rect><rect x="212" y="36" width="16" height="64" rx="3" fill="var(--teal)"></rect><rect x="238" y="30" width="16" height="70" rx="3" fill="var(--teal)"></rect><rect x="264" y="26" width="16" height="74" rx="3" fill="var(--teal)"></rect><rect x="290" y="16" width="16" height="84" rx="3" fill="var(--primary)"></rect></svg></div><span class="t-cap muted">Chiffres d'exemple.</span></div><nav class="tbar" aria-label="Navigation marchand"><button type="button" data-href="HF-MesPrix.dc.html" class=""><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12V4h8l8 8-8 8z"></path><circle cx="8.5" cy="8.5" r="1.5"></circle></svg>Prix</button><button type="button" data-href="HF-Stock.dc.html" class=""><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V8l-9-5-9 5v8l9 5z"></path><path d="M3 8l9 5 9-5M12 13v8"></path></svg>Stock</button><button type="button" data-href="HF-CommandesRecues.dc.html" class=""><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h14v16H5z"></path><path d="M9 9h6M9 13h6"></path></svg>Commandes</button><button type="button" data-href="HF-Statistiques.dc.html" class="on"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 20V10M12 20V4M19 20v-7"></path></svg>Stats</button></nav></div>
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>

@@ -2,38 +2,21 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<title>Comparo — Récapitulatif de commande</title>
+<title>Comparo — Récapitulatif de commande · P1</title>
 <script src="./support.js"></script>
 <link rel="stylesheet" href="ds/wf/tokens.css">
 <link rel="stylesheet" href="ds/wf/components/bundle.css">
-<link rel="stylesheet" href="hf.css">
+<link rel="stylesheet" href="proto.css">
 <script src="ds/wf/components/bundle.js"></script>
 </head>
 <body>
 <x-dc>
 <helmet>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&amp;family=Manrope:wght@400..800&amp;display=swap">
-<style>body{margin:0}a{color:inherit;text-decoration:none}.ln{display:flex;justify-content:space-between;padding:6px 0}.mode{flex:1;display:flex;flex-direction:column;gap:4px;padding:14px;border-radius:16px;background:var(--paper);box-shadow:var(--shadow-1)}</style>
+<style>body{margin:0}a{color:inherit;text-decoration:none}</style>
 </helmet>
-<div class="scr">
-  <div class="hdr"><a href="HF-Panier.dc.html" class="back" aria-label="Retour"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg></a><span class="title">Votre commande</span></div>
-  <div class="body-pad">
-    <span class="label muted">RÉCEPTION</span>
-    <div style="display: flex; gap: 10px;">
-      <div class="mode" style="box-shadow: inset 0 0 0 2px var(--primary), var(--shadow-1);"><span class="subtitle">Retrait</span><span class="caption muted">Gratuit · prêt en ~2 h</span></div>
-      <div class="mode"><span class="subtitle">Livraison</span><span class="caption muted">[FRAIS] FCFA</span></div>
-    </div>
-    <div class="card row" style="padding: 14px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg><span style="display: flex; flex-direction: column; flex-grow: 1;"><span class="body" style="font-weight: 700;">[Point de vente]</span><span class="caption muted">[Adresse] · ouvert jusqu'à 20 h</span></span><span class="link caption">Changer</span></div>
-    <span class="label muted">DÉTAIL</span>
-    <div class="card" style="padding: 10px 16px;">
-      <div class="ln"><span class="body">Produits (5)</span><span class="body" style="font-weight: 700;">[X] FCFA</span></div>
-      <div class="ln"><span class="body">Retrait</span><span class="body" style="font-weight: 700;">0 FCFA</span></div>
-      <div class="ln"><span class="body">Frais de paiement</span><span class="body" style="font-weight: 700;">[Y] FCFA</span></div>
-      <div class="ln" style="border-top: 1px solid var(--line-soft); margin-top: 6px; padding-top: 12px;"><span class="subtitle">Total</span><span class="ptag" style="font-size: 24px; line-height: 30px;">[T] FCFA</span></div>
-    </div>
-    <span class="caption muted">Les prix sont figés à la validation. Si un prix change avant, vous serez prévenu.</span>
-  </div>
-  <div class="foot"><a href="HF-Paiement.dc.html" class="btn">Payer [T] FCFA</a></div>
+<div class="phone">
+<div class="scr"><div class="hdr"><button class="back" type="button" aria-label="Retour"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg></button><div class="col grow"><span class="t-title">Votre commande</span></div></div><div class="pad"><span class="t-lab muted">Réception</span><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><button type="button" class="card col" style="padding:14px;border:0;text-align:left;gap:2px;box-shadow:inset 0 0 0 2px var(--primary),var(--shadow-1)"><span class="t-sub">Retrait</span><span class="t-cap muted">Gratuit · prêt en ~2 h</span></button><button type="button" class="card col" style="padding:14px;border:0;text-align:left;gap:2px;box-shadow:var(--shadow-1)"><span class="t-sub">Livraison</span><span class="t-cap muted">1 000 FCFA</span></button></div><div class="card row" style="padding:14px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg><span class="col grow"><span style="font-weight:700">Épicerie du Rond-Point</span><span class="t-cap muted">Libreville · ouvert jusqu'à 20 h</span></span></div><span class="t-lab muted">Détail</span><div class="card" style="padding:10px 16px"><div class="row" style="justify-content:space-between;padding:6px 0"><span>Produits (5)</span><b>14 250 FCFA</b></div><div class="row" style="justify-content:space-between;padding:6px 0"><span>Retrait</span><b>0 FCFA</b></div><div class="row" style="justify-content:space-between;border-top:1px solid var(--line-soft);margin-top:6px;padding-top:12px"><span class="t-sub">Total</span><span class="price-lg">14 250</span></div></div><span class="t-cap muted">Les prix sont figés à la validation. Si un prix change avant, vous serez prévenu.</span></div><div class="foot"><button class="btn" type="button" data-href="HF-Paiement.dc.html">Payer 14 250 FCFA</button></div></div>
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>

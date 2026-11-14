@@ -2,31 +2,21 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<title>Comparo — Créer une alerte</title>
+<title>Comparo — Créer une alerte · P1</title>
 <script src="./support.js"></script>
 <link rel="stylesheet" href="ds/wf/tokens.css">
 <link rel="stylesheet" href="ds/wf/components/bundle.css">
-<link rel="stylesheet" href="hf.css">
+<link rel="stylesheet" href="proto.css">
 <script src="ds/wf/components/bundle.js"></script>
 </head>
 <body>
 <x-dc>
 <helmet>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&amp;family=Manrope:wght@400..800&amp;display=swap">
-<style>body{margin:0}a{color:inherit;text-decoration:none}.opt{display:flex;gap:12px;align-items:center;padding:14px;border-radius:14px;background:var(--paper);box-shadow:var(--shadow-1)}.rd{width:20px;height:20px;border-radius:50%;box-shadow:inset 0 0 0 2px var(--line);flex:none}.rd-on{box-shadow:inset 0 0 0 6px var(--primary)}</style>
+<style>body{margin:0}a{color:inherit;text-decoration:none}</style>
 </helmet>
-<div class="scr">
-  <div class="hdr"><a href="HF-Alertes.dc.html" class="back" aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"></path></svg></a><span class="title">Nouvelle alerte</span></div>
-  <div class="body-pad">
-    <div class="card row" style="padding: 12px 14px;"><span class="thumb" style="width: 40px; height: 40px;"><svg viewBox="0 0 48 48" width="78%" height="78%" aria-hidden="true"><path d="M13 13 Q24 8 35 13 L38 40 Q24 45 10 40 Z" fill="var(--accent)" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"></path><path d="M15 14 Q24 18 33 14" fill="none" stroke="var(--ink)" stroke-width="2"></path><rect x="17" y="24" width="14" height="9" rx="2" fill="var(--primary)"></rect></svg></span><span style="display: flex; flex-direction: column; flex-grow: 1;"><span class="body" style="font-weight: 700;">Riz parfumé 5 kg</span><span class="caption muted">Meilleur prix actuel : [PRIX] FCFA</span></span></div>
-    <span class="label muted">PRÉVENEZ-MOI QUAND</span>
-    <div class="opt" style="box-shadow: inset 0 0 0 2px var(--primary);"><span class="rd rd-on"></span><span style="display: flex; flex-direction: column; flex-grow: 1; gap: 8px;"><span class="body" style="font-weight: 700;">Le prix passe sous</span><span class="inp" style="min-height: 44px;">[SEUIL] <span class="muted">FCFA</span></span></span></div>
-    <div class="opt"><span class="rd"></span><span class="body" style="font-weight: 700;">Le prix baisse, quel que soit le montant</span></div>
-    <div class="opt"><span class="rd"></span><span class="body" style="font-weight: 700;">Le produit revient en stock</span></div>
-    <span class="label muted">PAR</span>
-    <div style="display: flex; gap: 8px; flex-wrap: wrap;"><span class="chip chip-on">Dans l'app</span><span class="chip chip-on">SMS</span><span class="chip">E-mail</span></div>
-  </div>
-  <div class="foot"><a href="HF-Alertes.dc.html" class="btn">Créer l'alerte</a></div>
+<div class="phone">
+<div class="scr"><div class="hdr"><button class="back" type="button" data-href="HF-Alertes.dc.html" aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"></path></svg></button><span class="t-title">Nouvelle alerte</span></div><form class="pad" novalidate=""><div class="card row" style="padding:12px 14px"><span class="thumb thumb-lg"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M13 13 Q24 8 35 13 L38 40 Q24 45 10 40 Z" fill="var(--illu-lemon)" stroke="var(--illu-line)" stroke-width="2" stroke-linejoin="round"></path><path d="M15 14 Q24 18 33 14" fill="none" stroke="var(--illu-line)" stroke-width="2"></path><rect x="17" y="24" width="14" height="9" rx="2" fill="var(--illu-green)"></rect></svg></span><span class="col grow"><span style="font-weight:700">Riz parfumé 5 kg</span><span class="t-cap muted">Meilleur prix actuel : 4 950 FCFA</span></span></div><fieldset style="border:0;padding:0;margin:0;display:flex;flex-direction:column;gap:10px"><legend class="t-lab muted" style="margin-bottom:10px">Prévenez-moi quand</legend><label class="card row" style="padding:14px"><input type="radio" name="ak" value="seuil" checked=""><span class="col grow" style="gap:8px"><span style="font-weight:700">Le prix passe sous</span><span class="row" style="gap:8px"><input class="inp" inputmode="numeric" value="4 700" aria-label="Seuil en FCFA" style="min-height:42px"><span class="muted" style="font-weight:700">FCFA</span></span></span></label><label class="card row" style="padding:14px"><input type="radio" name="ak" value="baisse"><span style="font-weight:700">Le prix baisse, quel que soit le montant</span></label><label class="card row" style="padding:14px"><input type="radio" name="ak" value="stock"><span style="font-weight:700">Le produit revient en stock</span></label></fieldset><span class="t-lab muted">Par</span><div class="chips"><span class="chip on">Dans l'app</span><span class="chip on">SMS</span><span class="chip">E-mail</span></div><button class="btn" type="submit">Créer l'alerte</button></form></div>
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>

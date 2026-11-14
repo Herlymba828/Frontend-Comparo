@@ -6,7 +6,7 @@
 <script src="./support.js"></script>
 <link rel="stylesheet" href="ds/wf/tokens.css">
 <link rel="stylesheet" href="ds/wf/components/bundle.css">
-<link rel="stylesheet" href="hf.css">
+<link rel="stylesheet" href="proto.css">
 <script src="ds/wf/components/bundle.js"></script>
 </head>
 <body>
@@ -15,39 +15,8 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&amp;family=Manrope:wght@400..800&amp;display=swap">
 <style>body{margin:0}a{color:inherit;text-decoration:none}</style>
 </helmet>
-<div class="scr">
-  <div class="row" style="padding: 24px 20px 16px;">
-    <span style="width: 60px; height: 60px; border-radius: 50%; background: var(--accent); color: var(--on-accent); display: grid; place-items: center; font: 800 24px var(--font-display); flex: none;">H</span>
-    <div style="display: flex; flex-direction: column; flex-grow: 1;"><span class="title">[Nom affiché]</span><span class="caption muted">[e-mail] · Libreville</span></div>
-    <a href="#" class="back" aria-label="Modifier le profil"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"></path></svg></a>
-  </div>
-  <div class="body-pad">
-    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px;">
-      <a href="HF-Favoris.dc.html" class="card" style="display: flex; flex-direction: column; gap: 2px; padding: 12px;"><span class="big">[N]</span><span class="caption muted">Favoris</span></a>
-      <a href="HF-Alertes.dc.html" class="card" style="display: flex; flex-direction: column; gap: 2px; padding: 12px;"><span class="big">[N]</span><span class="caption muted">Alertes</span></a>
-      <a href="HF-MesCommandes.dc.html" class="card" style="display: flex; flex-direction: column; gap: 2px; padding: 12px;"><span class="big">[N]</span><span class="caption muted">Commandes</span></a>
-    </div>
-    <div class="card" style="padding: 0 16px;">
-      <a href="HF-Budget.dc.html" class="li"><span class="body" style="flex-grow: 1; font-weight: 600;">Mon budget courses</span><span class="pill pill-mid">P2</span></a>
-      <a href="HF-Notifications.dc.html" class="li"><span class="body" style="flex-grow: 1; font-weight: 600;">Notifications</span><span class="muted">›</span></a>
-      <a href="HF-Support.dc.html" class="li"><span class="body" style="flex-grow: 1; font-weight: 600;">Aide et support</span><span class="muted">›</span></a>
-      <a href="#" class="li"><span class="body" style="flex-grow: 1; font-weight: 600;">Sécurité et appareils connectés</span><span class="muted">›</span></a>
-    </div>
-    <span class="label muted">PARTICIPER</span>
-    <a href="HF-MarchandProfil.dc.html" class="card row" style="padding: 14px; background: var(--primary); color: var(--on-primary); box-shadow: none;">
-      <span style="display: flex; flex-direction: column; flex-grow: 1;"><span class="subtitle">Je suis commerçant</span><span class="caption">Publiez vos prix, attirez des clients</span></span><span>›</span>
-    </a>
-    <a href="HF-Releve.dc.html" class="card row" style="padding: 14px;">
-      <span style="display: flex; flex-direction: column; flex-grow: 1;"><span class="subtitle">Relever des prix</span><span class="caption muted">Aidez votre quartier à mieux acheter</span></span><span class="muted">›</span>
-    </a>
-  </div>
-  <div class="foot" style="padding-bottom: 8px;"><a href="HF-Connexion.dc.html" class="caption" style="text-align: center; color: var(--danger); font-weight: 700;">Se déconnecter</a></div>
-  <nav class="tbar" aria-label="Navigation principale">
-    <a href="HF-Accueil.dc.html"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"></path></svg>Accueil</a>
-    <a href="HF-Resultats.dc.html"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>Recherche</a>
-    <a href="HF-Panier.dc.html"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h3l2 11h11l2-8H7"></path><circle cx="10" cy="20" r="1.5"></circle><circle cx="17" cy="20" r="1.5"></circle></svg>Panier</a>
-    <a href="HF-Profil.dc.html" class="on" aria-current="page"><svg class="ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0z"></path></svg>Profil</a>
-  </nav>
+<div class="phone">
+<div class="scr"><div class="row" style="padding:24px 20px 16px"><span style="width:60px;height:60px;border-radius:50%;background:var(--avatar-bg);color:var(--avatar-fg);display:grid;place-items:center;font:800 24px var(--font-display);flex:none">H</span><div class="col grow"><span class="t-title">Herly</span><span class="t-cap muted">demo@comparo.ga · Libreville</span></div></div><div class="pad"><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px"><button type="button" class="card col" data-href="HF-Favoris.dc.html" style="padding:12px;border:0;text-align:left;gap:2px"><span class="big">3</span><span class="t-cap muted">Favoris</span></button><button type="button" class="card col" data-href="HF-Alertes.dc.html" style="padding:12px;border:0;text-align:left;gap:2px"><span class="big">3</span><span class="t-cap muted">Alertes</span></button><button type="button" class="card col" data-href="HF-MesCommandes.dc.html" style="padding:12px;border:0;text-align:left;gap:2px"><span class="big">3</span><span class="t-cap muted">Commandes</span></button></div><div class="card" style="padding:0 16px"><button type="button" class="li" data-href="HF-Budget.dc.html" style="width:100%;border-left:0;border-right:0;border-top:0;background:none;text-align:left"><span class="grow" style="font-weight:600">Mon budget courses</span><span class="pill p-mid">P2</span></button><button type="button" class="li" data-href="HF-Notifications.dc.html" style="width:100%;border-left:0;border-right:0;border-top:0;background:none;text-align:left"><span class="grow" style="font-weight:600">Notifications</span><span class="muted">›</span></button><button type="button" class="li" data-href="HF-Support.dc.html" style="width:100%;border-left:0;border-right:0;border-top:0;background:none;text-align:left"><span class="grow" style="font-weight:600">Aide et support</span><span class="muted">›</span></button><button type="button" class="li" data-href="HF-MesContributions.dc.html" style="width:100%;border-left:0;border-right:0;border-top:0;background:none;text-align:left"><span class="grow" style="font-weight:600">Mes relevés de prix</span><span class="muted">›</span></button></div><span class="t-lab muted">Participer</span><button type="button" class="card row" data-href="HF-MarchandProfil.dc.html" style="padding:14px;border:0;text-align:left;background:var(--primary);color:var(--on-primary);box-shadow:none"><span class="col grow"><span class="t-sub">Je suis commerçant</span><span class="t-cap">Publiez vos prix, attirez des clients</span></span>›</button><button type="button" class="card row" data-href="HF-Releve.dc.html" style="padding:14px;border:0;text-align:left"><span class="col grow"><span class="t-sub">Relever des prix</span><span class="t-cap muted">Aidez votre quartier à mieux acheter</span></span><span class="muted">›</span></button><button type="button" class="link t-cap" style="color:var(--danger);align-self:center;padding:8px">Se déconnecter</button></div><nav class="tbar" aria-label="Navigation principale"><button type="button" data-href="HF-Accueil.dc.html" class=""><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"></path></svg>Accueil</button><button type="button" data-href="HF-Resultats.dc.html" class=""><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>Recherche</button><button type="button" data-href="HF-Panier.dc.html" class=""><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h14v16H5z"></path><path d="M9 9h6M9 13h6"></path></svg>Ma liste<span class="badge">5</span></button><button type="button" data-href="HF-Profil.dc.html" class="on" aria-current="page"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg>Profil</button></nav></div>
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>

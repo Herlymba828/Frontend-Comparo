@@ -2,44 +2,21 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<title>Comparo Admin — Anomalies et dossiers</title>
+<title>Comparo — Anomalies et dossiers · P1</title>
 <script src="./support.js"></script>
 <link rel="stylesheet" href="ds/wf/tokens.css">
 <link rel="stylesheet" href="ds/wf/components/bundle.css">
-<link rel="stylesheet" href="hf.css">
+<link rel="stylesheet" href="proto.css">
 <script src="ds/wf/components/bundle.js"></script>
 </head>
 <body>
 <x-dc>
 <helmet>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&amp;family=Manrope:wght@400..800&amp;display=swap">
-<style>body{margin:0}a{color:inherit;text-decoration:none}.col{flex:1 1 240px;min-width:0;display:flex;flex-direction:column;gap:10px;padding:12px;border-radius:16px;background:var(--fill-100)}.tk{display:flex;flex-direction:column;gap:6px;padding:12px;border-radius:12px;background:var(--paper);box-shadow:var(--shadow-1)}</style>
+<style>body{margin:0}a{color:inherit;text-decoration:none}</style>
 </helmet>
-<div class="web">
-  <nav class="side" aria-label="Back-office">
-    <span style="font: 800 22px var(--font-display); padding: 0 12px 16px;">Comparo <span class="caption muted">admin</span></span>
-    <a href="BO-Validation.dc.html">Validation des prix</a>
-    <a href="BO-Marchands.dc.html">Marchands</a>
-    <a href="BO-Catalogue.dc.html">Catalogue</a>
-    <a href="BO-Anomalies.dc.html" class="on">Anomalies et dossiers</a>
-    <a href="BO-Litiges.dc.html">Litiges et support</a>
-  </nav>
-  <main class="main">
-    <div style="display: flex; flex-direction: column; gap: 4px;"><h1 style="margin: 0; font: 800 28px/32px var(--font-display);">Anomalies et dossiers</h1><span class="body muted">Un signal d'anomalie n'est pas une erreur : il demande une vérification.</span></div>
-    <div style="display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start;">
-      <div class="col"><span class="label">À EXAMINER · 3</span>
-        <div class="tk"><div class="row"><span class="pill pill-bad">Élevée</span><span class="caption muted" style="margin-left: auto;">auto</span></div><span class="body" style="font-weight: 700;">Huile 1 L : +41 % vs médiane</span><span class="caption muted">[Contributeur] · Owendo</span></div>
-        <div class="tk"><div class="row"><span class="pill pill-mid">Moyenne</span><span class="caption muted" style="margin-left: auto;">signalement</span></div><span class="body" style="font-weight: 700;">Prix incorrect signalé par un client</span><span class="caption muted">Riz 5 kg · [Vendeur]</span></div>
-      </div>
-      <div class="col"><span class="label">EN COURS · 1</span>
-        <div class="tk"><div class="row"><span class="pill pill-mid">Moyenne</span><span class="caption muted" style="margin-left: auto;">[Modérateur]</span></div><span class="body" style="font-weight: 700;">Doublon de produit</span><span class="caption muted">Riz parfum 5kg ↔ Riz parfumé 5 kg</span></div>
-      </div>
-      <div class="col"><span class="label">RÉSOLUS · 12</span>
-        <div class="tk"><div class="row"><span class="pill pill-good">Corrigé</span></div><span class="body" style="font-weight: 700;">Unité erronée (g au lieu de kg)</span><span class="caption muted">Sucre 1 kg · hier</span></div>
-      </div>
-    </div>
-    <div class="card" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; padding: 14px;"><span class="body" style="flex: 1 1 260px; font-weight: 600;">Actions possibles sur un dossier : confirmer, corriger, demander une vérification, suspendre le prix, conserver.</span><span class="caption muted">Chaque action est journalisée.</span></div>
-  </main>
+<div class="phone wide">
+<div class="scr"><div class="bo"><nav class="side" aria-label="Back-office"><span style="font:800 22px var(--font-display);padding:0 12px 14px">Comparo <span class="t-cap muted">admin</span></span><button type="button" data-href="BO-Validation.dc.html" class="">Validation des prix<span class="pill p-mid">2</span></button><button type="button" data-href="BO-Marchands.dc.html" class="">Marchands<span class="pill p-mid">1</span></button><button type="button" data-href="BO-Catalogue.dc.html" class="">Catalogue</button><button type="button" data-href="BO-Anomalies.dc.html" class="on">Anomalies<span class="pill p-mid">1</span></button><button type="button" data-href="BO-Litiges.dc.html" class="">Litiges et support<span class="pill p-mid">1</span></button></nav><div class="main"><div class="col" style="gap:4px"><h1 style="margin:0;font:800 28px/32px var(--font-display)">Anomalies et dossiers</h1><span class="muted">Un signal d'anomalie n'est pas une erreur : il demande une vérification.</span></div><div class="kan"><div class="kcol"><span class="t-lab">À examiner · 2</span><div class="card col" style="padding:12px;gap:6px"><span class="pill p-bad" style="align-self:flex-start">Élevée · auto</span><b>Huile végétale : +41 % vs médiane</b><span class="t-cap muted">Contributeur K. · Owendo</span></div><div class="card col" style="padding:12px;gap:6px"><span class="pill p-mid" style="align-self:flex-start">Moyenne · signalement</span><b>Prix incorrect signalé par un client</b><span class="t-cap muted">Riz parfumé 5 kg</span></div></div><div class="kcol"><span class="t-lab">En cours · 1</span><div class="card col" style="padding:12px;gap:6px"><b>Doublon de produit</b><span class="t-cap muted">Riz parfum 5kg ↔ Riz parfumé 5 kg</span></div></div><div class="kcol"><span class="t-lab">Résolus · 12</span><div class="card col" style="padding:12px;gap:6px"><span class="pill p-good" style="align-self:flex-start">Corrigé</span><b>Unité erronée (g au lieu de kg)</b></div></div></div></div></div></div>
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":800}}'>

@@ -2,11 +2,11 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<title>Comparo — Suivi de commande</title>
+<title>Comparo — Suivi de commande · P1</title>
 <script src="./support.js"></script>
 <link rel="stylesheet" href="ds/wf/tokens.css">
 <link rel="stylesheet" href="ds/wf/components/bundle.css">
-<link rel="stylesheet" href="hf.css">
+<link rel="stylesheet" href="proto.css">
 <script src="ds/wf/components/bundle.js"></script>
 </head>
 <body>
@@ -15,26 +15,8 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&amp;family=Manrope:wght@400..800&amp;display=swap">
 <style>body{margin:0}a{color:inherit;text-decoration:none}</style>
 </helmet>
-<div class="scr">
-  <div class="hdr"><a href="HF-MesCommandes.dc.html" class="back" aria-label="Retour"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg></a><div style="display: flex; flex-direction: column;"><span class="title">Commande [N°]</span><span class="caption muted">Retrait · [Point de vente]</span></div></div>
-  <div class="body-pad">
-    <div class="card-lg" style="display: flex; flex-direction: column; gap: 8px; padding: 18px; background: var(--accent); color: var(--on-accent); box-shadow: none;">
-      <span class="label">CODE DE RETRAIT</span>
-      <span style="font: 800 40px/44px var(--font-display); letter-spacing: 0.12em;">[CODE]</span>
-      <span class="caption">Montrez ce code au vendeur pour récupérer vos articles.</span>
-    </div>
-    <div class="card-lg" style="padding: 18px;">
-      <div class="row"><span class="step step-done">✓</span><span style="display: flex; flex-direction: column;"><span class="body" style="font-weight: 700;">Payée</span><span class="caption muted">08:02</span></span></div>
-      <div class="vline"></div>
-      <div class="row"><span class="step step-done">✓</span><span style="display: flex; flex-direction: column;"><span class="body" style="font-weight: 700;">En préparation</span><span class="caption muted">08:15</span></span></div>
-      <div class="vline"></div>
-      <div class="row"><span class="step step-now">3</span><span style="display: flex; flex-direction: column;"><span class="body" style="font-weight: 700;">Prête au retrait</span><span class="caption" style="color: var(--primary); font-weight: 700;">Maintenant</span></span></div>
-      <div class="vline"></div>
-      <div class="row"><span class="step step-next">4</span><span class="body muted">Récupérée</span></div>
-    </div>
-    <a href="#" class="card row" style="padding: 14px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--teal-ink)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg><span style="display: flex; flex-direction: column; flex-grow: 1;"><span class="body" style="font-weight: 700;">[Point de vente]</span><span class="caption muted">[Adresse] · ouvert jusqu'à 20 h</span></span><span class="link caption">Itinéraire</span></a>
-  </div>
-  <div class="foot"><a href="HF-MesCommandes.dc.html" class="btn">J'ai récupéré ma commande</a><a href="HF-Litige.dc.html" class="caption" style="text-align: center; color: var(--danger); font-weight: 700;">Signaler un problème</a></div>
+<div class="phone">
+<div class="scr"><div class="hdr"><button class="back" type="button" aria-label="Retour"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg></button><div class="col grow"><span class="t-title">Commande C-2041</span><span class="t-cap muted">Retrait · Épicerie du Rond-Point</span></div></div><div class="pad"><div class="col" style="gap:6px;padding:18px;border-radius:20px;background:var(--highlight-bg);color:var(--highlight-fg)"><span class="t-lab">Code de retrait</span><span style="font:800 40px/44px var(--font-display);letter-spacing:.14em">7K2Q</span><span class="t-cap">Montrez ce code au vendeur pour récupérer vos articles.</span></div><div class="card-lg" style="padding:18px"><div class="row"><span class="step s-done">✓</span><span style="font-weight:700;color:var(--ink)">Payée</span></div><div class="vline"></div><div class="row"><span class="step s-done">✓</span><span style="font-weight:700;color:var(--ink)">En préparation</span></div><div class="vline"></div><div class="row"><span class="step s-now">3</span><span style="font-weight:700;color:var(--ink)">Prête au retrait</span></div><div class="vline"></div><div class="row"><span class="step s-next">4</span><span style="font-weight:500;color:var(--ink-muted)">Récupérée</span></div></div></div><div class="foot"><button class="btn" type="button">J'ai récupéré ma commande</button><button class="link t-cap" type="button" data-href="HF-Litige.dc.html" style="color:var(--danger);align-self:center;padding:8px">Signaler un problème</button></div></div>
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>

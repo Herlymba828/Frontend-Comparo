@@ -2,11 +2,11 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<title>Comparo — Mes commandes</title>
+<title>Comparo — Mes commandes · P1</title>
 <script src="./support.js"></script>
 <link rel="stylesheet" href="ds/wf/tokens.css">
 <link rel="stylesheet" href="ds/wf/components/bundle.css">
-<link rel="stylesheet" href="hf.css">
+<link rel="stylesheet" href="proto.css">
 <script src="ds/wf/components/bundle.js"></script>
 </head>
 <body>
@@ -15,23 +15,8 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&amp;family=Manrope:wght@400..800&amp;display=swap">
 <style>body{margin:0}a{color:inherit;text-decoration:none}</style>
 </helmet>
-<div class="scr">
-  <div class="hdr"><a href="HF-Profil.dc.html" class="back" aria-label="Retour"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg></a><span class="title">Mes commandes</span></div>
-  <div class="body-pad">
-    <div style="display: flex; gap: 8px;"><span class="chip chip-on">En cours</span><span class="chip">Terminées</span><span class="chip">Annulées</span></div>
-    <a href="HF-Suivi.dc.html" class="card" style="display: flex; flex-direction: column; gap: 10px; padding: 14px;">
-      <div class="row"><span class="subtitle" style="flex-grow: 1;">[Vendeur]</span><span class="pill pill-mid">Prête au retrait</span></div>
-      <div class="row"><span class="caption muted" style="flex-grow: 1;">[N°] · 5 articles · aujourd'hui</span><span class="ptag" style="font-size: 16px;">[T] FCFA</span></div>
-    </a>
-    <a href="HF-Suivi.dc.html" class="card" style="display: flex; flex-direction: column; gap: 10px; padding: 14px;">
-      <div class="row"><span class="subtitle" style="flex-grow: 1;">[Vendeur]</span><span class="pill pill-good">En préparation</span></div>
-      <div class="row"><span class="caption muted" style="flex-grow: 1;">[N°] · 2 articles · hier</span><span class="ptag" style="font-size: 16px;">[T] FCFA</span></div>
-    </a>
-    <div class="card" style="display: flex; flex-direction: column; gap: 10px; padding: 14px;">
-      <div class="row"><span class="subtitle" style="flex-grow: 1;">[Vendeur]</span><span class="pill pill-bad">Paiement échoué</span></div>
-      <div class="row"><span class="caption muted" style="flex-grow: 1;">[N°] · 1 article · lundi</span><a href="HF-Paiement.dc.html" class="caption link">Réessayer le paiement</a></div>
-    </div>
-  </div>
+<div class="phone">
+<div class="scr"><div class="hdr"><button class="back" type="button" aria-label="Retour"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg></button><div class="col grow"><span class="t-title">Mes commandes</span></div></div><div class="pad"><div class="card col" style="padding:14px;gap:10px"><div class="row"><span class="t-sub grow">Épicerie du Rond-Point</span><span class="pill p-mid">Prête au retrait</span></div><div class="row"><span class="t-cap muted grow">C-2041 · 5 articles</span><span class="price" style="font-size:16px">13 250 FCFA</span></div><button class="link t-cap" type="button" style="align-self:flex-start">Suivre</button></div><div class="card col" style="padding:14px;gap:10px"><div class="row"><span class="t-sub grow">Supérette Bel-Air</span><span class="pill p-good">En préparation</span></div><div class="row"><span class="t-cap muted grow">C-2033 · 2 articles</span><span class="price" style="font-size:16px">2 700 FCFA</span></div><button class="link t-cap" type="button" style="align-self:flex-start">Suivre</button></div><div class="card col" style="padding:14px;gap:10px"><div class="row"><span class="t-sub grow">Boutique Sainte-Anne</span><span class="pill p-bad">Paiement échoué</span></div><div class="row"><span class="t-cap muted grow">C-2019 · 1 article</span><span class="price" style="font-size:16px">850 FCFA</span></div><button class="link t-cap" type="button" data-href="HF-Paiement.dc.html" style="align-self:flex-start">Réessayer le paiement</button></div></div></div>
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>

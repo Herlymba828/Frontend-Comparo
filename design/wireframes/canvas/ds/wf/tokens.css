@@ -34,8 +34,11 @@
   --teal-700: #1b706c;
   --red-300: #ff9b91;
   --red-700: #b3261e;
+  --earth-300: #e0b574;
   --earth-700: #7a4f12;
+  --violet-300: #c3b0ea;
   --violet-700: #5b3f8c;
+  --brick-300: #f0a591;
   --brick-700: #9b3a26;
 }
 :root, [data-theme="light"] {
@@ -150,10 +153,10 @@
   --proof-low: var(--line);
   --brand-mark-1: var(--primary);
   --brand-mark-2: var(--teal-ink);
-  --brand-mark-3: var(--earth-700);
-  --brand-mark-4: var(--violet-700);
-  --brand-mark-5: var(--brick-700);
-  --on-brand-mark: var(--sage-0);
+  --brand-mark-3: var(--earth-300);
+  --brand-mark-4: var(--violet-300);
+  --brand-mark-5: var(--brick-300);
+  --on-brand-mark: var(--forest-950);
   --proof-medium-fg: var(--on-accent);
   --save-bg: var(--accent);
   --save-fg: var(--on-accent);

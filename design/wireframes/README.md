@@ -1,25 +1,24 @@
 # Wireframes et maquettes — Comparo
 
-Export du canvas « Wireframes Comparateur de prix » (claude.ai), version du 13/11/2026 : wireframes en niveaux de gris, écrans haute fidélité (identité « corde à prix », design system v2.4) et back-office.
-
 Ce dossier est une **référence de conception** : il ne fait pas partie de l'application Flutter et n'est pas compilé.
+
+Export du canvas « Wireframes Comparateur de prix » du 14/11/2026 (design system v2.5) : 40 écrans haute fidélité, 5 écrans de back-office et 13 wireframes en niveaux de gris.
 
 ## Contenu
 
 | Dossier | Ce qu'il contient |
 |---|---|
-| `apercus/` | Une capture PNG par écran (58 écrans), à ouvrir directement sur GitHub |
-| `canvas/` | Les sources du canvas : un fichier `*.dc.html` par écran, `canvas.json` (disposition et titres des planches), `hf.css`, `proto.css` et la copie du design system dans `ds/wf/` (tokens, composants) |
-| `prototype/comparo-prototype.html` | Le prototype cliquable (un seul fichier HTML, sans dépendance) : ouvrez-le dans un navigateur |
+| `apercus/` | Une capture PNG par écran, thème clair |
+| `canvas/` | Les sources du canvas : un fichier `*.dc.html` par écran, `canvas.json` (disposition et titres des planches), `proto.css`, `hf.css` et la copie du design system dans `ds/wf/` |
+| `prototype/comparo-prototype.html` | Le prototype cliquable, en un seul fichier : ouvrez-le dans un navigateur |
 
 ## Ouvrir les écrans
 
-- **Le plus simple** : les captures de `apercus/`, ou le prototype dans un navigateur.
-- Les fichiers `canvas/*.dc.html` sont faits pour l'éditeur de canvas : ils chargent un `support.js` fourni par l'éditeur, absent ici. Leur contenu (HTML et styles) reste lisible tel quel et sert de référence pour l'intégration Flutter.
+- Le plus simple : les captures de `apercus/`, ou le prototype dans un navigateur.
+- Les fichiers `canvas/*.dc.html` sont faits pour l'éditeur de canvas : ils chargent un `support.js` fourni par l'éditeur, absent de cette archive. Leur HTML et leurs styles restent lisibles et servent de référence pour l'intégration.
+- Les écrans haute fidélité et back-office sont générés depuis le prototype : pour modifier un écran, modifiez le prototype.
 
-## Écrans
-
-### Haute fidélité (application mobile, 390 × 844)
+## Écrans haute fidélité (390 × 844)
 
 | Écran | Source | Aperçu |
 |---|---|---|
@@ -64,7 +63,7 @@ Ce dossier est une **référence de conception** : il ne fait pas partie de l'ap
 | Relever un prix | [`HF-Releve.dc.html`](canvas/HF-Releve.dc.html) | [aperçu](apercus/HF-Releve.png) |
 | Mes relevés | [`HF-MesContributions.dc.html`](canvas/HF-MesContributions.dc.html) | [aperçu](apercus/HF-MesContributions.png) |
 
-### Back-office (web, 1280 × 800)
+## Back-office (1280 × 800)
 
 | Écran | Source | Aperçu |
 |---|---|---|
@@ -74,7 +73,7 @@ Ce dossier est une **référence de conception** : il ne fait pas partie de l'ap
 | Anomalies et dossiers · P1 | [`BO-Anomalies.dc.html`](canvas/BO-Anomalies.dc.html) | [aperçu](apercus/BO-Anomalies.png) |
 | Litiges et support · P1 | [`BO-Litiges.dc.html`](canvas/BO-Litiges.dc.html) | [aperçu](apercus/BO-Litiges.png) |
 
-### Wireframes (niveaux de gris)
+## Wireframes (niveaux de gris)
 
 | Écran | Source | Aperçu |
 |---|---|---|
@@ -92,17 +91,13 @@ Ce dossier est une **référence de conception** : il ne fait pas partie de l'ap
 | M6 · Disponibilité | [`Disponibilite.dc.html`](canvas/Disponibilite.dc.html) | [aperçu](apercus/Disponibilite.png) |
 | T1 · Relevé terrain (contributeur) | [`Releve.dc.html`](canvas/Releve.dc.html) | [aperçu](apercus/Releve.png) |
 
-## Design system
-
-Les écrans haute fidélité utilisent le design system Comparo v2.4 (palette P07 : vert `#24834B`, citron `#D7E96B`, turquoise `#29A6A1`, fond `#FAFBF5`, texte `#20392D` ; polices Bricolage Grotesque et Manrope). Les tokens sont dans `canvas/ds/wf/tokens.json` et `tokens.css`.
-
 ## Décisions ouvertes
 
-Ces points restent à trancher avant l'intégration :
-
-- Cible tactile : 44 px dans le design system, alors que la règle Android demande 48 dp.
+- Cible tactile : 44 px dans le design system ; la règle Android demande 48 dp.
+- Résultats, fraîcheur dans la liste : l'API ne renvoie pas encore le bloc `trust` dans la liste des produits.
+- Résultats, bouton « + » : il ajoute l'offre la moins chère ; ajouter le produit sans vendeur ?
 - Offres à égalité au prix le plus bas : une seule étiquette citron ou toutes.
 - Graisse 500 pour toutes les légendes (contraste).
 - Coût du trajet dans « Ma liste ».
 - Icônes et logo définitifs.
-- Zone et distance (chantier 27 du backend).
+- Zone et distance.

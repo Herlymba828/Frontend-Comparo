@@ -2,11 +2,11 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<title>Comparo — Commandes reçues</title>
+<title>Comparo — Commandes reçues · P1</title>
 <script src="./support.js"></script>
 <link rel="stylesheet" href="ds/wf/tokens.css">
 <link rel="stylesheet" href="ds/wf/components/bundle.css">
-<link rel="stylesheet" href="hf.css">
+<link rel="stylesheet" href="proto.css">
 <script src="ds/wf/components/bundle.js"></script>
 </head>
 <body>
@@ -15,31 +15,8 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&amp;family=Manrope:wght@400..800&amp;display=swap">
 <style>body{margin:0}a{color:inherit;text-decoration:none}</style>
 </helmet>
-<div class="scr">
-  <div style="display: flex; flex-direction: column; gap: 12px; padding: 20px 20px 12px;">
-    <span class="title">Commandes</span>
-    <div style="display: flex; gap: 8px;"><span class="chip chip-on">À préparer · 2</span><span class="chip">Prêtes · 1</span><span class="chip">Terminées</span></div>
-  </div>
-  <div class="body-pad" style="gap: 10px;">
-    <div class="card" style="display: flex; flex-direction: column; gap: 10px; padding: 14px; box-shadow: inset 0 0 0 2px var(--primary), var(--shadow-1);">
-      <div class="row"><span class="subtitle" style="flex-grow: 1;">[N°] · Retrait</span><span class="pill pill-good">Payée</span></div>
-      <span class="caption muted">Riz parfumé 5 kg × 2 · Huile végétale 1 L × 3</span>
-      <div class="row"><span class="caption muted" style="flex-grow: 1;">Reçue à 08:02</span><span class="ptag" style="font-size: 16px;">[T] FCFA</span></div>
-      <div style="display: flex; gap: 8px;"><button type="button" class="btn btn-sm" style="flex: 1;">Marquer prête</button><button type="button" class="btn2 btn-sm" style="flex: 1;">Article manquant</button></div>
-    </div>
-    <div class="card" style="display: flex; flex-direction: column; gap: 10px; padding: 14px;">
-      <div class="row"><span class="subtitle" style="flex-grow: 1;">[N°] · Livraison</span><span class="pill pill-good">Payée</span></div>
-      <span class="caption muted">Sucre en poudre 1 kg × 4</span>
-      <div class="row"><span class="caption muted" style="flex-grow: 1;">Reçue à 07:40</span><span class="ptag" style="font-size: 16px;">[T] FCFA</span></div>
-    </div>
-    <div class="card row" style="padding: 14px; background: var(--fill-100); box-shadow: none;"><span class="caption" style="flex-grow: 1;">Au retrait, demandez le code du client pour remettre la commande.</span></div>
-  </div>
-  <nav class="tbar" style="margin-top: auto;" aria-label="Navigation marchand">
-    <a href="HF-MesPrix.dc.html"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M4 12V4h8l8 8-8 8z"></path><circle cx="8.5" cy="8.5" r="1.5"></circle></svg>Prix</a>
-    <a href="HF-Stock.dc.html"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V8l-9-5-9 5v8l9 5z"></path><path d="M3 8l9 5 9-5M12 13v8"></path></svg>Stock</a>
-    <a href="HF-CommandesRecues.dc.html" class="on" aria-current="page"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h14v16H5z"></path><path d="M9 9h6M9 13h6"></path></svg>Commandes</a>
-    <a href="HF-Statistiques.dc.html"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 20V10M12 20V4M19 20v-7"></path></svg>Stats</a>
-  </nav>
+<div class="phone">
+<div class="scr"><div class="col" style="gap:12px;padding:20px 20px 12px"><span class="t-title">Commandes</span><div class="chips"><span class="chip on">À traiter · 0</span><span class="chip">Prêtes · 1</span></div></div><div class="pad" style="gap:10px"><div class="card col" style="padding:14px;gap:10px;"><div class="row"><span class="t-sub grow">C-2041 · Retrait</span><span class="pill p-mid">Prête au retrait</span></div><span class="t-cap muted">5 articles</span><div class="row"><span class="t-cap muted grow">Code client : 7K2Q</span><span class="price" style="font-size:16px">13 250 FCFA</span></div></div><div class="card row" style="padding:14px;background:var(--fill-100);box-shadow:none"><span class="t-cap">Au retrait, demandez le code du client pour remettre la commande.</span></div></div><nav class="tbar" aria-label="Navigation marchand"><button type="button" data-href="HF-MesPrix.dc.html" class=""><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12V4h8l8 8-8 8z"></path><circle cx="8.5" cy="8.5" r="1.5"></circle></svg>Prix</button><button type="button" data-href="HF-Stock.dc.html" class=""><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V8l-9-5-9 5v8l9 5z"></path><path d="M3 8l9 5 9-5M12 13v8"></path></svg>Stock</button><button type="button" data-href="HF-CommandesRecues.dc.html" class="on"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h14v16H5z"></path><path d="M9 9h6M9 13h6"></path></svg>Commandes</button><button type="button" data-href="HF-Statistiques.dc.html" class=""><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 20V10M12 20V4M19 20v-7"></path></svg>Stats</button></nav></div>
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>

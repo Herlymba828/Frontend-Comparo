@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Aucun résultat</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/wf/tokens.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:inherit;text-decoration:none}
+.ln{display:block;height:8px;border-radius:4px;background:var(--fill-200)}
+.n{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:var(--ink);color:var(--paper);font:700 11px/1 var(--font-mono);flex:none}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; display: flex; flex-direction: column; background: var(--paper); color: var(--ink); font-family: var(--font-sans);">
+  <div style="display: flex; gap: 8px; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--line-soft);">
+    <a href="Main.dc.html" aria-label="Retour" style="width: 40px; height: 40px; display: grid; place-items: center; border: 1px solid var(--line-soft); border-radius: 8px; font-size: 18px;">‹</a>
+    <div style="flex-grow: 1; display: flex; align-items: center; height: 44px; padding: 0 16px; border: 1px solid var(--line); border-radius: 999px; font-size: 15px;">riz 25kg bio</div>
+  </div>
+  <div style="display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; padding: 48px 24px 24px;">
+    <div style="width: 80px; height: 80px; background: var(--fill-100); border-radius: 8px;"></div>
+    <div style="display: flex; gap: 8px; align-items: center;"><span class="n">1</span><span class="subtitle">Aucun produit pour « riz 25kg bio »</span></div>
+    <span class="body" style="color: var(--ink-muted);">Essayez un terme plus court ou parcourez une catégorie proche.</span>
+  </div>
+  <div style="display: flex; flex-direction: column; gap: 12px; padding: 0 16px;">
+    <div style="display: flex; gap: 8px; align-items: center;"><span class="n">2</span><span class="label" style="color: var(--ink-muted);">Catégories proches</span></div>
+    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+      <a href="Resultats.dc.html" class="label" style="padding: 8px 12px; border: 1px solid var(--line); border-radius: 999px;">Riz</a>
+      <a href="Resultats.dc.html" class="label" style="padding: 8px 12px; border: 1px solid var(--line); border-radius: 999px;">Céréales</a>
+      <a href="Resultats.dc.html" class="label" style="padding: 8px 12px; border: 1px solid var(--line); border-radius: 999px;">Épicerie</a>
+    </div>
+    <div style="display: flex; gap: 8px; align-items: center; margin-top: 16px;"><span class="n">3</span><a href="Main.dc.html" style="flex-grow: 1; display: flex; align-items: center; justify-content: center; min-height: 44px; border: 1px solid var(--line); border-radius: 8px; font-weight: 600;">Voir toutes les catégories</a></div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

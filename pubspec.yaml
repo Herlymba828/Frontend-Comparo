@@ -1,5 +1,5 @@
 name: frontend
-description: "A new Flutter project."
+description: "Comparateur de prix — application Flutter (design system Comparo v2.4)."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -32,6 +32,11 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
+
+  # Composants d'identité Comparo (corde à prix, ligne de preuve, étiquette,
+  # ardoise, thème). Ses polices sont embarquées par le paquet.
+  comparo_ui:
+    path: flutter/comparo_ui
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

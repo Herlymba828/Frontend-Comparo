@@ -1,0 +1,13 @@
+// Pictogrammes produits, repris du design system (composant Picto).
+// Les couleurs sont des tokens d'illustration, remplacés au rendu par ComparoColors.
+
+const Map<String, String> pictoPaths = {
+  'riz': '<path d="M13 13 Q24 8 35 13 L38 40 Q24 45 10 40 Z" fill="{illu-lemon}" stroke="{illu-line}" stroke-width="2" stroke-linejoin="round"/><path d="M15 14 Q24 18 33 14" fill="none" stroke="{illu-line}" stroke-width="2"/><rect x="17" y="24" width="14" height="9" rx="2" fill="{illu-green}"/>',
+  'huile': '<rect x="12" y="15" width="24" height="27" rx="5" fill="{illu-teal}" stroke="{illu-line}" stroke-width="2"/><rect x="20" y="8" width="8" height="7" rx="1.5" fill="{illu-green}" stroke="{illu-line}" stroke-width="2"/><path d="M30 18 h4 a3 3 0 0 1 3 3 v6" fill="none" stroke="{illu-line}" stroke-width="2"/><rect x="16" y="26" width="16" height="8" rx="2" fill="{illu-lemon}"/>',
+  'sucre': '<path d="M12 16 L24 10 L36 16 V38 L24 44 L12 38 Z" fill="{illu-paper}" stroke="{illu-line}" stroke-width="2" stroke-linejoin="round"/><path d="M12 16 L24 22 L36 16 M24 22 V44" fill="none" stroke="{illu-line}" stroke-width="2"/><rect x="15" y="26" width="6" height="6" fill="{illu-green}"/>',
+  'lait': '<rect x="13" y="12" width="22" height="30" rx="4" fill="{illu-paper}" stroke="{illu-line}" stroke-width="2"/><rect x="13" y="20" width="22" height="12" fill="{illu-green}"/><ellipse cx="24" cy="12" rx="11" ry="3" fill="{illu-shade}" stroke="{illu-line}" stroke-width="2"/>',
+  'sardine': '<rect x="8" y="16" width="32" height="18" rx="9" fill="{illu-teal}" stroke="{illu-line}" stroke-width="2"/><path d="M15 25 q7 -6 14 0 q-7 6 -14 0 z M29 25 l5 -3 v6 z" fill="{illu-paper}"/>',
+  'eau': '<path d="M20 6 h8 v5 l3 5 v24 a4 4 0 0 1 -4 4 h-6 a4 4 0 0 1 -4 -4 V16 l3 -5 z" fill="{illu-soft}" stroke="{illu-line}" stroke-width="2" stroke-linejoin="round"/><rect x="19" y="5" width="10" height="5" rx="1.5" fill="{illu-green}"/><rect x="17" y="24" width="14" height="8" fill="{illu-teal}"/>',
+  'savon': '<rect x="9" y="18" width="30" height="18" rx="8" fill="{illu-lemon}" stroke="{illu-line}" stroke-width="2"/><circle cx="16" cy="12" r="3" fill="none" stroke="{illu-teal}" stroke-width="2"/><circle cx="24" cy="9" r="2" fill="none" stroke="{illu-teal}" stroke-width="2"/><path d="M15 27 h18" stroke="{illu-line}" stroke-width="2" stroke-linecap="round" opacity=".4"/>',
+  'conserve': '<rect x="12" y="13" width="24" height="28" rx="3" fill="{illu-paper}" stroke="{illu-line}" stroke-width="2"/><rect x="12" y="19" width="24" height="15" fill="{illu-lemon}"/><circle cx="24" cy="26.5" r="5" fill="{illu-green}"/><ellipse cx="24" cy="13" rx="12" ry="3" fill="{illu-shade}" stroke="{illu-line}" stroke-width="2"/>',
+};

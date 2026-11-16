@@ -1,0 +1,12 @@
+<!-- @dsCard group="Prix" height=250 -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>ProductCard — aperçu</title></head>
+<body>
+<div id="root"></div>
+<script>
+  var W = window.Wf, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(h('div',{className:'wf-row',style:{alignItems:'flex-start'}},h(W.ProductCard,{name:'Riz parfumé',brand:'Marque X',format:'5 kg',fromAmount:4950,offers:6}),h(W.ProductCard,{name:'Huile végétale',brand:'Marque Y',format:'1 L',fromAmount:1350,offers:1,sponsored:true}),h('div',{style:{width:320}},h(W.ProductCard,{layout:'row',name:'Sucre en poudre',brand:'Marque Z',format:'1 kg',fromAmount:800,offers:4}))));
+</script>
+</body>
+</html>

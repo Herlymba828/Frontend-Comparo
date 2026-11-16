@@ -1,0 +1,12 @@
+<!-- @dsCard group="Navigation" height=64 -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Tabs — aperçu</title></head>
+<body>
+<div id="root"></div>
+<script>
+  var W = window.Wf, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(h('div',{className:'wf-stack'},h(W.Tabs,{items:['Comparer','Historique','Tendance'],value:0})));
+</script>
+</body>
+</html>

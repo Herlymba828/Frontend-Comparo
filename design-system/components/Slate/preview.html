@@ -1,0 +1,21 @@
+<!-- @dsCard group="Prix" height=900 -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Slate — aperçu</title></head>
+<body>
+<div id="root"></div>
+<script>
+  var W = window.Wf, h = React.createElement;
+  function lab(t){ return h('span',{className:'label wf-muted'},t); }
+  var seven = ['Riz parfumé 5 kg','Huile végétale 1 L','Sucre en poudre 1 kg','Lait concentré sucré en boîte 397 g','Sardines à l\'huile 125 g','Eau minérale 1,5 L','Savon de toilette'].map(function(l,i){return {label:l,value:900+i*350};});
+  ReactDOM.createRoot(document.getElementById('root')).render(h('div',{className:'wf-stack',style:{gap:14}},
+    h(W.Slate,{title:'Prix du jour',meta:'Libreville · le moins cher vérifié',footer:'En FCFA · mis à jour il y a 2 h',
+      rows:[{label:'Riz parfumé 5 kg',value:4950},{label:'Huile végétale 1 L',value:1350,selected:true},{label:'Sucre en poudre 1 kg',missing:'manque 1'}]}),
+    lab('Limite : 7 lignes données → 5 affichées, libellé long coupé'), h(W.Slate,{title:'Prix du jour',footer:'En FCFA · mis à jour il y a 2 h',rows:seven}),
+    lab('Chargement'), h(W.Slate,{title:'Prix du jour',state:'loading',rows:[]}),
+    lab('Vide'), h(W.Slate,{title:'Prix du jour',rows:[],footer:'Libreville'}),
+    lab('Erreur'), h(W.Slate,{title:'Prix du jour',state:'error',rows:[],onRetry:function(){}}),
+    lab('Hors connexion'), h(W.Slate,{title:'Prix du jour',offline:'prix du 3 nov., 18:40',rows:[{label:'Riz parfumé 5 kg',value:4950},{label:'Huile végétale 1 L',value:1350}]})));
+</script>
+</body>
+</html>

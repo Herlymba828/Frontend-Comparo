@@ -1,0 +1,639 @@
+{
+ "PriceLine": {
+  "status": "actif",
+  "flutter": "PriceLine",
+  "role": "Corde à prix : les offres actuelles d'un produit pendent à une ficelle selon leur prix ; la moins chère en citron, à gauche.",
+  "props": "`offers` ({ price, vendor }[], offres actuelles), `size` (`sm` | `lg`), `onSelect` (offre touchée), `state` (`loading`), `offline` (bool)",
+  "states": {
+   "defaut": "Étiquettes placées selon le prix ; la moins chère en `price-best-bg`.",
+   "chargement": "Ficelle seule et trois étiquettes en squelette (`fill-100`), `aria-busy`.",
+   "vide": "0 ou 1 offre : pas de corde ; l'écran affiche le prix seul ou l'état vide.",
+   "erreur": "—",
+   "horsConnexion": "Même rendu, données du cache ; le libellé vocal ajoute « hors connexion ».",
+   "desactive": "—",
+   "selectionne": "Étiquette ciblée au clavier : contour `focus` 3px."
+  },
+  "limits": [
+   "8 offres au plus : les 8 moins chères ; au-delà, mention « +N autres offres » sous la grande corde.",
+   "Prix égaux ou proches : en grand, l'étiquette descend d'un rang (3 rangs) puis se décale vers la droite ; en petit, 16 unités d'écart minimum.",
+   "Prix long (7 caractères et plus, ex. 125 000) : le chiffre est resserré pour tenir dans l'étiquette.",
+   "Nom de vendeur : raccourci à 10 caractères + « … » ; le nom complet reste dans le libellé vocal."
+  ],
+  "a11y": [
+   "Résumé vocal : « 4 offres de 4 950 à 5 600 FCFA ; la moins chère en citron ».",
+   "Avec `onSelect`, chaque étiquette est un bouton (Tab, Entrée, Espace) annoncé « vendeur, prix, le moins cher ».",
+   "La liste des offres sous la corde reste l'accès principal ; la corde ne porte jamais seule l'information."
+  ],
+  "tokens": [
+   "corde-string",
+   "price-best-bg",
+   "price-best-fg",
+   "paper",
+   "ink",
+   "ink-muted",
+   "focus",
+   "fill-100"
+  ]
+ },
+ "ProofLine": {
+  "status": "actif",
+  "flutter": "ProofLine",
+  "role": "Ligne de preuve : pastille, âge du prix, source et verdict en un mot. Remplace les badges fraîcheur + confiance dans les listes.",
+  "props": "`level` (`high` | `medium` | `low`, calculé par l'API), `age`, `source` (`vendor` | `field`), `offline` (bool), `state` (`loading`)",
+  "states": {
+   "defaut": "« Vu il y a 2 j · vendeur vérifié · Fiable ».",
+   "chargement": "Pastille et texte en squelette.",
+   "vide": "Âge absent : « Vu à une date inconnue ».",
+   "erreur": "—",
+   "horsConnexion": "Âge calculé sur la date du cache, suivi de « · hors connexion ».",
+   "desactive": "—",
+   "selectionne": "—"
+  },
+  "limits": [
+   "Texte sur 2 lignes au plus ; la pastille reste alignée sur la première."
+  ],
+  "a11y": [
+   "Le mot du verdict est toujours écrit : pastille pleine, demi ou vide n'est jamais seule."
+  ],
+  "tokens": [
+   "proof-high",
+   "proof-medium",
+   "proof-low",
+   "ink",
+   "ink-muted",
+   "on-primary"
+  ]
+ },
+ "PriceTag": {
+  "status": "actif",
+  "flutter": "PriceTag",
+  "role": "Prix en FCFA. `variant=\"tag\"` : l'étiquette du meilleur prix, une seule par produit.",
+  "props": "`amount`, `currency`, `unitPrice`, `unit`, `priceType`, `wasAmount`, `freshness`, `size` (`md` | `lg`), `variant` (`tag`)",
+  "states": {
+   "defaut": "Montant, devise, prix à l'unité.",
+   "chargement": "—",
+   "vide": "Montant absent : « — », jamais 0.",
+   "erreur": "—",
+   "horsConnexion": "Montant du cache ; la date est portée par la ligne de preuve.",
+   "desactive": "—",
+   "selectionne": "—"
+  },
+  "limits": [
+   "Montant sans décimales, milliers séparés par une espace fine insécable.",
+   "Prix expiré : barré + « Prix expiré — non actuel », jamais en étiquette citron."
+  ],
+  "a11y": [
+   "Étiquette citron annoncée « Meilleur prix : 4 950 FCFA »."
+  ],
+  "tokens": [
+   "price-best-bg",
+   "price-best-fg",
+   "ink",
+   "ink-muted"
+  ]
+ },
+ "Picto": {
+  "status": "actif",
+  "flutter": "ProductPicto",
+  "role": "Picto produit plat sur vignette, avec repère de marque (initiale sur pastille).",
+  "props": "`kind` (8 familles), `brand`, `size` (`md` 48 | `lg` 56)",
+  "states": {
+   "defaut": "Picto de la famille.",
+   "chargement": "Vignette `fill-100` seule.",
+   "vide": "Famille inconnue : sac générique.",
+   "erreur": "—",
+   "horsConnexion": "—",
+   "desactive": "—",
+   "selectionne": "—"
+  },
+  "limits": [
+   "Initiale de marque sur 1 caractère.",
+   "Jamais de photo grise ni de lettre à la place du picto."
+  ],
+  "a11y": [
+   "Picto décoratif (masqué) ; la marque est lue avec le nom du produit."
+  ],
+  "tokens": [
+   "fill-100",
+   "illu-lemon",
+   "illu-teal",
+   "illu-green",
+   "illu-soft",
+   "illu-paper",
+   "illu-shade",
+   "illu-line",
+   "brand-mark-1…5",
+   "on-brand-mark"
+  ]
+ },
+ "Slate": {
+  "status": "actif",
+  "flutter": "MarketSlate",
+  "role": "Ardoise du marché : lignes « produit ........ prix ». Prix du jour, Ma liste par boutique, tableau du marchand.",
+  "props": "`title`, `meta`, `rows` ({ label, value, missing, selected, onClick }[]), `footer`, `state` (`loading` | `error`), `onRetry`, `emptyText`, `offline` (date du cache)",
+  "states": {
+   "defaut": "Jusqu'à 5 lignes, date de mise à jour en pied.",
+   "chargement": "3 lignes en squelette sur l'ardoise.",
+   "vide": "« Pas encore de prix du jour dans votre zone. »",
+   "erreur": "« Prix du jour indisponible. » + bouton « Réessayer » (`link-on-dark`).",
+   "horsConnexion": "Dernière ardoise du cache ; pied « Hors connexion · prix du 3 nov., 18:40 ».",
+   "desactive": "—",
+   "selectionne": "Ligne choisie : coche `slate-highlight`."
+  },
+  "limits": [
+   "5 lignes au plus : les suivantes ne sont pas affichées (avertissement en développement).",
+   "Libellé long : coupé avec « … » ; le prix n'est jamais coupé."
+  ],
+  "a11y": [
+   "Chaque ligne est lue « produit, prix » ; une ligne cliquable est un bouton de 48 px au moins."
+  ],
+  "tokens": [
+   "slate",
+   "on-slate",
+   "slate-muted",
+   "slate-highlight",
+   "link-on-dark"
+  ]
+ },
+ "ListSummary": {
+  "status": "actif",
+  "flutter": "ListSummary",
+  "role": "Carte « Ma liste de la semaine » de l'accueil : total au mieux et économie possible.",
+  "props": "`count`, `best`, `save`, `onOpen`, `state` (`loading`), `onStart`",
+  "states": {
+   "defaut": "Total au mieux + étiquette d'économie.",
+   "chargement": "Squelette du total.",
+   "vide": "« Commencez votre liste de la semaine » + phrase d'aide.",
+   "erreur": "—",
+   "horsConnexion": "Totaux du cache, sans étiquette d'économie (non garantie).",
+   "desactive": "—",
+   "selectionne": "—"
+  },
+  "limits": [
+   "Aucune boutique n'a toute la liste : le total au mieux est celui du découpage en arrêts.",
+   "Économie nulle : pas d'étiquette."
+  ],
+  "a11y": [
+   "Carte entière cliquable, annoncée « Ma liste de la semaine, 5 articles, 13 950 FCFA au mieux »."
+  ],
+  "tokens": [
+   "highlight-ring",
+   "save-bg",
+   "save-fg",
+   "paper",
+   "ink",
+   "ink-muted"
+  ]
+ },
+ "OfferRow": {
+  "status": "déprécié → ligne d'offre avec ProofLine (Flutter : OfferTile)",
+  "flutter": "OfferTile",
+  "role": "Ligne d'offre : vendeur, prix, preuve, disponibilité.",
+  "props": "`vendor`, `zone`, `amount`, `unitPrice`, `freshness`, `trust`, `availability`, `best`, `sponsored`",
+  "states": {
+   "defaut": "Vendeur et preuve à gauche, prix et écart à droite.",
+   "chargement": "Ligne en squelette.",
+   "vide": "—",
+   "erreur": "—",
+   "horsConnexion": "Données du cache.",
+   "desactive": "Offre épuisée : déplacée dans la section repliée, jamais désactivée sur place.",
+   "selectionne": "—"
+  },
+  "limits": [
+   "Nom de vendeur sur 2 lignes au plus.",
+   "Expirées et épuisées : section repliée en bas, jamais « meilleur prix »."
+  ],
+  "a11y": [
+   "Bouton « Ajouter » de 48 px annoncé « Ajouter <vendeur> à ma liste »."
+  ],
+  "tokens": [
+   "paper",
+   "line-soft",
+   "ink",
+   "ink-muted",
+   "price-best-bg"
+  ],
+  "pending": [
+   "chargement"
+  ]
+ },
+ "ProductCard": {
+  "status": "déprécié → Picto + PriceLine",
+  "flutter": "—",
+  "role": "Carte produit des résultats (ancienne version, photo grise et « dès »).",
+  "props": "`name`, `brand`, `format`, `fromAmount`, `offers`, `layout`",
+  "states": {
+   "defaut": "Ne plus utiliser dans un nouvel écran.",
+   "chargement": "—",
+   "vide": "—",
+   "erreur": "—",
+   "horsConnexion": "—",
+   "desactive": "—",
+   "selectionne": "—"
+  },
+  "limits": [
+   "Remplacée par le résultat avec petite corde."
+  ],
+  "a11y": [
+   "—"
+  ],
+  "tokens": [
+   "paper",
+   "line-soft"
+  ]
+ },
+ "Button": {
+  "status": "actif",
+  "flutter": "FilledButton / OutlinedButton / TextButton thématisés",
+  "role": "Action : `primary` pour l'action unique de l'écran, `secondary`, `ghost`.",
+  "props": "`variant`, `size`, `block`, `disabled`, `onClick`",
+  "states": {
+   "defaut": "48px de haut (`target-primary`).",
+   "chargement": "Libellé conservé, indicateur à droite, non cliquable.",
+   "vide": "—",
+   "erreur": "—",
+   "horsConnexion": "—",
+   "desactive": "`fill-100`, texte `ink-muted`, non focalisable par la souris.",
+   "selectionne": "Focus clavier : anneau `focus` 2px décalé de 2px."
+  },
+  "limits": [
+   "Une action principale par écran.",
+   "Libellé à l'infinitif, sans point ; 2 lignes interdites : raccourcir."
+  ],
+  "a11y": [
+   "Cible ≥ 48px (`target-min`, règle Android), comme le bouton principal."
+  ],
+  "tokens": [
+   "primary",
+   "on-primary",
+   "paper",
+   "line",
+   "teal-ink",
+   "focus"
+  ],
+  "pending": [
+   "chargement"
+  ]
+ },
+ "SearchBar": {
+  "status": "actif",
+  "flutter": "SearchBar thématisée",
+  "role": "Recherche produit en tête de l'accueil et de Recherche.",
+  "props": "`placeholder`, `value`, `voice`",
+  "states": {
+   "defaut": "Pilule `fill-100`.",
+   "chargement": "Suggestions en squelette sous le champ.",
+   "vide": "Aucun résultat → écran « Aucun résultat » avec une issue.",
+   "erreur": "—",
+   "horsConnexion": "Recherche dans le cache seulement ; mention sous le champ.",
+   "desactive": "—",
+   "selectionne": "Focus : fond `paper`, anneau `focus`."
+  },
+  "limits": [
+   "Texte saisi sur une ligne, défilement horizontal."
+  ],
+  "a11y": [
+   "Libellé vocal = placeholder ; micro annoncé « Recherche vocale »."
+  ],
+  "tokens": [
+   "fill-100",
+   "paper",
+   "ink",
+   "ink-muted",
+   "focus"
+  ],
+  "pending": [
+   "chargement",
+   "horsConnexion"
+  ]
+ },
+ "TextField": {
+  "status": "actif",
+  "flutter": "TextField thématisé",
+  "role": "Champ de formulaire étiqueté.",
+  "props": "`label`, `placeholder`, `value`, `suffix`, `hint`, `error`, `inputMode`",
+  "states": {
+   "defaut": "Bordure `line`, 48px.",
+   "chargement": "—",
+   "vide": "—",
+   "erreur": "Bordure 2px `danger` + message précédé de « ⚠ ».",
+   "horsConnexion": "—",
+   "desactive": "Fond `fill-100`, texte `ink-muted`.",
+   "selectionne": "Anneau `focus`."
+  },
+  "limits": [
+   "Message d'erreur sur 2 lignes au plus."
+  ],
+  "a11y": [
+   "Étiquette liée au champ ; `aria-invalid` en erreur."
+  ],
+  "tokens": [
+   "paper",
+   "line",
+   "danger",
+   "focus",
+   "ink-muted"
+  ],
+  "pending": [
+   "desactive"
+  ]
+ },
+ "Placeholder": {
+  "status": "maquette seulement",
+  "flutter": "—",
+  "role": "Bloc barré réservant la place d'une image en maquette.",
+  "props": "`width`, `height`, `label`",
+  "states": {
+   "defaut": "Bloc `fill-100` barré.",
+   "chargement": "—",
+   "vide": "—",
+   "erreur": "—",
+   "horsConnexion": "—",
+   "desactive": "—",
+   "selectionne": "—"
+  },
+  "limits": [
+   "N'apparaît pas dans l'app : remplacé par Picto ou un squelette."
+  ],
+  "a11y": [
+   "Rôle image avec libellé."
+  ],
+  "tokens": [
+   "fill-100",
+   "fill-200",
+   "note"
+  ]
+ },
+ "FreshnessBadge": {
+  "status": "déprécié dans les listes → ProofLine ; conservé sur l'écran Fiabilité",
+  "flutter": "—",
+  "role": "Badge de fraîcheur : Récent, Ancien, Expiré, Date inconnue.",
+  "props": "`level`, `age`",
+  "states": {
+   "defaut": "Plein, contour ou pointillé selon le niveau.",
+   "chargement": "—",
+   "vide": "« Date inconnue », pointillé.",
+   "erreur": "—",
+   "horsConnexion": "—",
+   "desactive": "—",
+   "selectionne": "—"
+  },
+  "limits": [
+   "Un mot toujours écrit."
+  ],
+  "a11y": [
+   "Le sens ne repose pas sur la couleur."
+  ],
+  "tokens": [
+   "primary-soft",
+   "line",
+   "ink-muted"
+  ]
+ },
+ "TrustBadge": {
+  "status": "déprécié dans les listes → ProofLine ; conservé sur l'écran Fiabilité",
+  "flutter": "—",
+  "role": "Badge de confiance en 3 niveaux ; cliquable vers Fiabilité.",
+  "props": "`level`, `source`, `onClick`",
+  "states": {
+   "defaut": "Élevée (plein), moyenne (citron), faible (contour).",
+   "chargement": "—",
+   "vide": "—",
+   "erreur": "—",
+   "horsConnexion": "—",
+   "desactive": "Non cliquable sans `onClick`.",
+   "selectionne": "—"
+  },
+  "limits": [
+   "—"
+  ],
+  "a11y": [
+   "Glyphe + mot."
+  ],
+  "tokens": [
+   "primary-soft",
+   "proof-medium",
+   "line"
+  ]
+ },
+ "AvailabilityChip": {
+  "status": "actif",
+  "flutter": "à créer (texte + glyphe)",
+  "role": "Disponibilité chez un vendeur.",
+  "props": "`status` (`in` | `low` | `out` | `unknown`)",
+  "states": {
+   "defaut": "Disponible / Stock limité / Épuisé / Dispo. inconnue.",
+   "chargement": "—",
+   "vide": "« Dispo. inconnue ».",
+   "erreur": "—",
+   "horsConnexion": "—",
+   "desactive": "—",
+   "selectionne": "—"
+  },
+  "limits": [
+   "Épuisé : l'offre part dans la section repliée."
+  ],
+  "a11y": [
+   "Glyphe + mot."
+  ],
+  "tokens": [
+   "primary",
+   "ink",
+   "ink-muted"
+  ]
+ },
+ "Banner": {
+  "status": "actif",
+  "flutter": "MaterialBanner thématisé",
+  "role": "Bandeau d'état : hors ligne, information, avertissement, succès.",
+  "props": "`tone`, `title`, `children`, `action`, `onAction`",
+  "states": {
+   "defaut": "Glyphe, titre, texte, action facultative.",
+   "chargement": "—",
+   "vide": "—",
+   "erreur": "—",
+   "horsConnexion": "Ton `offline` : pointillé, date des données en cache.",
+   "desactive": "—",
+   "selectionne": "—"
+  },
+  "limits": [
+   "Un bandeau à la fois en tête d'écran."
+  ],
+  "a11y": [
+   "`role=alert` pour l'avertissement, `status` sinon."
+  ],
+  "tokens": [
+   "warning-bg",
+   "warning-fg",
+   "primary-soft",
+   "fill-100",
+   "line"
+  ],
+  "pending": []
+ },
+ "Tabs": {
+  "status": "actif",
+  "flutter": "SegmentedButton thématisé",
+  "role": "Onglets segmentés de la fiche : Moins chères, Historique, Alerte.",
+  "props": "`items`, `value`, `onChange`",
+  "states": {
+   "defaut": "Pilule `fill-100`.",
+   "chargement": "—",
+   "vide": "—",
+   "erreur": "—",
+   "horsConnexion": "—",
+   "desactive": "Onglet P1 grisé.",
+   "selectionne": "Onglet `paper` + ombre `shadow-1`."
+  },
+  "limits": [
+   "3 onglets au plus ; libellés d'un ou deux mots."
+  ],
+  "a11y": [
+   "`role=tablist`, `aria-selected`."
+  ],
+  "tokens": [
+   "fill-100",
+   "paper",
+   "ink",
+   "ink-muted"
+  ],
+  "pending": [
+   "desactive"
+  ]
+ },
+ "AppBar": {
+  "status": "actif",
+  "flutter": "AppBar thématisée",
+  "role": "Barre d'app : retour, titre, actions.",
+  "props": "`title`, `back`, `actions`",
+  "states": {
+   "defaut": "Fond `canvas`.",
+   "chargement": "—",
+   "vide": "—",
+   "erreur": "—",
+   "horsConnexion": "—",
+   "desactive": "—",
+   "selectionne": "—"
+  },
+  "limits": [
+   "Titre sur une ligne, coupé avec « … »."
+  ],
+  "a11y": [
+   "Bouton retour annoncé « Retour » ; 48px."
+  ],
+  "tokens": [
+   "canvas",
+   "paper",
+   "ink"
+  ]
+ },
+ "BottomNav": {
+  "status": "actif",
+  "flutter": "ComparoNavigationBar",
+  "role": "Navigation principale : Accueil, Recherche, Ma liste, Profil.",
+  "props": "`items`, `value`",
+  "states": {
+   "defaut": "Icône + libellé `ink-muted`.",
+   "chargement": "—",
+   "vide": "—",
+   "erreur": "—",
+   "horsConnexion": "Inchangée.",
+   "desactive": "—",
+   "selectionne": "Couleur `primary` + mini-étiquette `nav-indicator`."
+  },
+  "limits": [
+   "4 onglets ; le défaut à 5 onglets (« Alertes », « Panier ») est déprécié.",
+   "Compteur : 99+ au-delà de 99."
+  ],
+  "a11y": [
+   "`aria-current=page` ; compteur lu « 5 articles »."
+  ],
+  "tokens": [
+   "paper",
+   "line-soft",
+   "primary",
+   "nav-indicator",
+   "badge-count-bg",
+   "badge-count-fg"
+  ],
+  "pending": [
+   "limite : 99+"
+  ]
+ },
+ "EmptyState": {
+  "status": "actif",
+  "flutter": "à créer",
+  "role": "État vide : aucun résultat, aucune alerte, données insuffisantes.",
+  "props": "`title`, `children`, `action`, `onAction`",
+  "states": {
+   "defaut": "Illustration, titre, phrase, une issue.",
+   "chargement": "—",
+   "vide": "—",
+   "erreur": "—",
+   "horsConnexion": "—",
+   "desactive": "—",
+   "selectionne": "—"
+  },
+  "limits": [
+   "Toujours une issue (PJ-001)."
+  ],
+  "a11y": [
+   "Titre lu en premier."
+  ],
+  "tokens": [
+   "ink",
+   "ink-muted"
+  ],
+  "pending": []
+ },
+ "Annotation": {
+  "status": "maquette seulement",
+  "flutter": "—",
+  "role": "Note numérotée sur une maquette.",
+  "props": "`n`, `children`",
+  "states": {
+   "defaut": "Pointillé `note`.",
+   "chargement": "—",
+   "vide": "—",
+   "erreur": "—",
+   "horsConnexion": "—",
+   "desactive": "—",
+   "selectionne": "—"
+  },
+  "limits": [
+   "N'apparaît pas dans l'app."
+  ],
+  "a11y": [
+   "—"
+  ],
+  "tokens": [
+   "note"
+  ]
+ },
+ "Gauge": {
+  "status": "actif",
+  "flutter": "à créer",
+  "role": "Jauge à 3 niveaux de fraîcheur ou de confiance, écran Fiabilité.",
+  "props": "`kind`, `level`, `label`, `children`",
+  "states": {
+   "defaut": "Niveau 3 `proof-high`, 2 `proof-medium`, 1 `ink-muted`.",
+   "chargement": "—",
+   "vide": "« Inconnue », 0 segment.",
+   "erreur": "—",
+   "horsConnexion": "—",
+   "desactive": "—",
+   "selectionne": "—"
+  },
+  "limits": [
+   "Explication fournie par l'API ; sinon rien."
+  ],
+  "a11y": [
+   "`role=img` : « Moyenne, niveau 2 sur 3 »."
+  ],
+  "tokens": [
+   "proof-high",
+   "proof-medium",
+   "fill-200"
+  ]
+ }
+}

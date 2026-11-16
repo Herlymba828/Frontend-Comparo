@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Comparo — Signaler un problème · P1</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/wf/tokens.css">
+<link rel="stylesheet" href="ds/wf/components/bundle.css">
+<link rel="stylesheet" href="proto.css">
+<script src="ds/wf/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&amp;family=Manrope:wght@400..800&amp;display=swap">
+<style>body{margin:0}a{color:inherit;text-decoration:none}</style>
+</helmet>
+<div class="phone">
+<div class="scr"><div class="hdr"><button class="back" type="button" data-href="HF-Suivi.dc.html" aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"></path></svg></button><div class="col"><span class="t-title">Signaler un problème</span><span class="t-cap muted">Commande C-2041</span></div></div><form class="pad" novalidate=""><span class="t-lab muted">Que s'est-il passé ?</span><div class="chips"><button type="button" class="chip on" data-t="Article manquant">Article manquant</button><button type="button" class="chip " data-t="Mauvais article">Mauvais article</button><button type="button" class="chip " data-t="Produit abîmé">Produit abîmé</button><button type="button" class="chip " data-t="Prix différent">Prix différent</button><button type="button" class="chip " data-t="Non reçue">Non reçue</button><button type="button" class="chip " data-t="Autre">Autre</button></div><div class="fld"><label for="d-text">Décrivez le problème</label><textarea class="inp" placeholder="Ex. : il manquait un sac de riz…">Il manquait un sac de riz dans ma commande.</textarea></div><label class="btn2" for="d-file" style="border-style:dashed"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"></path><circle cx="12" cy="13" r="3.5"></circle></svg>Ajouter une photo<input type="file" accept="image/*" hidden=""></label><span class="t-cap muted"></span><span class="t-cap muted" style="text-align:center">Le vendeur et notre équipe vous répondent sous 48 h.</span><button class="btn" type="submit">Envoyer le signalement</button></form></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic { renderVals() { return {}; } }
+</script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+<!-- @dsCard group="Produit" height=150 -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Picto — aperçu</title></head>
+<body>
+<div id="root"></div>
+<script>
+  var W = window.Wf, h = React.createElement;
+  var kinds = ['riz','huile','sucre','lait','sardine','eau','savon','conserve'];
+  ReactDOM.createRoot(document.getElementById('root')).render(h('div',{className:'wf-row',style:{gap:18}},
+    kinds.map(function(k,i){ return h(W.Picto,{key:k,kind:k,brand:'Marque '+'ABCDEFGH'[i],size:i===0?'lg':'md'}); })));
+</script>
+</body>
+</html>

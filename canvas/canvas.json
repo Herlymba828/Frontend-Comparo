@@ -1,0 +1,829 @@
+{
+  "v": 3,
+  "attachments": {},
+  "boards": {
+    "AucunResultat.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "C3 · Aucun résultat",
+      "w": 390,
+      "x": 940,
+      "y": 0
+    },
+    "BO-Anomalies.dc.html": {
+      "expand": "fill",
+      "h": 800,
+      "is_interactive": true,
+      "page": "hf",
+      "title": "Anomalies et dossiers · P1",
+      "w": 1280,
+      "x": 4080,
+      "y": 6000
+    },
+    "BO-Catalogue.dc.html": {
+      "expand": "fill",
+      "h": 800,
+      "is_interactive": true,
+      "page": "hf",
+      "title": "Catalogue",
+      "w": 1280,
+      "x": 2720,
+      "y": 6000
+    },
+    "BO-Litiges.dc.html": {
+      "expand": "fill",
+      "h": 800,
+      "is_interactive": true,
+      "page": "hf",
+      "title": "Litiges et support · P1",
+      "w": 1280,
+      "x": 5440,
+      "y": 6000
+    },
+    "BO-Marchands.dc.html": {
+      "expand": "fill",
+      "h": 800,
+      "is_interactive": true,
+      "page": "hf",
+      "title": "Vérification des marchands",
+      "w": 1280,
+      "x": 1360,
+      "y": 6000
+    },
+    "BO-Validation.dc.html": {
+      "expand": "fill",
+      "h": 800,
+      "is_interactive": true,
+      "page": "hf",
+      "title": "Validation des prix",
+      "w": 1280,
+      "x": 0,
+      "y": 6000
+    },
+    "Connexion.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "C6 · Connexion / inscription",
+      "w": 390,
+      "x": 2350,
+      "y": 0
+    },
+    "Disponibilite.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "M6 · Disponibilité",
+      "w": 390,
+      "x": 2350,
+      "y": 1800
+    },
+    "Fiabilite.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "C5 · Fiabilité d'une offre",
+      "w": 390,
+      "x": 1880,
+      "y": 0
+    },
+    "Fiche.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "C4 · Fiche produit et offres",
+      "w": 390,
+      "x": 1410,
+      "y": 0
+    },
+    "HF-Accueil-Chargement.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "hf",
+      "title": "Accueil · réseau lent (chargement)",
+      "w": 390,
+      "x": 5170,
+      "y": 0
+    },
+    "HF-Accueil-HorsLigne.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "hf",
+      "title": "Accueil · hors connexion",
+      "w": 390,
+      "x": 4700,
+      "y": 0
+    },
+    "HF-Accueil-Premier.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "hf",
+      "title": "Accueil · premier lancement",
+      "w": 390,
+      "x": 4230,
+      "y": 0
+    },
+    "HF-Accueil.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "hf",
+      "title": "Accueil",
+      "w": 390,
+      "x": 470,
+      "y": 0
+    },
+    "HF-Alertes.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "hf",
+      "title": "Mes alertes · P1",
+      "w": 390,
+      "x": 1880,
+      "y": 1200
+    },
+    "HF-Assistant.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "hf",
+      "title": "Assistant · P2",
+      "w": 390,
+      "x": 4230,
+      "y": 2400
+    },
+    "HF-AucunResultat.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "hf",
+      "title": "Aucun résultat",
+      "w": 390,
+      "x": 1410,
+      "y": 0
+    },
+    "HF-Bienvenue.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "hf",
+      "title": "Bienvenue · choix de la zone",
+      "w": 390,
+      "x": 0,
+      "y": 0
+    },
+    "HF-Budget.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "hf",
+      "title": "Budget · P2",
+      "w": 390,
+      "x": 3290,
+      "y": 1200
+    },
+    "HF-Commande.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "hf",
+      "title": "Récapitulatif de commande · P1",
+      "w": 390,
+      "x": 940,
+      "y": 2400
+    },
+    "HF-CommandesRecues.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "hf",
+      "title": "Commandes reçues · P1",
+      "w": 390,
+      "x": 2820,
+      "y": 3600
+    },
+    "HF-Connexion.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "hf",
+      "title": "Connexion",
+      "w": 390,
+      "x": 0,
+      "y": 1200
+    },
+    "HF-CreerAlerte.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "hf",
+      "title": "Créer une alerte · P1",
+      "w": 390,
+      "x": 2350,
+      "y": 1200
+    },
+    "HF-Favoris.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "hf",
+      "title": "Favoris · P1",
+      "w": 390,
+      "x": 1410,
+      "y": 1200
+    },
+    "HF-Fiabilite.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "hf",
+      "title": "Fiabilité d'un prix",
+      "w": 390,
+      "x": 2350,
+      "y": 0
+    },
+    "HF-Fiche.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "hf",
+      "title": "Fiche produit et offres",
+      "w": 390,
+      "x": 1880,
+      "y": 0
+    },
+    "HF-Historique.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "hf",
+      "title": "Historique et tendance · P1",
+      "w": 390,
+      "x": 2820,
+      "y": 0
+    },
+    "HF-HorsLigne.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "hf",
+      "title": "Hors connexion · P1",
+      "w": 390,
+      "x": 3760,
+      "y": 0
+    },
+    "HF-Inscription.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "hf",
+      "title": "Inscription",
+      "w": 390,
+      "x": 470,
+      "y": 1200
+    },
+    "HF-Litige.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "hf",
+      "title": "Signaler un problème · P1",
+      "w": 390,
+      "x": 3290,
+      "y": 2400
+    },
+    "HF-MarchandProfil.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "hf",
+      "title": "Créer son commerce",
+      "w": 390,
+      "x": 0,
+      "y": 3600
+    },
+    "HF-MarchandStatut.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "hf",
+      "title": "Vérification du commerce",
+      "w": 390,
+      "x": 470,
+      "y": 3600
+    },
+    "HF-MesCommandes.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "hf",
+      "title": "Mes commandes · P1",
+      "w": 390,
+      "x": 2820,
+      "y": 2400
+    },
+    "HF-MesContributions.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "hf",
+      "title": "Mes relevés",
+      "w": 390,
+      "x": 470,
+      "y": 4800
+    },
+    "HF-MesPrix.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "hf",
+      "title": "Mes prix",
+      "w": 390,
+      "x": 1410,
+      "y": 3600
+    },
+    "HF-Notifications.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "hf",
+      "title": "Notifications · P1",
+      "w": 390,
+      "x": 2820,
+      "y": 1200
+    },
+    "HF-Optimisation.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "hf",
+      "title": "Optimiser le panier · P2",
+      "w": 390,
+      "x": 470,
+      "y": 2400
+    },
+    "HF-Paiement.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "hf",
+      "title": "Paiement mobile money · P1",
+      "w": 390,
+      "x": 1410,
+      "y": 2400
+    },
+    "HF-PaiementOk.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "hf",
+      "title": "Paiement confirmé · P1",
+      "w": 390,
+      "x": 1880,
+      "y": 2400
+    },
+    "HF-Panier.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "hf",
+      "title": "Ma liste · P1",
+      "w": 390,
+      "x": 0,
+      "y": 2400
+    },
+    "HF-PointsDeVente.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "hf",
+      "title": "Points de vente",
+      "w": 390,
+      "x": 940,
+      "y": 3600
+    },
+    "HF-Prevision.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "hf",
+      "title": "Prévision · P2",
+      "w": 390,
+      "x": 3290,
+      "y": 0
+    },
+    "HF-Profil.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "hf",
+      "title": "Profil",
+      "w": 390,
+      "x": 940,
+      "y": 1200
+    },
+    "HF-Publier.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "hf",
+      "title": "Publier un prix",
+      "w": 390,
+      "x": 1880,
+      "y": 3600
+    },
+    "HF-Releve.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "hf",
+      "title": "Relever un prix",
+      "w": 390,
+      "x": 0,
+      "y": 4800
+    },
+    "HF-Resultats.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "hf",
+      "title": "Résultats",
+      "w": 390,
+      "x": 940,
+      "y": 0
+    },
+    "HF-Statistiques.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "hf",
+      "title": "Statistiques · P1",
+      "w": 390,
+      "x": 3290,
+      "y": 3600
+    },
+    "HF-Stock.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "hf",
+      "title": "Stock",
+      "w": 390,
+      "x": 2350,
+      "y": 3600
+    },
+    "HF-Suivi.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "hf",
+      "title": "Suivi de commande · P1",
+      "w": 390,
+      "x": 2350,
+      "y": 2400
+    },
+    "HF-Support.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "hf",
+      "title": "Support · P1",
+      "w": 390,
+      "x": 3760,
+      "y": 2400
+    },
+    "Main.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "C1 · Accueil",
+      "w": 390,
+      "x": 0,
+      "y": 0
+    },
+    "MarchandProfil.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "M1 · Créer son profil marchand",
+      "w": 390,
+      "x": 0,
+      "y": 1800
+    },
+    "MarchandStatut.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "M2 · Statut de vérification",
+      "w": 390,
+      "x": 470,
+      "y": 1800
+    },
+    "MesPrix.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "M4 · Mes prix",
+      "w": 390,
+      "x": 1410,
+      "y": 1800
+    },
+    "PointsDeVente.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "M3 · Points de vente",
+      "w": 390,
+      "x": 940,
+      "y": 1800
+    },
+    "Profil.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "C7 · Profil",
+      "w": 390,
+      "x": 2820,
+      "y": 0
+    },
+    "Publier.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "M5 · Publier un prix",
+      "w": 390,
+      "x": 1880,
+      "y": 1800
+    },
+    "Releve.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "T1 · Relevé terrain (contributeur)",
+      "w": 390,
+      "x": 2820,
+      "y": 1800
+    },
+    "Resultats.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "C2 · Résultats",
+      "w": 390,
+      "x": 470,
+      "y": 0
+    }
+  },
+  "createdOnFiles": {
+    "at": "2026-11-05T12:55:00Z",
+    "v": 1
+  },
+  "designSystems": [
+    {
+      "artifact": "https://claude.ai/code/artifact/29b4b1bb-3ab0-43bf-be60-7f682fbe9ec7",
+      "copiedAt": "2026-11-11T13:15:00Z",
+      "namespace": "wf",
+      "title": "Comparo",
+      "version": "1794397616-9590"
+    }
+  ],
+  "launch": {
+    "page": "hf",
+    "view": "canvas"
+  },
+  "noteOrder": [
+    "t1",
+    "t2",
+    "c1",
+    "c2",
+    "c3",
+    "c4",
+    "c5",
+    "c6",
+    "c7",
+    "m1",
+    "m2",
+    "m3",
+    "m4",
+    "m5",
+    "m6",
+    "t3",
+    "hr0",
+    "hr1",
+    "hr2",
+    "hr3",
+    "hr4",
+    "hr5",
+    "hfn",
+    "acc"
+  ],
+  "notes": {
+    "acc": {
+      "fill": "green",
+      "page": "hf",
+      "text": "Accueil (point 5) : une seule surface forte, l'ardoise. Avec une liste, « Ma liste de la semaine » passe en premier (« que faire maintenant ») ; sans liste, l'ardoise d'abord puis l'invitation. « Vus récemment » remplacé par « Racheter la liste du 4 nov. ». États : premier lancement (choix de la zone, mode d'emploi), hors connexion (dates du cache, pas d'économie promise), réseau lent (squelettes).",
+      "w": 1330,
+      "x": 4230,
+      "y": 900
+    },
+    "c1": {
+      "fill": "gray",
+      "text": "① Zone en texte, sans distance (hypothèse à confirmer) → filtre location\n② GET /api/catalog/products/?search=\n③ GET /api/catalog/categories/tree/ (icon_url)\n④ Consultés récemment = stockage local, aucune API\n⑤ Alertes = P1 : onglet grisé",
+      "w": 390,
+      "x": 0,
+      "y": 900
+    },
+    "c2": {
+      "fill": "orange",
+      "text": "① Filtres : catégorie, marque, format (paramètres existants)\n② /products/ ne renvoie ni prix minimum ni nombre d'offres → À CRÉER côté API, sinon retirer la ligne\n③ Pagination 20 : chargement au défilement\n④ Ligne cliquable → C4",
+      "w": 390,
+      "x": 470,
+      "y": 900
+    },
+    "c3": {
+      "fill": "gray",
+      "text": "① PJ-001 : toujours proposer une issue\n② Suggestions = catégories proches (categories/) ; pas de correction orthographique dans l'API\n③ Lien vers l'arbre des catégories",
+      "w": 390,
+      "x": 940,
+      "y": 900
+    },
+    "c4": {
+      "fill": "orange",
+      "text": "① Meilleur prix = is_best_offer, classement serveur → À CRÉER\n② Offres triées par prix normalisé (serveur). Champs : amount, quantity + unit, merchant_name, location, observed_at\n③ Expirées et indisponibles en section à part, jamais « meilleur prix » → statut à créer\n④ Alternatives (substituts) → endpoint À CRÉER\n⑤ Historique : connexion requise (analytics/observations)",
+      "w": 390,
+      "x": 1410,
+      "y": 900
+    },
+    "c5": {
+      "fill": "orange",
+      "text": "① Fraîcheur 3 niveaux : very_recent + recent → Récent, old → Ancien, expire → Expiré\n② Confiance 3 niveaux (élevée, moyenne, faible) → mapping et seuils À CRÉER\n③ Phrase d'explication → À CRÉER\n④ source_label, observed_at, last_confirmed_at, verification_level\n⑤ Signalement consommateur : endpoint à confirmer",
+      "w": 390,
+      "x": 1880,
+      "y": 900
+    },
+    "c6": {
+      "fill": "gray",
+      "text": "① POST /api/auth/login/ et signup/ (email, mot de passe ×2, nom, téléphone, ville, pays = GA)\n② Mot de passe oublié : absent de l'API\n③ Comparaison et catalogue publics : pas de compte obligatoire\nEnvoyer l'e-mail en minuscules ; inscription limitée à 5 par heure",
+      "w": 390,
+      "x": 2350,
+      "y": 900
+    },
+    "c7": {
+      "fill": "gray",
+      "text": "① GET/PATCH /api/auth/me/\n② Appareils connectés : GET/DELETE /api/auth/sessions/\n③ Devenir marchand → M1\n④ Contribuer → T1 (rôle contributor à créer)\n⑤ POST /api/auth/logout/ avec le refresh",
+      "w": 390,
+      "x": 2820,
+      "y": 900
+    },
+    "hfn": {
+      "fill": "green",
+      "page": "hf",
+      "text": "Comparo — identité « Marché & étiquettes » (palette P07).\nSignature : la corde à prix (offres accrochées à une ficelle selon leur prix, la moins chère en citron). Accueil, Résultats, Fiche, Ma liste et Relever un prix suivent cette direction ; ils reprennent le prototype.\nVert = agir et rassurer · Citron = l'étiquette du meilleur prix, une par produit · Turquoise = graphiques.\nBricolage Grotesque pour titres et prix, Manrope pour l'interface.\nP1 / P2 dans le titre = hors MVP. Les dépendances API sont dans le document d'audit.",
+      "w": 620,
+      "x": -720,
+      "y": 0
+    },
+    "hr0": {
+      "kind": "title1",
+      "maxW": 5560,
+      "page": "hf",
+      "text": "Découvrir et comparer",
+      "w": 240,
+      "x": 0,
+      "y": -260
+    },
+    "hr1": {
+      "kind": "title1",
+      "maxW": 3680,
+      "page": "hf",
+      "text": "Compte, favoris et alertes",
+      "w": 240,
+      "x": 0,
+      "y": 940
+    },
+    "hr2": {
+      "kind": "title1",
+      "maxW": 4620,
+      "page": "hf",
+      "text": "Acheter et suivre",
+      "w": 240,
+      "x": 0,
+      "y": 2140
+    },
+    "hr3": {
+      "kind": "title1",
+      "maxW": 3680,
+      "page": "hf",
+      "text": "Marchand",
+      "w": 240,
+      "x": 0,
+      "y": 3340
+    },
+    "hr4": {
+      "kind": "title1",
+      "maxW": 860,
+      "page": "hf",
+      "text": "Contributeur",
+      "w": 240,
+      "x": 0,
+      "y": 4540
+    },
+    "hr5": {
+      "kind": "title1",
+      "maxW": 6720,
+      "page": "hf",
+      "text": "Back-office web (modération et administration)",
+      "w": 240,
+      "x": 0,
+      "y": 5740
+    },
+    "m1": {
+      "fill": "orange",
+      "text": "① POST /api/merchants/ : name obligatoire ; description, phone, email, website\n② Logo = URL seulement, pas d'upload\n③ Justificatifs : non supportés par l'API → À CRÉER\n④ Le rôle merchant n'est jamais attribué → À CORRIGER, sinon le marchand ne peut rien publier",
+      "w": 390,
+      "x": 0,
+      "y": 2700
+    },
+    "m2": {
+      "fill": "orange",
+      "text": "① L'API n'a que is_verified et status : pas d'étape « en examen » ni de refus motivé → À CRÉER\n② Vérification par un admin : POST /api/merchants/{id}/verify/\n③ Ce que le marchand peut faire en attendant (à décider)",
+      "w": 390,
+      "x": 470,
+      "y": 2700
+    },
+    "m3": {
+      "fill": "gray",
+      "text": "① GET /api/merchants/{id}/locations/ : name, city, zone, is_main, opening_hours\n② Ajout : name, street, city obligatoires ; zone_id, latitude, longitude\n③ set_main/ pour le point principal\nFaille : n'importe qui peut créer un point de vente chez un autre marchand",
+      "w": 390,
+      "x": 940,
+      "y": 2700
+    },
+    "m4": {
+      "fill": "orange",
+      "text": "① Statuts : draft, review, published, suspended, expired\n② POST …/confirm/ met à jour last_confirmed_at (fraîcheur)\n③ Un prix publié n'est jamais exposé à la comparaison (is_exposed) → À CORRIGER",
+      "w": 390,
+      "x": 1410,
+      "y": 2700
+    },
+    "m5": {
+      "fill": "orange",
+      "text": "① Produit du catalogue ou demande de création\n② amount, quantity, unit (FCFA = XAF)\n③ Type de prix : GET /api/pricing/types/\n④ available, limited, unavailable, unknown\n⑤ Promotion : promotion_label, valid_from, valid_to\n⑥ Statut draft → review ; un modérateur publie\nModifier écrase l'historique → À CORRIGER (PJ-017)",
+      "w": 390,
+      "x": 1880,
+      "y": 2700
+    },
+    "m6": {
+      "fill": "orange",
+      "text": "① Un point de vente à la fois (location_id)\n② PATCH /api/availability/{id}/ : 4 statuts\n③ POST …/confirm/ : « toujours vrai »\nLes mises à jour renvoient 500 (statut SUSPENDED inexistant) → À CORRIGER",
+      "w": 390,
+      "x": 2350,
+      "y": 2700
+    },
+    "t1": {
+      "kind": "title1",
+      "maxW": 3210,
+      "text": "Consommateur — MVP",
+      "w": 240,
+      "x": 0,
+      "y": -260
+    },
+    "t2": {
+      "kind": "title1",
+      "maxW": 3210,
+      "text": "Marchand et contributeur — MVP",
+      "w": 240,
+      "x": 0,
+      "y": 1540
+    },
+    "t3": {
+      "fill": "orange",
+      "text": "① photo_url : URL seulement, pas d'upload\n② product_id ou raw_product_name\n③ barcode\n④ observed_price et observed_at obligatoires ; location en texte\n⑤ Révision modérateur : accepted, rejected, duplicate\nUne contribution acceptée ne crée aucun prix → À CORRIGER",
+      "w": 390,
+      "x": 2820,
+      "y": 2700
+    }
+  },
+  "order": [
+    "Main.dc.html",
+    "Resultats.dc.html",
+    "AucunResultat.dc.html",
+    "Fiche.dc.html",
+    "Fiabilite.dc.html",
+    "Connexion.dc.html",
+    "Profil.dc.html",
+    "MarchandProfil.dc.html",
+    "MarchandStatut.dc.html",
+    "PointsDeVente.dc.html",
+    "MesPrix.dc.html",
+    "Publier.dc.html",
+    "Disponibilite.dc.html",
+    "Releve.dc.html",
+    "HF-Bienvenue.dc.html",
+    "HF-Accueil.dc.html",
+    "HF-Accueil-Premier.dc.html",
+    "HF-Accueil-HorsLigne.dc.html",
+    "HF-Accueil-Chargement.dc.html",
+    "HF-Resultats.dc.html",
+    "HF-AucunResultat.dc.html",
+    "HF-Fiche.dc.html",
+    "HF-Fiabilite.dc.html",
+    "HF-Historique.dc.html",
+    "HF-Prevision.dc.html",
+    "HF-HorsLigne.dc.html",
+    "HF-Connexion.dc.html",
+    "HF-Inscription.dc.html",
+    "HF-Profil.dc.html",
+    "HF-Favoris.dc.html",
+    "HF-Alertes.dc.html",
+    "HF-CreerAlerte.dc.html",
+    "HF-Notifications.dc.html",
+    "HF-Budget.dc.html",
+    "HF-Panier.dc.html",
+    "HF-Optimisation.dc.html",
+    "HF-Commande.dc.html",
+    "HF-Paiement.dc.html",
+    "HF-PaiementOk.dc.html",
+    "HF-Suivi.dc.html",
+    "HF-MesCommandes.dc.html",
+    "HF-Litige.dc.html",
+    "HF-Support.dc.html",
+    "HF-Assistant.dc.html",
+    "HF-MarchandProfil.dc.html",
+    "HF-MarchandStatut.dc.html",
+    "HF-PointsDeVente.dc.html",
+    "HF-MesPrix.dc.html",
+    "HF-Publier.dc.html",
+    "HF-Stock.dc.html",
+    "HF-CommandesRecues.dc.html",
+    "HF-Statistiques.dc.html",
+    "HF-Releve.dc.html",
+    "HF-MesContributions.dc.html",
+    "BO-Validation.dc.html",
+    "BO-Marchands.dc.html",
+    "BO-Catalogue.dc.html",
+    "BO-Anomalies.dc.html",
+    "BO-Litiges.dc.html"
+  ],
+  "pages": [
+    {
+      "id": "wf",
+      "name": "Wireframes"
+    },
+    {
+      "id": "hf",
+      "name": "Haute fidélité"
+    }
+  ],
+  "title": "Wireframes Comparateur de prix"
+}

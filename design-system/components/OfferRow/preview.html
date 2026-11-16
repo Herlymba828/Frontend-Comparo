@@ -1,0 +1,12 @@
+<!-- @dsCard group="Prix" height=420 -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>OfferRow — aperçu</title></head>
+<body>
+<div id="root"></div>
+<script>
+  var W = window.Wf, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(h('div',{className:'wf-stack'},h(W.OfferRow,{best:true,vendor:'Vendeur A',zone:'Libreville',distance:'1,2 km',date:'3 nov.',amount:4950,unitPrice:990,unit:'kg',freshness:'fresh',age:'2 j',trust:'high',availability:'in'}),h(W.OfferRow,{vendor:'Vendeur B',zone:'Owendo',distance:'6 km',date:'14 oct.',amount:5200,unitPrice:1040,unit:'kg',freshness:'old',age:'3 sem.',trust:'medium',availability:'low'}),h(W.OfferRow,{vendor:'Vendeur C',zone:'Libreville',distance:'2,8 km',date:'2 sept.',amount:4600,freshness:'expired',trust:'low',availability:'unknown'})));
+</script>
+</body>
+</html>

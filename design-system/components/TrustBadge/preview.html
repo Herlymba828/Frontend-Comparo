@@ -1,0 +1,12 @@
+<!-- @dsCard group="Confiance" height=56 -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>TrustBadge — aperçu</title></head>
+<body>
+<div id="root"></div>
+<script>
+  var W = window.Wf, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(h('div',{className:'wf-row'},h(W.TrustBadge,{level:'high',source:'Marchand'}),h(W.TrustBadge,{level:'medium',source:'Relevé terrain',onClick:function(){}}),h(W.TrustBadge,{level:'low'})));
+</script>
+</body>
+</html>

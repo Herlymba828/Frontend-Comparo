@@ -1,0 +1,23 @@
+name: comparo_ui
+description: Composants d'identité Comparo (corde à prix, ligne de preuve, étiquette, picto, ardoise…) générés depuis le design system.
+version: 0.1.0
+publish_to: none
+environment:
+  sdk: ">=3.5.0 <4.0.0"
+  flutter: ">=3.24.0"
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_svg: ^2.0.10
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+flutter:
+  fonts:
+    - family: Bricolage Grotesque
+      fonts:
+        - asset: fonts/BricolageGrotesque.ttf
+    - family: Manrope
+      fonts:
+        - asset: fonts/Manrope.ttf

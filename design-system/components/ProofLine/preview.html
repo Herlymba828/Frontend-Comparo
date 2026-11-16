@@ -1,0 +1,18 @@
+<!-- @dsCard group="Confiance" height=230 -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>ProofLine — aperçu</title></head>
+<body>
+<div id="root"></div>
+<script>
+  var W = window.Wf, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(h('div',{className:'wf-stack',style:{gap:14}},
+    h(W.ProofLine,{age:'il y a 2 j',source:'vendor',level:'high'}),
+    h(W.ProofLine,{age:'hier',source:'field',level:'medium'}),
+    h(W.ProofLine,{age:'il y a 9 j',level:'low'}),
+    h(W.ProofLine,{level:'low'}),
+    h(W.ProofLine,{age:'il y a 3 j',source:'vendor',level:'high',offline:true}),
+    h(W.ProofLine,{state:'loading'})));
+</script>
+</body>
+</html>

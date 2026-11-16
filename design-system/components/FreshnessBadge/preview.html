@@ -1,0 +1,12 @@
+<!-- @dsCard group="Confiance" height=56 -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>FreshnessBadge — aperçu</title></head>
+<body>
+<div id="root"></div>
+<script>
+  var W = window.Wf, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(h('div',{className:'wf-row'},h(W.FreshnessBadge,{level:'fresh',age:'2 j'}),h(W.FreshnessBadge,{level:'old',age:'3 sem.'}),h(W.FreshnessBadge,{level:'expired'}),h(W.FreshnessBadge,{level:'unknown'})));
+</script>
+</body>
+</html>

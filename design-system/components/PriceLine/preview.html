@@ -1,0 +1,21 @@
+<!-- @dsCard group="Prix" height=760 -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>PriceLine — aperçu</title></head>
+<body>
+<div id="root"></div>
+<script>
+  var W = window.Wf, h = React.createElement;
+  var offers = [{price:4950,vendor:'Épicerie du Rond-Point'},{price:5100,vendor:'Dépôt Owendo Gros'},{price:5350,vendor:'Supérette Bel-Air'},{price:5600,vendor:'Boutique Sainte-Anne'}];
+  var many = [4950,4950,4950,4950,5000,5100,5200,5600,5800,6000].map(function(p,i){return {price:p,vendor:'Vendeur '+String.fromCharCode(65+i)+' du quartier'};});
+  var long = [{price:118500,vendor:'Dépôt Owendo Gros'},{price:125000,vendor:'Grossiste du Port-Môle'},{price:131250,vendor:'Supérette Bel-Air'}];
+  function lab(t){ return h('span',{className:'label wf-muted'},t); }
+  ReactDOM.createRoot(document.getElementById('root')).render(h('div',{className:'wf-stack',style:{gap:14}},
+    lab('size="lg" · fiche produit'), h(W.PriceLine,{offers:offers,size:'lg',onSelect:function(){}}),
+    lab('size="sm" · résultat de recherche'), h(W.PriceLine,{offers:offers}),
+    lab('Chargement (state="loading")'), h(W.PriceLine,{offers:[],size:'lg',state:'loading'}),
+    lab('Limite : 10 offres dont 4 au même prix → 8 affichées'), h(W.PriceLine,{offers:many,size:'lg'}),
+    lab('Limite : prix longs (sac de 50 kg)'), h(W.PriceLine,{offers:long,size:'lg'})));
+</script>
+</body>
+</html>

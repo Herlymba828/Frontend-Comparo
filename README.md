@@ -1,7 +1,9 @@
 # Comparateur Prix — frontend Flutter
 
-Application Flutter du parcours consommateur. Le projet Flutter se trouve dans
-ce dossier (`comparateur-prix/frontend/` dans le dépôt principal).
+Application Flutter du parcours consommateur et des espaces marchand, livreur
+et modération. Le projet Flutter se trouve dans ce dossier
+(`comparateur-prix/comparo_frontend-v2.4/`) ; son habillage vient du design
+system Comparo v2.4 (voir « Référence visuelle »).
 
 Le nom affiché est « Comparateur Prix » sur les plateformes mobiles et Web.
 L'identifiant Android défini pour le produit est
@@ -16,7 +18,7 @@ Depuis ce dossier :
 flutter pub get
 flutter analyze
 flutter test
-flutter run -d chrome
+flutter run -d chrome --web-port 7357
 ```
 
 Le frontend lit le catalogue via `GET /api/catalog/products/`, utilise
@@ -26,6 +28,11 @@ l’authentification par jetons JWT (`/api/auth/signup/`, `/api/auth/login/` et
 
 - Chrome, Windows et iOS simulateur : `http://127.0.0.1:8010`
 - Émulateur Android : `http://10.0.2.2:8010`
+
+L'API de développement (`backend/compose.dev.yaml`) n'autorise, pour le Web,
+que les origines `http://127.0.0.1:7357` à `7359` (et `localhost`) : lancez
+donc `flutter run` avec `--web-port 7357`. Une page servie sur un autre port
+est bloquée par le navigateur (CORS).
 
 Une URL différente peut être fournie au lancement :
 
@@ -42,19 +49,41 @@ flutter build appbundle --release --dart-define=API_BASE_URL=https://api.example
 ```
 
 Les montants sont formatés selon `fr-FR` et gardent la devise renvoyée par
-l’API (par exemple `1 250 XAF`). Si la devise manque, l’application l’indique
-sans la remplacer par une autre devise.
+l’API. Le franc CFA s’écrit « FCFA » et perd ses décimales nulles
+(`1650.00` XAF devient `1 650 FCFA`) ; un montant qui a de vraies décimales
+n’est jamais arrondi. Si la devise manque, l’application l’indique sans la
+remplacer par une autre devise.
 
 ## Référence visuelle
 
-Le thème Flutter suit la direction artistique « Marché & étiquettes » de la
-maquette Figma v2 : fond papier chaud, encre vert profond, kraft, terracotta et
-lime, prix sur étiquettes kraft perforées, badges en tampon et motif wax
-(`lib/core/widgets/market_widgets.dart`) en l’absence d’image produit. Les
-polices (Bricolage Grotesque, Big Shoulders Display, Caveat, Inter) sont
-embarquées dans `assets/fonts/` sous licence SIL OFL.
+L'habillage suit le design system **Comparo v2.4** (identité « Marché &
+étiquettes », palette « Fraîcheur quotidienne ») :
 
-Écrans (barre du bas : Accueil, Recherche, Panier, Compte) :
+- `flutter/comparo_ui/` est le paquet de composants (corde à prix, ligne de
+  preuve, étiquette citron, ardoise « Prix du jour », carte « Ma liste de la
+  semaine », barre d'onglets, thème). L'app l'utilise comme dépendance
+  (`comparo_ui: path: flutter/comparo_ui`).
+- Ses polices (Bricolage Grotesque, Manrope, SIL OFL) sont enregistrées sous le
+  nom `packages/comparo_ui/…` : ne jamais écrire `'Manrope'` seul dans un style,
+  il retomberait sur la police du système. Passer par `AppFonts` ou `ComparoText`.
+- Les couleurs de l'app (`AppColors`) sont des alias de la palette du design
+  system : rien n'y est écrit en dur. Le thème (`AppTheme.light`) part de
+  `ComparoTheme.light()`.
+- Les jetons viennent de `design-system/tokens.json`, produit par
+  `tools/tokens.py` ; ne pas modifier `tokens.dart` à la main. Sous Windows,
+  lancer les scripts avec `PYTHONUTF8=1` (sinon ils échouent sur les accents
+  et peuvent laisser un fichier tronqué).
+- Cibles tactiles de 48 px au moins (règle Android).
+- Les polices étant variables, un style qui fixe `fontVariations` ne suit plus
+  `copyWith(fontWeight: …)` : utiliser `AppTextStyles.weighted`.
+- Le prix est un simple chiffre ; l'étiquette citron est réservée au meilleur
+  prix (`PriceTag(best: true)`, `BestPriceSeal`), une seule par produit.
+
+Les tests du paquet : `cd flutter/comparo_ui && flutter test` (les captures de
+référence tolèrent 4 % de pixels différents : le lissage des lettres change
+d'un système à l'autre ; régénérer avec `--update-goldens`).
+
+Écrans (barre du bas : Accueil, Recherche, Ma liste, Profil) :
 
 - **Client** : accueil, recherche, fiche produit et comparaison (ajout d’une
   offre au panier), panier (`/cart`), commande en livraison ou retrait

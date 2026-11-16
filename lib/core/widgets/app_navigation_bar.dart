@@ -1,7 +1,10 @@
+import 'package:comparo_ui/comparo_ui.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../theme/app_theme.dart';
+import '../../features/commerce/commerce_repository.dart';
+import '../../features/identity/data/auth_providers.dart';
 
 /// From this width (Material's "expanded" size) the navigation moves to a
 /// side rail: a bottom bar stretched over a desktop screen spreads its
@@ -30,11 +33,15 @@ class AdaptiveNavigation extends StatelessWidget {
     required this.child,
     this.appBar,
     this.showNavigation = true,
+    this.badges = const {},
   });
 
   final List<NavItem> items;
   final int selectedIndex;
   final Widget child;
+
+  /// Compteur par position d'onglet (articles de « Ma liste »).
+  final Map<int, int> badges;
   final PreferredSizeWidget? appBar;
 
   /// False while the space is not set up yet (a merchant without shop).
@@ -62,9 +69,13 @@ class AdaptiveNavigation extends StatelessWidget {
               onDestinationSelected: (index) => _go(context, index),
               labelType: NavigationRailLabelType.all,
               destinations: [
-                for (final item in items)
+                for (final (index, item) in items.indexed)
                   NavigationRailDestination(
-                    icon: Icon(item.icon),
+                    icon: Badge(
+                      isLabelVisible: (badges[index] ?? 0) > 0,
+                      label: Text('${badges[index]}'),
+                      child: Icon(item.icon),
+                    ),
                     selectedIcon: item.selectedIcon == null
                         ? null
                         : Icon(item.selectedIcon),
@@ -72,11 +83,7 @@ class AdaptiveNavigation extends StatelessWidget {
                   ),
               ],
             ),
-            const VerticalDivider(
-              width: 1.5,
-              thickness: 1.5,
-              color: AppColors.ink,
-            ),
+            const VerticalDivider(width: 1),
             Expanded(child: child),
           ],
         ),
@@ -85,24 +92,17 @@ class AdaptiveNavigation extends StatelessWidget {
     return Scaffold(
       appBar: appBar,
       body: child,
-      bottomNavigationBar: DecoratedBox(
-        decoration: const BoxDecoration(
-          border: Border(top: BorderSide(color: AppColors.ink, width: 1.5)),
-        ),
-        child: NavigationBar(
-          selectedIndex: selectedIndex,
-          onDestinationSelected: (index) => _go(context, index),
-          destinations: [
-            for (final item in items)
-              NavigationDestination(
-                icon: Icon(item.icon),
-                selectedIcon: item.selectedIcon == null
-                    ? null
-                    : Icon(item.selectedIcon),
-                label: item.label,
-              ),
-          ],
-        ),
+      bottomNavigationBar: ComparoNavigationBar(
+        currentIndex: selectedIndex,
+        onTap: (index) => _go(context, index),
+        items: [
+          for (final (index, item) in items.indexed)
+            ComparoNavItem(
+              icon: item.icon,
+              label: item.label,
+              badge: (badges[index] ?? 0) > 0 ? badges[index] : null,
+            ),
+        ],
       ),
     );
   }
@@ -126,32 +126,41 @@ int navIndexFor(List<NavItem> items, String location) {
 
 const customerTabs = [
   NavItem('Accueil', Icons.home_outlined, '/', selectedIcon: Icons.home),
-  NavItem('Recherche', Icons.search, '/search'),
+  NavItem('Recherche', Icons.search_rounded, '/search'),
   NavItem(
-    'Panier',
-    Icons.shopping_basket_outlined,
+    'Ma liste',
+    Icons.checklist_rounded,
     '/cart',
-    selectedIcon: Icons.shopping_basket,
+    selectedIcon: Icons.checklist_rounded,
   ),
   NavItem(
-    'Compte',
-    Icons.person_outline,
+    'Profil',
+    Icons.person_outline_rounded,
     '/account',
-    selectedIcon: Icons.person,
+    selectedIcon: Icons.person_rounded,
   ),
 ];
 
+/// Position de « Ma liste » dans [customerTabs].
+const _listTabIndex = 2;
+
 /// The customer space's four tabs; the screens bring their own app bar.
-class CustomerShell extends StatelessWidget {
+class CustomerShell extends ConsumerWidget {
   const CustomerShell({super.key, required this.location, required this.child});
 
   final String location;
   final Widget child;
 
   @override
-  Widget build(BuildContext context) => AdaptiveNavigation(
-    items: customerTabs,
-    selectedIndex: navIndexFor(customerTabs, location),
-    child: child,
-  );
+  Widget build(BuildContext context, WidgetRef ref) {
+    // The list count is only asked for a signed-in user: a visitor has no cart.
+    final signedIn = ref.watch(authSessionProvider).value != null;
+    final count = signedIn ? ref.watch(cartProvider).value?.itemCount : null;
+    return AdaptiveNavigation(
+      items: customerTabs,
+      selectedIndex: navIndexFor(customerTabs, location),
+      badges: {_listTabIndex: ?count},
+      child: child,
+    );
+  }
 }

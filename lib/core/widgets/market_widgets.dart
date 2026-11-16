@@ -1,10 +1,9 @@
-import 'dart:math' as math;
-
+import 'package:comparo_ui/comparo_ui.dart' as comparo;
 import 'package:flutter/material.dart';
 
 import '../theme/app_theme.dart';
 
-/// Surface papier à bord encré et ombre imprimée (cartes produit, offres).
+/// Carte à plat : fond papier et filet léger, sans ombre (design Comparo v2.4).
 class MarketSurface extends StatelessWidget {
   const MarketSurface({
     super.key,
@@ -12,45 +11,36 @@ class MarketSurface extends StatelessWidget {
     this.onTap,
     this.padding = EdgeInsets.zero,
     this.muted = false,
-    this.radius = 14,
+    this.radius = comparo.ComparoDims.radiusCard,
   });
 
   final Widget child;
   final VoidCallback? onTap;
   final EdgeInsetsGeometry padding;
 
-  /// Offre non comparable ou donnée secondaire : bord clair, sans ombre.
+  /// Offre non comparable ou donnée secondaire : fond grisé.
   final bool muted;
   final double radius;
 
   @override
   Widget build(BuildContext context) {
-    final shape = RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(radius),
-      side: BorderSide(
-        color: muted ? AppColors.border : AppColors.ink,
-        width: 1.2,
-      ),
-    );
-    return DecoratedBox(
-      decoration: BoxDecoration(
+    return Material(
+      color: muted ? AppColors.disabled : AppColors.surface,
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(radius),
-        boxShadow: muted ? null : inkShadow(),
+        side: const BorderSide(color: AppColors.border),
       ),
-      child: Material(
-        color: AppColors.surface,
-        shape: shape,
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: onTap,
-          child: Padding(padding: padding, child: child),
-        ),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(padding: padding, child: child),
       ),
     );
   }
 }
 
-/// Étiquette de prix en kraft, perforée et légèrement de travers.
+/// Un prix. Simple chiffre par défaut ; avec [best], l'étiquette citron du
+/// design, réservée au meilleur prix d'un produit.
 class PriceTag extends StatelessWidget {
   const PriceTag({
     super.key,
@@ -58,7 +48,7 @@ class PriceTag extends StatelessWidget {
     this.style = AppTextStyles.priceSecondary,
     this.caption,
     this.muted = false,
-    this.angle = -2,
+    this.best = false,
   });
 
   final String label;
@@ -67,130 +57,86 @@ class PriceTag extends StatelessWidget {
   /// Ligne secondaire sous le prix (ex. prix au kilo).
   final String? caption;
 
-  /// Prix inconnu ou offre non comparable : papier pointillé, texte gris.
+  /// Prix inconnu ou offre non comparable : texte gris, jamais en étiquette.
   final bool muted;
 
-  /// Inclinaison en degrés.
-  final double angle;
+  /// Le meilleur prix du produit : étiquette citron.
+  final bool best;
 
   @override
   Widget build(BuildContext context) {
-    final holeSize = style.fontSize! >= 24 ? 9.0 : 7.0;
-    return Transform.rotate(
-      angle: angle * math.pi / 180,
-      child: Container(
-        padding: EdgeInsets.fromLTRB(8, 5, 12, caption == null ? 4 : 6),
-        decoration: BoxDecoration(
-          color: muted ? AppColors.disabled : AppColors.kraft,
-          border: Border.all(
-            color: muted ? AppColors.border : AppColors.kraftEdge,
-          ),
-          borderRadius: const BorderRadius.horizontal(
-            left: Radius.circular(12),
-            right: Radius.circular(4),
-          ),
-          boxShadow: muted
-              ? null
-              : inkShadow(
-                  offset: 2,
-                  color: AppColors.kraftEdge.withValues(alpha: 0.6),
-                ),
+    final price = best && !muted
+        ? comparo.PriceTag.text(label, kind: comparo.PriceTagKind.best)
+        : Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: muted
+                ? style.copyWith(color: AppColors.textSecondary)
+                : style,
+          );
+    if (caption == null) {
+      return price;
+    }
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        price,
+        const SizedBox(height: 3),
+        Text(
+          caption!,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.labelMedium,
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: holeSize,
-              height: holeSize,
-              decoration: BoxDecoration(
-                color: AppColors.surface,
-                shape: BoxShape.circle,
-                border: Border.all(color: AppColors.ink),
-              ),
-            ),
-            const SizedBox(width: 7),
-            Flexible(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    label,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: muted
-                        ? style.copyWith(color: AppColors.textSecondary)
-                        : style,
-                  ),
-                  if (caption != null) ...[
-                    const SizedBox(height: 3),
-                    Text(
-                      caption!,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: AppColors.textSecondary,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
+      ],
     );
   }
 }
 
-/// Badge façon tampon encreur.
+/// Badge d'état : contour et fond de la couleur, sans inclinaison.
 class StampBadge extends StatelessWidget {
   const StampBadge({
     super.key,
     required this.label,
     this.color = AppColors.primary,
     this.icon,
-    this.angle = 0,
   });
 
   final String label;
   final Color color;
   final IconData? icon;
-  final double angle;
 
   @override
   Widget build(BuildContext context) {
-    return Transform.rotate(
-      angle: angle * math.pi / 180,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-        decoration: BoxDecoration(
-          border: Border.all(color: color, width: 1.5),
-          borderRadius: BorderRadius.circular(4),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (icon != null) ...[
-              Icon(icon, size: 12, color: color),
-              const SizedBox(width: 4),
-            ],
-            Flexible(
-              child: Text(
-                label,
-                style: AppTextStyles.stamp.copyWith(color: color),
-              ),
-            ),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        border: Border.all(color: color),
+        borderRadius: BorderRadius.circular(comparo.ComparoDims.radiusSm),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null) ...[
+            Icon(icon, size: 12, color: color),
+            const SizedBox(width: 4),
           ],
-        ),
+          Flexible(
+            child: Text(
+              label,
+              style: AppTextStyles.stamp.copyWith(color: color),
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
-/// Tampon rond « Meilleur prix » posé sur la meilleure offre vérifiée.
+/// « Meilleur prix vérifié » : l'étiquette citron posée sur la meilleure offre.
 class BestPriceSeal extends StatelessWidget {
   const BestPriceSeal({super.key});
 
@@ -199,175 +145,57 @@ class BestPriceSeal extends StatelessWidget {
     return Semantics(
       label: 'Meilleur prix vérifié',
       excludeSemantics: true,
-      child: Transform.rotate(
-        angle: -12 * math.pi / 180,
-        child: Container(
-          width: 62,
-          height: 62,
-          decoration: BoxDecoration(
-            color: AppColors.terracotta,
-            shape: BoxShape.circle,
-            border: Border.all(color: AppColors.surface, width: 2),
-            boxShadow: inkShadow(),
-          ),
-          padding: const EdgeInsets.all(8),
-          // Le texte s'ajuste au disque, même avec un grand facteur de texte.
-          child: const FittedBox(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'MEILLEUR',
-                  style: TextStyle(
-                    fontFamily: AppFonts.display,
-                    color: AppColors.surface,
-                    fontSize: 8,
-                    letterSpacing: 0.6,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                Text(
-                  'PRIX',
-                  style: TextStyle(
-                    fontFamily: AppFonts.display,
-                    color: AppColors.surface,
-                    fontSize: 18,
-                    height: 1,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                Text(
-                  'vérifié',
-                  style: TextStyle(
-                    fontFamily: AppFonts.hand,
-                    color: AppColors.accent,
-                    fontSize: 13,
-                    height: 1,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
+      child: const comparo.PriceTag.text(
+        'Meilleur prix vérifié',
+        kind: comparo.PriceTagKind.best,
       ),
     );
   }
 }
 
-/// Motif wax de marque (vert, lime, terracotta, kraft), répété à l'horizontale.
-class WaxPattern extends StatelessWidget {
-  const WaxPattern({super.key, this.unitSize});
-
-  /// Côté d'un motif ; par défaut la hauteur disponible.
-  final double? unitSize;
-
-  @override
-  Widget build(BuildContext context) {
-    return ExcludeSemantics(
-      child: CustomPaint(painter: _WaxPainter(unitSize), size: Size.infinite),
-    );
-  }
-}
-
-class _WaxPainter extends CustomPainter {
-  _WaxPainter(this.unitSize);
-
-  final double? unitSize;
-
-  static const _palettes = [
-    // fond, anneau, cœur, point, coins
-    [
-      AppColors.primary,
-      AppColors.accent,
-      AppColors.terracotta,
-      AppColors.kraft,
-      AppColors.ink,
-    ],
-    [
-      AppColors.ink,
-      AppColors.terracotta,
-      AppColors.accent,
-      AppColors.primary,
-      AppColors.kraft,
-    ],
-    [
-      AppColors.primary,
-      AppColors.kraft,
-      AppColors.ink,
-      AppColors.accent,
-      AppColors.terracotta,
-    ],
-  ];
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final s = unitSize ?? math.max(size.height, 1.0);
-    final k = s / 120;
-    final rows = (size.height / s).ceil();
-    final columns = (size.width / s).ceil();
-    for (var row = 0; row < rows; row++) {
-      for (var column = 0; column < columns; column++) {
-        final palette = _palettes[(column + row) % _palettes.length];
-        final origin = Offset(column * s, row * s);
-        final rect = origin & Size(s, s);
-        canvas.save();
-        canvas.clipRect(rect);
-        canvas.drawRect(rect, Paint()..color = palette[0]);
-        final center = rect.center;
-        canvas.drawCircle(
-          center,
-          38 * k,
-          Paint()
-            ..color = palette[1]
-            ..style = PaintingStyle.stroke
-            ..strokeWidth = 10 * k,
-        );
-        canvas.drawCircle(center, 20 * k, Paint()..color = palette[2]);
-        canvas.drawCircle(center, 7 * k, Paint()..color = palette[3]);
-        final corner = Paint()..color = palette[4];
-        final faded = Paint()..color = palette[1].withValues(alpha: 0.55);
-        canvas.drawCircle(rect.topLeft, 26 * k, corner);
-        canvas.drawCircle(rect.bottomRight, 26 * k, corner);
-        canvas.drawCircle(rect.topRight, 26 * k, faded);
-        canvas.drawCircle(rect.bottomLeft, 26 * k, faded);
-        final dot = Paint()..color = palette[3];
-        for (final anchor in [
-          Offset(center.dx, origin.dy + 11 * k),
-          Offset(center.dx, origin.dy + 109 * k),
-          Offset(origin.dx + 11 * k, center.dy),
-          Offset(origin.dx + 109 * k, center.dy),
-        ]) {
-          canvas.drawPath(
-            Path()
-              ..moveTo(anchor.dx, anchor.dy - 7 * k)
-              ..lineTo(anchor.dx + 5 * k, anchor.dy)
-              ..lineTo(anchor.dx, anchor.dy + 7 * k)
-              ..lineTo(anchor.dx - 5 * k, anchor.dy)
-              ..close(),
-            dot,
-          );
-        }
-        canvas.restore();
-      }
+/// Le picto du design pour un produit, d'après son nom ; « conserve » à défaut.
+comparo.PictoKind pictoKindFor(String? name) {
+  final text = (name ?? '').toLowerCase();
+  const keywords = {
+    'riz': comparo.PictoKind.riz,
+    'huile': comparo.PictoKind.huile,
+    'sucre': comparo.PictoKind.sucre,
+    'lait': comparo.PictoKind.lait,
+    'sardine': comparo.PictoKind.sardine,
+    'eau': comparo.PictoKind.eau,
+    'savon': comparo.PictoKind.savon,
+  };
+  for (final entry in keywords.entries) {
+    if (RegExp('\\b${entry.key}').hasMatch(text)) {
+      return entry.value;
     }
   }
-
-  @override
-  bool shouldRepaint(covariant _WaxPainter oldDelegate) =>
-      oldDelegate.unitSize != unitSize;
+  return comparo.PictoKind.conserve;
 }
 
-/// Image produit : photo de l'API si elle existe, sinon le motif wax.
+/// Image produit : photo de l'API si elle existe, sinon le picto du produit.
 class ProductArtwork extends StatelessWidget {
-  const ProductArtwork({super.key, this.url, this.unitSize});
+  const ProductArtwork({super.key, this.url, this.name, this.unitSize});
 
   final String? url;
+
+  /// Nom du produit, pour choisir le picto quand il n'y a pas de photo.
+  final String? name;
   final double? unitSize;
 
   @override
   Widget build(BuildContext context) {
-    final fallback = WaxPattern(unitSize: unitSize);
+    final fallback = ColoredBox(
+      color: AppColors.disabled,
+      child: Center(
+        child: ExcludeSemantics(
+          child: comparo.ProductPicto(
+            kind: pictoKindFor(name),
+            large: (unitSize ?? 0) >= 84,
+          ),
+        ),
+      ),
+    );
     final uri = Uri.tryParse(url?.trim() ?? '');
     // Les URL d'images sont fournies par les marchands : HTTPS uniquement.
     if (uri == null || uri.scheme != 'https' || uri.host.isEmpty) {

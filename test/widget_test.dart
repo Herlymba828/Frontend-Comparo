@@ -6,6 +6,7 @@
 // tree, read text, and verify that the values of widget properties are correct.
 
 import 'package:dio/dio.dart';
+import 'package:comparo_ui/comparo_ui.dart' show formatXaf;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -45,8 +46,15 @@ void main() {
       ),
     );
 
-    expect(find.text('Comparateur Prix'), findsOneWidget);
+    expect(find.text('Comparo'), findsOneWidget);
+    expect(find.text('Au marché aujourd’hui'), findsOneWidget);
     expect(find.text('Prix du jour'), findsOneWidget);
+    // The categories sit below the slate: the list builds them when scrolled to.
+    await tester.scrollUntilVisible(
+      find.text('Explorer par catégorie'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
     expect(find.text('Explorer par catégorie'), findsOneWidget);
   });
 
@@ -66,16 +74,40 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.drag(find.byType(ListView).first, const Offset(0, -500));
-    await tester.pumpAndSettle();
-
+    // The slate of the design lists the product with its best price, in FCFA
+    // and without decimals (the design's formatter).
     expect(find.text('Produit fictif du catalogue'), findsOneWidget);
-    expect(find.text('1\u202f234,50 XAF'), findsOneWidget);
+    expect(find.text(formatXaf(1235)), findsOneWidget);
+    expect(find.textContaining('En FCFA'), findsOneWidget);
     expect(
       repository.requestedSearches.any(
-        (request) => request.ordering == '-created_at' && request.pageSize == 4,
+        (request) => request.ordering == '-created_at' && request.pageSize == 5,
       ),
       isTrue,
+    );
+  });
+
+  testWidgets('the slate never shows a rounded price', (tester) async {
+    // 1234.50 would read "1 235" on the slate and "1 234,50" on the product
+    // page: the slate leaves such a price out instead of altering it.
+    final repository = _HomeFixtureCatalogRepository(price: '1234.50');
+    AppRouter.router.go('/');
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          noPriceEvolution,
+          catalogRepositoryProvider.overrideWithValue(repository),
+        ],
+        child: const ComparateurPrixApp(),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Produit fictif du catalogue'), findsNothing);
+    expect(find.text(formatXaf(1235)), findsNothing);
+    expect(
+      find.text('Pas encore de prix du jour dans votre zone.'),
+      findsOneWidget,
     );
   });
 
@@ -142,7 +174,12 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.ensureVisible(find.text('Épicerie fictive'));
+    // The categories sit below the slate: the list builds them when scrolled to.
+    await tester.scrollUntilVisible(
+      find.text('Épicerie fictive'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
     await tester.tap(find.text('Épicerie fictive'));
     await tester.pumpAndSettle();
 
@@ -177,7 +214,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Riz parfumé'), findsOneWidget);
-    expect(find.text('1\u202f250,00 XAF'), findsOneWidget);
+    expect(find.text('1\u00a0250 FCFA'), findsOneWidget);
     await tester.tap(find.text('Riz parfumé'));
     await tester.pumpAndSettle();
     expect(find.text('Fiche produit'), findsOneWidget);
@@ -206,7 +243,7 @@ void main() {
     expect(find.text('Riz parfumé'), findsOneWidget);
     expect(find.text('Comparaison d’offres'), findsOneWidget);
     expect(find.text('Supermarché local'), findsOneWidget);
-    expect(find.text('1\u202f250,00 XAF'), findsAtLeastNWidgets(1));
+    expect(find.text('1\u00a0250 FCFA'), findsAtLeastNWidgets(1));
     expect(find.textContaining('Source : Supermarché local'), findsOneWidget);
     expect(find.textContaining('Fraîcheur : Récente'), findsOneWidget);
     expect(find.textContaining('Vérification du prix : Vérifié'), findsNothing);
@@ -281,7 +318,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('1\u202f250,00 — devise non renseignée'), findsOneWidget);
+    expect(find.text('1\u00a0250,00 — devise non renseignée'), findsOneWidget);
     expect(find.textContaining('€'), findsNothing);
   });
 
@@ -410,6 +447,10 @@ void main() {
 }
 
 class _HomeFixtureCatalogRepository extends _FakeCatalogRepository {
+  _HomeFixtureCatalogRepository({this.price = '1235.00'});
+
+  /// Best price of the single product of the catalogue.
+  final String price;
   final requestedSearches = <CatalogSearchRequest>[];
 
   @override
@@ -432,7 +473,7 @@ class _HomeFixtureCatalogRepository extends _FakeCatalogRepository {
     return RepositoryResult(
       value: CatalogProductPage(
         count: 1,
-        results: const [
+        results: [
           CatalogProduct(
             id: 901,
             name: 'Produit fictif du catalogue',
@@ -440,7 +481,7 @@ class _HomeFixtureCatalogRepository extends _FakeCatalogRepository {
             availability: 'available',
             isActive: true,
             isVerified: false,
-            priceSnapshot: '1234.50',
+            priceSnapshot: price,
             priceSnapshotCurrency: 'XAF',
           ),
         ],

@@ -78,6 +78,12 @@ class _AccountMenu extends ConsumerWidget {
                   child: const Icon(Icons.chevron_right),
                 ),
         ),
+        entry(
+          Icons.favorite_border,
+          'Mes favoris',
+          '/account/favorites',
+          subtitle: 'Les produits et les commerces que je suis',
+        ),
         entry(Icons.trending_down, 'Mes alertes de prix', '/alerts'),
         entry(
           Icons.savings_outlined,

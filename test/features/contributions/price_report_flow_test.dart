@@ -227,7 +227,7 @@ void main() {
     expect(find.textContaining('à 120 m de vous'), findsOneWidget);
 
     await _fillRice(tester, '1 500');
-    expect(find.text('Prix habituel : environ 1 025 XAF / kg.'), findsOne);
+    expect(find.text('Prix habituel : environ 1 025 FCFA / kg.'), findsOne);
     await _save(tester);
 
     final draft = reports.drafts.single;

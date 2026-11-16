@@ -30,7 +30,7 @@ class PriceInput {
 }
 
 // Spaces a user or a keyboard may put between thousands.
-final _spaces = RegExp('[\\s  ]');
+final _spaces = RegExp('[\\s  ]');
 // "1500", or thousands grouped by spaces or dots: "1 500", "1.500.000".
 final _wholeAmount = RegExp(r'^(\d+|\d{1,3}([ .]\d{3})+)$');
 final _decimalAmount = RegExp(r'^\d+([.,]\d{1,2})?$');

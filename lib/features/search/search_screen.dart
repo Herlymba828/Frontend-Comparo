@@ -1,3 +1,4 @@
+import 'package:comparo_ui/comparo_ui.dart' show PriceLine;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -12,7 +13,7 @@ import '../../core/widgets/cache_status_banner.dart';
 import '../../core/widgets/market_widgets.dart';
 import '../catalog/data/catalog_providers.dart';
 import '../catalog/models/catalog_product.dart';
-import '../comparison/price_rope.dart';
+import '../comparison/comparo_adapters.dart';
 import '../catalog/models/catalog_product_page.dart';
 import '../catalog/models/catalog_search_request.dart';
 import '../stores/stores_screen.dart';
@@ -526,13 +527,17 @@ class _ProductTile extends StatelessWidget {
                   const SizedBox(height: AppSpacing.space8),
                   Row(
                     children: [
-                      Flexible(
-                        child: PriceTag(
-                          label: formatPrice(price, currency),
-                          muted: !hasPrice,
+                      // The price takes all the room the button leaves (a Flexible
+                      // next to a Spacer would split the row in two and cut it).
+                      Expanded(
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: PriceTag(
+                            label: formatPrice(price, currency),
+                            muted: !hasPrice,
+                          ),
                         ),
                       ),
-                      const Spacer(),
                       NearbyStoresButton(
                         productId: product.id,
                         productName: product.name,
@@ -542,10 +547,7 @@ class _ProductTile extends StatelessWidget {
                   ),
                   if (product.currentPrices.length >= 2) ...[
                     const SizedBox(height: AppSpacing.space8),
-                    PriceRope(
-                      prices: product.currentPrices,
-                      offerCount: product.offerCount,
-                    ),
+                    PriceLine(offers: priceLineOffers(product.currentPrices)),
                   ],
                   const SizedBox(height: AppSpacing.space8),
                   Text(

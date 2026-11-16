@@ -427,7 +427,7 @@ class _PriceReportFormState extends ConsumerState<PriceReportForm> {
           keyboardType: TextInputType.number,
           textInputAction: TextInputAction.done,
           inputFormatters: [
-            FilteringTextInputFormatter.allow(RegExp('[0-9 .,  ]')),
+            FilteringTextInputFormatter.allow(RegExp('[0-9 .,  ]')),
           ],
           decoration: const InputDecoration(
             labelText: 'Prix affiché',

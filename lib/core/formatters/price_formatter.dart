@@ -1,3 +1,12 @@
+/// Le franc CFA s'écrit « FCFA » (design Comparo v2.4) ; les autres devises
+/// gardent leur code.
+String currencyLabel(String code) =>
+    code.toUpperCase() == 'XAF' ? 'FCFA' : code;
+
+/// Montant lisible : « 4 950 FCFA ». Le montant n'est jamais arrondi : pour le
+/// franc CFA, qui n'a pas de subdivision, seules des décimales qui valent zéro
+/// (« 4950.00 ») disparaissent. Les autres devises, et une devise inconnue,
+/// gardent leurs centimes.
 String formatPrice(String? amount, String? currency) {
   if (amount == null || amount.trim().isEmpty) {
     return 'Prix non renseigné';
@@ -10,11 +19,19 @@ String formatPrice(String? amount, String? currency) {
   if (match != null) {
     final sign = match.group(1)!;
     final digits = match.group(2)!;
-    final decimal = match.group(3);
+    final rawDecimal = match.group(3);
+    final dropZeros = _zeroDecimalCurrencies.contains(
+      currencyCode?.toUpperCase(),
+    );
+    final decimal =
+        rawDecimal == null ||
+            (dropZeros && RegExp(r'^0+$').hasMatch(rawDecimal))
+        ? null
+        : rawDecimal;
     final grouped = StringBuffer(sign);
     for (var index = 0; index < digits.length; index++) {
       if (index > 0 && (digits.length - index) % 3 == 0) {
-        grouped.write('\u202f');
+        grouped.write('\u00a0');
       }
       grouped.write(digits[index]);
     }
@@ -23,7 +40,7 @@ String formatPrice(String? amount, String? currency) {
 
   return currencyCode == null || currencyCode.isEmpty
       ? '$formatted — devise non renseignée'
-      : '$formatted $currencyCode';
+      : '$formatted ${currencyLabel(currencyCode)}';
 }
 
 /// Devises sans subdivision usuelle : le prix unitaire s'affiche à l'unité.

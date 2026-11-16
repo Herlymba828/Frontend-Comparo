@@ -33,12 +33,12 @@ class NearbyStoresButton extends StatelessWidget {
     if (compact) {
       return Material(
         color: AppColors.surface,
-        shape: const CircleBorder(side: BorderSide(color: AppColors.ink)),
+        shape: const CircleBorder(side: BorderSide(color: AppColors.kraftEdge)),
         child: IconButton(
           tooltip: 'Magasins proches qui vendent ce produit',
           icon: const Icon(
             Icons.location_on_outlined,
-            color: AppColors.terracotta,
+            color: AppColors.primary,
           ),
           onPressed: open,
         ),

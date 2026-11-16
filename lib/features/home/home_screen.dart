@@ -1,15 +1,63 @@
+import 'package:comparo_ui/comparo_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../core/formatters/price_formatter.dart';
+import '../../core/errors/api_exception.dart';
+import '../../core/formatters/age_formatter.dart';
+import '../../core/storage/repository_result.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/widgets/market_widgets.dart';
+import '../../core/widgets/comparo_logo.dart';
 import '../../core/widgets/space_scaffold.dart';
 import '../catalog/data/catalog_providers.dart';
 import '../catalog/models/catalog_product.dart';
+import '../catalog/models/catalog_product_page.dart';
 import '../catalog/models/catalog_search_request.dart';
-import '../stores/stores_screen.dart';
+import '../commerce/basket_optimisation_screen.dart';
+import '../commerce/commerce_repository.dart';
+import '../identity/data/auth_providers.dart';
+
+/// Products listed on the "Prix du jour" slate (the design allows 5 rows).
+const _slateRequest = CatalogSearchRequest(
+  query: '',
+  ordering: '-created_at',
+  pageSize: MarketSlate.maxRows,
+);
+
+/// What "Ma liste de la semaine" shows: the cart's size and its best total.
+class _WeeklyList {
+  const _WeeklyList({this.count = 0, this.best = 0, this.save = 0});
+
+  final int count;
+  final num best;
+  final num save;
+}
+
+/// The signed-in user's list; null for a visitor (nothing to count).
+final _weeklyListProvider = FutureProvider.autoDispose<_WeeklyList?>((
+  ref,
+) async {
+  if (ref.watch(authSessionProvider).value == null) {
+    return null;
+  }
+  final cart = await ref.watch(cartProvider.future);
+  if (cart.itemCount == 0) {
+    return const _WeeklyList();
+  }
+  final cartTotal = num.tryParse(cart.total) ?? 0;
+  try {
+    final plan = await ref.watch(basketOptimisationProvider(false).future);
+    final best = plan.solutions.isEmpty ? null : plan.solutions.first;
+    return _WeeklyList(
+      count: cart.itemCount,
+      best: num.tryParse(best?.total ?? '') ?? cartTotal,
+      save: num.tryParse(best?.savings ?? '') ?? 0,
+    );
+  } on ApiException {
+    // The comparison is optional: the list still shows what it holds.
+    return _WeeklyList(count: cart.itemCount, best: cartTotal);
+  }
+});
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -36,38 +84,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final categories = ref.watch(categoryTreeProvider);
-    const featuredRequest = CatalogSearchRequest(
-      query: '',
-      ordering: '-created_at',
-      pageSize: 4,
-    );
-    final products = ref.watch(searchProductsProvider(featuredRequest));
+    final products = ref.watch(searchProductsProvider(_slateRequest));
 
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          children: [
-            Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                color: AppColors.accent,
-                shape: BoxShape.circle,
-                border: Border.all(color: AppColors.ink, width: 1.5),
-                boxShadow: inkShadow(offset: 2, color: AppColors.terracotta),
-              ),
-              child: const Icon(
-                Icons.shopping_basket_outlined,
-                color: AppColors.ink,
-                size: 19,
-              ),
-            ),
-            const SizedBox(width: AppSpacing.space8),
-            const Flexible(
-              child: Text('Comparateur Prix', overflow: TextOverflow.ellipsis),
-            ),
-          ],
-        ),
+        title: const ComparoLogo(),
         actions: [
           const SpaceSwitcher(current: AppSpace.customer),
           IconButton(
@@ -92,131 +113,82 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ],
       ),
       body: Center(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final horizontalPadding = constraints.maxWidth >= 760
-                ? AppSpacing.space32
-                : AppSpacing.space16;
-            return ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 1120),
-              child: ListView(
-                padding: EdgeInsets.fromLTRB(
-                  horizontalPadding,
-                  AppSpacing.space24,
-                  horizontalPadding,
-                  AppSpacing.space48,
-                ),
-                children: [
-                  _HomeHero(
-                    searchController: _searchController,
-                    onSearch: _openSearch,
-                  ),
-                  const SizedBox(height: AppSpacing.space24),
-                  _SectionHeading(
-                    title: 'Explorer par catégorie',
-                    actionLabel: 'Tout voir',
-                    onAction: () => context.push('/search'),
-                  ),
-                  const SizedBox(height: AppSpacing.space8),
-                  categories.when(
-                    loading: () => const SizedBox(
-                      height: 82,
-                      child: Center(child: LinearProgressIndicator()),
-                    ),
-                    error: (error, stackTrace) => _SectionError(
-                      message: 'Catégories indisponibles.',
-                      onRetry: () => ref.invalidate(categoryTreeProvider),
-                    ),
-                    data: (tree) {
-                      final items = _flattenCategories(tree).take(8).toList();
-                      if (items.isEmpty) {
-                        return const _EmptySection(
-                          message:
-                              'Aucune catégorie disponible pour le moment.',
-                        );
-                      }
-                      return SizedBox(
-                        height: 44,
-                        child: ListView.separated(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: items.length,
-                          separatorBuilder: (context, index) =>
-                              const SizedBox(width: AppSpacing.space8),
-                          itemBuilder: (context, index) {
-                            final category = items[index];
-                            return _CategoryTile(
-                              category: category,
-                              onTap: () => context.push(
-                                Uri(
-                                  path: '/search',
-                                  queryParameters: {'category': category.slug},
-                                ).toString(),
-                              ),
-                            );
-                          },
-                        ),
-                      );
-                    },
-                  ),
-                  const SizedBox(height: AppSpacing.space24),
-                  _SectionHeading(
-                    title: 'À découvrir',
-                    actionLabel: 'Voir tout',
-                    onAction: () => context.push('/search'),
-                  ),
-                  const SizedBox(height: AppSpacing.space4),
-                  Text(
-                    'Les nouveautés du catalogue et leur meilleur prix connu.',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  const SizedBox(height: AppSpacing.space16),
-                  products.when(
-                    loading: () => const Padding(
-                      padding: EdgeInsets.symmetric(
-                        vertical: AppSpacing.space32,
-                      ),
-                      child: Center(child: CircularProgressIndicator()),
-                    ),
-                    error: (error, stackTrace) => _SectionError(
-                      message: 'Impossible de charger les produits.',
-                      onRetry: () => ref.invalidate(
-                        searchProductsProvider(featuredRequest),
-                      ),
-                    ),
-                    data: (result) {
-                      final items = result.value.results.take(4).toList();
-                      if (items.isEmpty) {
-                        return const _EmptySection(
-                          message: 'Aucun produit disponible pour le moment.',
-                        );
-                      }
-                      final columns = constraints.maxWidth >= 980
-                          ? 4
-                          : constraints.maxWidth >= 640
-                          ? 3
-                          : 2;
-                      return GridView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: items.length,
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: columns,
-                          crossAxisSpacing: AppSpacing.space16,
-                          mainAxisSpacing: AppSpacing.space16,
-                          childAspectRatio: columns == 2 ? 0.6 : 0.78,
-                        ),
-                        itemBuilder: (context, index) => _CatalogProductCard(
-                          product: items[index],
-                          onTap: () =>
-                              context.push('/product/${items[index].id}'),
-                        ),
-                      );
-                    },
-                  ),
-                ],
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 640),
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(
+              ComparoDims.space5,
+              ComparoDims.space2,
+              ComparoDims.space5,
+              AppSpacing.space48,
+            ),
+            children: [
+              Text(
+                'Au marché aujourd’hui',
+                style: Theme.of(context).textTheme.headlineLarge,
               ),
-            );
-          },
+              const SizedBox(height: AppSpacing.space4),
+              Text(
+                'Les meilleurs prix connus, comparés pour vous',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              const SizedBox(height: AppSpacing.space16),
+              _SearchField(
+                controller: _searchController,
+                onSearch: _openSearch,
+              ),
+              const SizedBox(height: AppSpacing.space16),
+              _WeeklyListCard(
+                list: ref.watch(_weeklyListProvider),
+                onOpen: () => context.go('/cart'),
+                onStart: () => context.go('/search'),
+              ),
+              const SizedBox(height: AppSpacing.space16),
+              _PriceSlate(
+                products: products,
+                onRetry: () =>
+                    ref.invalidate(searchProductsProvider(_slateRequest)),
+                onOpen: (product) => context.push('/product/${product.id}'),
+              ),
+              const SizedBox(height: AppSpacing.space24),
+              const SectionTitle('Explorer par catégorie'),
+              const SizedBox(height: AppSpacing.space8),
+              categories.when(
+                loading: () => const SizedBox(
+                  height: 48,
+                  child: Center(child: LinearProgressIndicator()),
+                ),
+                error: (error, stackTrace) => _SectionError(
+                  message: 'Catégories indisponibles.',
+                  onRetry: () => ref.invalidate(categoryTreeProvider),
+                ),
+                data: (tree) {
+                  final items = _flattenCategories(tree).take(8).toList();
+                  if (items.isEmpty) {
+                    return const _EmptySection(
+                      message: 'Aucune catégorie disponible pour le moment.',
+                    );
+                  }
+                  return Wrap(
+                    spacing: AppSpacing.space8,
+                    runSpacing: AppSpacing.space8,
+                    children: [
+                      for (final category in items)
+                        _CategoryTile(
+                          category: category,
+                          onTap: () => context.push(
+                            Uri(
+                              path: '/search',
+                              queryParameters: {'category': category.slug},
+                            ).toString(),
+                          ),
+                        ),
+                    ],
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -265,121 +237,137 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 }
 
-class _HomeHero extends StatelessWidget {
-  const _HomeHero({required this.searchController, required this.onSearch});
+class _SearchField extends StatelessWidget {
+  const _SearchField({required this.controller, required this.onSearch});
 
-  final SearchController searchController;
+  final SearchController controller;
   final ValueChanged<String> onSearch;
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final compact = constraints.maxWidth < 520;
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(6),
-              child: const SizedBox(
-                height: 12,
-                width: double.infinity,
-                child: OverflowBox(
-                  minHeight: 120,
-                  maxHeight: 120,
-                  child: WaxPattern(),
-                ),
-              ),
+    final colors = context.comparo;
+    OutlineInputBorder pill(Color color, double width) => OutlineInputBorder(
+      borderRadius: BorderRadius.circular(ComparoDims.radiusPill),
+      borderSide: BorderSide(color: color, width: width),
+    );
+    return TextField(
+      controller: controller,
+      onSubmitted: onSearch,
+      textInputAction: TextInputAction.search,
+      decoration: InputDecoration(
+        hintText: 'Riz, huile, savon…',
+        prefixIcon: Icon(Icons.search_rounded, color: colors.ink),
+        suffixIcon: IconButton(
+          tooltip: 'Rechercher',
+          onPressed: () => onSearch(controller.text),
+          icon: Icon(Icons.arrow_forward_rounded, color: colors.primary),
+        ),
+        border: pill(colors.lineSoft, 1),
+        enabledBorder: pill(colors.lineSoft, 1),
+        focusedBorder: pill(colors.primary, 2),
+      ),
+    );
+  }
+}
+
+class _WeeklyListCard extends StatelessWidget {
+  const _WeeklyListCard({
+    required this.list,
+    required this.onOpen,
+    required this.onStart,
+  });
+
+  final AsyncValue<_WeeklyList?> list;
+  final VoidCallback onOpen;
+  final VoidCallback onStart;
+
+  @override
+  Widget build(BuildContext context) {
+    return list.when(
+      loading: () => const ListSummary.loading(),
+      // The list is a convenience: without it the card invites to start one.
+      error: (error, stackTrace) => ListSummary(count: 0, onStart: onStart),
+      data: (data) => data == null || data.count == 0
+          ? ListSummary(count: 0, onStart: onStart)
+          : ListSummary(
+              count: data.count,
+              best: data.best,
+              save: data.save,
+              onOpen: onOpen,
             ),
-            const SizedBox(height: AppSpacing.space16),
-            Text(
-              'Prix du jour',
-              style: AppTextStyles.display.copyWith(
-                fontSize: compact ? 38 : 48,
+    );
+  }
+}
+
+/// "Prix du jour": the best known price of the latest products, on the slate.
+class _PriceSlate extends StatelessWidget {
+  const _PriceSlate({
+    required this.products,
+    required this.onRetry,
+    required this.onOpen,
+  });
+
+  final AsyncValue<RepositoryResult<CatalogProductPage>> products;
+  final VoidCallback onRetry;
+  final ValueChanged<CatalogProduct> onOpen;
+
+  @override
+  Widget build(BuildContext context) {
+    return products.when(
+      loading: () =>
+          const MarketSlate(title: 'Prix du jour', rows: [], loading: true),
+      error: (error, stackTrace) => MarketSlate(
+        title: 'Prix du jour',
+        rows: const [],
+        error: true,
+        onRetry: onRetry,
+      ),
+      data: (result) {
+        final priced = <(CatalogProduct, num)>[
+          for (final product in result.value.results)
+            // The slate is in FCFA: another currency would be misread.
+            if (_priceOf(product) case final price?) (product, price),
+        ];
+        final updated = priced
+            .map((entry) => entry.$1.priceSnapshotUpdatedAt)
+            .whereType<DateTime>()
+            .fold<DateTime?>(
+              null,
+              (latest, moment) =>
+                  latest == null || moment.isAfter(latest) ? moment : latest,
+            );
+        return MarketSlate(
+          title: 'Prix du jour',
+          meta: 'le meilleur prix connu',
+          rows: [
+            for (final (product, price) in priced)
+              SlateRow(
+                label: product.name,
+                value: price,
+                onTap: () => onOpen(product),
               ),
-            ),
-            const SizedBox(height: AppSpacing.space4),
-            Transform.rotate(
-              angle: -0.035,
-              alignment: Alignment.centerLeft,
-              child: const Row(
-                children: [
-                  Icon(
-                    Icons.location_on_outlined,
-                    size: 18,
-                    color: AppColors.terracotta,
-                  ),
-                  SizedBox(width: AppSpacing.space4),
-                  Flexible(
-                    child: Text(
-                      'comparés près de chez vous',
-                      style: AppTextStyles.handNote,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: AppSpacing.space16),
-            DecoratedBox(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(14),
-                boxShadow: inkShadow(),
-              ),
-              child: TextField(
-                controller: searchController,
-                onSubmitted: onSearch,
-                textInputAction: TextInputAction.search,
-                decoration: InputDecoration(
-                  hintText: 'Rechercher un produit (ex. riz, huile)',
-                  prefixIcon: const Icon(Icons.search, color: AppColors.ink),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.space16,
-                    vertical: 18,
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(
-                      color: AppColors.ink,
-                      width: 1.5,
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(
-                      color: AppColors.primary,
-                      width: 2,
-                    ),
-                  ),
-                  suffixIcon: Padding(
-                    padding: const EdgeInsets.all(5),
-                    child: Tooltip(
-                      message: 'Rechercher',
-                      child: FilledButton(
-                        onPressed: () => onSearch(searchController.text),
-                        style: FilledButton.styleFrom(
-                          backgroundColor: AppColors.ink,
-                          foregroundColor: AppColors.accent,
-                          minimumSize: const Size(48, 48),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: AppSpacing.space16,
-                          ),
-                        ),
-                        child: compact
-                            ? const Icon(
-                                Icons.arrow_forward,
-                                semanticLabel: 'Rechercher',
-                              )
-                            : const Text('Rechercher'),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
           ],
+          footer: updated == null
+              ? 'En FCFA'
+              : 'En FCFA · mis à jour ${formatAge(updated)}',
         );
       },
     );
+  }
+
+  static num? _priceOf(CatalogProduct product) {
+    final currency = product.priceSnapshotCurrency;
+    if (currency != null && currency.isNotEmpty && currency != 'XAF') {
+      return null;
+    }
+    final amount = num.tryParse((product.priceSnapshot ?? '').trim());
+    // The slate shows whole francs. The design's formatter would round a price
+    // with decimals (1234.50 -> 1 235): a different amount from the product
+    // page, so such a price stays off the slate rather than be shown rounded.
+    if (amount == null || amount != amount.truncate()) {
+      return null;
+    }
+    return amount;
   }
 }
 
@@ -435,30 +423,6 @@ Iterable<CatalogCategory> _flattenCategories(
   }
 }
 
-class _SectionHeading extends StatelessWidget {
-  const _SectionHeading({
-    required this.title,
-    required this.actionLabel,
-    required this.onAction,
-  });
-
-  final String title;
-  final String actionLabel;
-  final VoidCallback onAction;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: Text(title, style: Theme.of(context).textTheme.titleLarge),
-        ),
-        TextButton(onPressed: onAction, child: Text(actionLabel)),
-      ],
-    );
-  }
-}
-
 class _SectionError extends StatelessWidget {
   const _SectionError({required this.message, required this.onRetry});
 
@@ -490,118 +454,6 @@ class _EmptySection extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: AppSpacing.space16),
       child: Text(message, style: Theme.of(context).textTheme.bodyMedium),
-    );
-  }
-}
-
-class _CatalogProductCard extends StatelessWidget {
-  const _CatalogProductCard({required this.product, required this.onTap});
-
-  final CatalogProduct product;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final hasPrice =
-        product.priceSnapshot != null &&
-        product.priceSnapshot!.trim().isNotEmpty;
-    return MarketSurface(
-      onTap: onTap,
-      padding: const EdgeInsets.fromLTRB(10, 10, 10, 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(9),
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  ProductArtwork(url: product.imageUrl, unitSize: 96),
-                  Align(
-                    alignment: Alignment.bottomRight,
-                    child: Padding(
-                      padding: const EdgeInsets.all(AppSpacing.space4),
-                      child: NearbyStoresButton(
-                        productId: product.id,
-                        productName: product.name,
-                        compact: true,
-                      ),
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.topLeft,
-                    child: Padding(
-                      padding: const EdgeInsets.all(AppSpacing.space8),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.space8,
-                          vertical: 3,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.surface,
-                          border: Border.all(color: AppColors.ink),
-                          borderRadius: BorderRadius.circular(100),
-                        ),
-                        child: Text(
-                          product.category?.name ?? 'Produit',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: Theme.of(context).textTheme.labelSmall
-                              ?.copyWith(color: AppColors.ink),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: AppSpacing.space8),
-          Text(
-            product.name,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          const SizedBox(height: AppSpacing.space4),
-          Text(
-            'Meilleur prix connu',
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.labelSmall,
-          ),
-          const SizedBox(height: 6),
-          PriceTag(
-            label: formatPrice(
-              product.priceSnapshot,
-              product.priceSnapshotCurrency,
-            ),
-            muted: !hasPrice,
-          ),
-          if (product.isVerified || product.availability == 'available')
-            Padding(
-              padding: const EdgeInsets.only(top: AppSpacing.space8),
-              child: Wrap(
-                spacing: AppSpacing.space4,
-                runSpacing: AppSpacing.space4,
-                children: [
-                  if (product.isVerified)
-                    const StampBadge(
-                      label: 'Vérifié',
-                      icon: Icons.check,
-                      angle: -2,
-                    ),
-                  if (product.availability == 'available')
-                    const StampBadge(
-                      label: 'Disponible',
-                      color: AppColors.info,
-                    ),
-                ],
-              ),
-            ),
-        ],
-      ),
     );
   }
 }

@@ -13,7 +13,10 @@ import '../availability/models/merchant_availability.dart';
 import '../catalog/data/catalog_providers.dart';
 import '../catalog/models/catalog_product.dart';
 import '../commerce/commerce_repository.dart';
+import '../comparison/alternatives.dart';
 import '../comparison/models/comparison_offer.dart';
+import '../favorites/favorite_buttons.dart';
+import '../quality/price_flag.dart';
 import '../comparison/trust_line.dart';
 import '../identity/data/auth_providers.dart';
 import '../stores/stores_screen.dart';
@@ -64,6 +67,7 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
       appBar: AppBar(
         title: const Text('Fiche produit'),
         actions: [
+          FavoriteProductButton(productId: id),
           NearbyStoresButton(productId: id),
           if (productAsync.value?.value case final product?)
             IconButton(
@@ -262,6 +266,7 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                     },
                   ),
                   const SizedBox(height: AppSpacing.space24),
+                  AlternativesSection(productId: id),
                   PriceEvolutionSection(productId: id),
                   const SizedBox(height: AppSpacing.space24),
                   _AvailabilitySection(productId: id),
@@ -333,7 +338,11 @@ class _ProductHero extends StatelessWidget {
           child: SizedBox(
             height: 140,
             width: double.infinity,
-            child: ProductArtwork(url: product.imageUrl, unitSize: 140),
+            child: ProductArtwork(
+              url: product.imageUrl,
+              name: product.name,
+              unitSize: 140,
+            ),
           ),
         ),
         const SizedBox(height: 16),
@@ -362,25 +371,9 @@ class _ProductHero extends StatelessWidget {
             if (hasPrice) ...[
               const SizedBox(width: 12),
               Flexible(
-                child: Transform.rotate(
-                  angle: 0.05,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(
-                        Icons.arrow_back,
-                        size: 16,
-                        color: AppColors.terracotta,
-                      ),
-                      const SizedBox(width: 2),
-                      Flexible(
-                        child: Text(
-                          'prix de\nréférence',
-                          style: AppTextStyles.handNote.copyWith(fontSize: 18),
-                        ),
-                      ),
-                    ],
-                  ),
+                child: Text(
+                  'meilleur prix connu',
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ),
             ],
@@ -747,7 +740,6 @@ class _OfferCard extends StatelessWidget {
                       color: offer.isCurrentlyValid
                           ? AppColors.primary
                           : AppColors.terracotta,
-                      angle: -1.5,
                     ),
                   ],
                 ),
@@ -759,7 +751,6 @@ class _OfferCard extends StatelessWidget {
                   style: AppTextStyles.pricePrimary.copyWith(fontSize: 26),
                   caption: quantity.isEmpty ? null : quantity,
                   muted: !comparable,
-                  angle: comparable ? -1.5 : 0,
                 ),
               ),
             ],
@@ -832,9 +823,17 @@ class _OfferCard extends StatelessWidget {
           ],
           if (comparable) ...[
             const SizedBox(height: 10),
-            Align(
-              alignment: Alignment.centerRight,
-              child: _AddToCartButton(offer: offer),
+            Wrap(
+              alignment: WrapAlignment.end,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 8,
+              runSpacing: 4,
+              children: [
+                _FlagPriceButton(offer: offer),
+                if (offer.merchant case final merchantId?)
+                  FavoriteShopButton(merchantId: merchantId),
+                _AddToCartButton(offer: offer),
+              ],
             ),
           ],
         ],
@@ -845,12 +844,12 @@ class _OfferCard extends StatelessWidget {
       return Padding(padding: const EdgeInsets.only(bottom: 12), child: card);
     }
     return Padding(
-      padding: const EdgeInsets.only(top: 30, bottom: 12),
+      padding: const EdgeInsets.only(top: 18, bottom: 12),
       child: Stack(
         clipBehavior: Clip.none,
         children: [
           card,
-          const Positioned(top: -40, right: -8, child: BestPriceSeal()),
+          const Positioned(top: -16, right: 12, child: BestPriceSeal()),
         ],
       ),
     );
@@ -968,6 +967,27 @@ class _Badge extends StatelessWidget {
 }
 
 /// Adds one unit of this offer to the cart (sign-in required).
+/// "Signaler ce prix": tells the moderators a shown price looks wrong.
+class _FlagPriceButton extends ConsumerWidget {
+  const _FlagPriceButton({required this.offer});
+
+  final ComparisonOffer offer;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return TextButton.icon(
+      onPressed: () => showPriceFlagSheet(
+        context,
+        ref,
+        offerId: offer.id,
+        merchantName: offer.merchantName ?? 'ce commerce',
+      ),
+      icon: const Icon(Icons.flag_outlined, size: 18),
+      label: const Text('Signaler ce prix'),
+    );
+  }
+}
+
 class _AddToCartButton extends ConsumerStatefulWidget {
   const _AddToCartButton({required this.offer});
 

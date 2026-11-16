@@ -21,6 +21,7 @@ import '../features/courier/courier_deliveries_screen.dart';
 import '../features/courier/courier_delivery_screen.dart';
 import '../features/courier/courier_profile_screen.dart';
 import '../features/courier/courier_shell.dart';
+import '../features/favorites/favorites_screen.dart';
 import '../features/home/home_screen.dart';
 import '../features/identity/auth_screen.dart';
 import '../features/identity/password_reset_screen.dart';
@@ -130,6 +131,10 @@ class AppRouter {
       GoRoute(
         path: '/account/budgets/:id',
         builder: (context, state) => BudgetScreen(budgetId: _id(state)),
+      ),
+      GoRoute(
+        path: '/account/favorites',
+        builder: (context, state) => const FavoritesScreen(),
       ),
       GoRoute(
         path: '/account/channels',

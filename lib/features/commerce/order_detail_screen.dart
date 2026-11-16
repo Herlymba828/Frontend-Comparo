@@ -221,7 +221,6 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
           child: PriceTag(
             label: pickup!.code!,
             style: AppTextStyles.pricePrimary,
-            angle: 0,
           ),
         ),
       ],

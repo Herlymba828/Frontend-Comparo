@@ -1,33 +1,45 @@
+import 'package:comparo_ui/comparo_ui.dart';
 import 'package:flutter/material.dart';
 
-/// Palette « Marché & étiquettes » — miroir de la collection Figma « Colors ».
+/// Couleurs de l'app : des alias du design system Comparo v2.4 (palette P07
+/// « Fraîcheur quotidienne »). Aucune valeur n'est écrite ici : tout vient de
+/// [ComparoPalette], donc de `design-system/tokens.json`.
 class AppColors {
-  static const primary = Color(0xFF24834B);
-  static const accent = Color(0xFFD7E96B);
-  static const secondary = Color(0xFF29A6A1);
-  static const background = Color(0xFFF6F0E3);
-  static const surface = Color(0xFFFFFDF7);
-  static const textPrimary = Color(0xFF14281D);
-  static const textSecondary = Color(0xFF5D6359);
-  static const border = Color(0xFFDCCFB4);
-  static const error = Color(0xFFB42318);
+  static const primary = ComparoPalette.green600;
+  static const accent = ComparoPalette.lemon300;
+  static const secondary = ComparoPalette.teal500;
+  static const background = ComparoPalette.sage25;
+  static const surface = ComparoPalette.sage0;
+  static const textPrimary = ComparoPalette.forest800;
+  static const textSecondary = ComparoPalette.sage700;
+  static const border = ComparoPalette.sage100;
+  static const error = ComparoPalette.red700;
   static const warning = Color(0xFFA16207);
   static const info = Color(0xFF1769AA);
-  static const disabled = Color(0xFFECE4D2);
+  static const disabled = ComparoPalette.sage50;
 
-  static const kraft = Color(0xFFEAD7B0);
-  static const kraftEdge = Color(0xFFB98E52);
-  static const terracotta = Color(0xFFC4512C);
-  static const ink = Color(0xFF14281D);
+  /// Remplissage neutre (ancien « kraft »).
+  static const kraft = ComparoPalette.sage100;
+
+  /// Filet plus marqué (ancien « bord kraft »).
+  static const kraftEdge = ComparoPalette.sage500;
+
+  /// Alerte, indisponible, action sensible (ancien « terracotta »).
+  static const terracotta = ComparoPalette.red700;
+  static const ink = ComparoPalette.forest800;
 
   const AppColors._();
 }
 
+/// Polices embarquées par `comparo_ui` : Flutter les enregistre sous
+/// `packages/comparo_ui/…`. Il n'y a plus de police manuscrite : les anciens
+/// styles « prix » et « note à la main » passent sur Bricolage Grotesque et
+/// Manrope.
 class AppFonts {
-  static const body = 'Inter';
-  static const display = 'BricolageGrotesque';
-  static const price = 'BigShouldersDisplay';
-  static const hand = 'Caveat';
+  static const body = ComparoText.fontSans;
+  static const display = ComparoText.fontDisplay;
+  static const price = ComparoText.fontDisplay;
+  static const hand = ComparoText.fontSans;
 
   const AppFonts._();
 }
@@ -44,317 +56,239 @@ class AppSpacing {
   const AppSpacing._();
 }
 
+/// Les polices sont variables : le poids se règle par l'axe `wght`. Un style
+/// qui le fixe ne suit plus un simple `copyWith(fontWeight: …)` : passer par
+/// [AppTextStyles.weighted].
 class AppTextStyles {
   static const pricePrimary = TextStyle(
     fontFamily: AppFonts.price,
     color: AppColors.ink,
     fontSize: 28,
     height: 1,
-    fontWeight: FontWeight.w900,
+    fontWeight: FontWeight.w800,
+    fontVariations: [FontVariation('wght', 800), FontVariation('opsz', 28)],
+    fontFeatures: [FontFeature.tabularFigures()],
   );
   static const priceSecondary = TextStyle(
     fontFamily: AppFonts.price,
     color: AppColors.ink,
     fontSize: 19,
     height: 1,
-    fontWeight: FontWeight.w800,
+    fontWeight: FontWeight.w700,
+    fontVariations: [FontVariation('wght', 700), FontVariation('opsz', 19)],
+    fontFeatures: [FontFeature.tabularFigures()],
   );
   static const display = TextStyle(
     fontFamily: AppFonts.display,
     color: AppColors.ink,
-    fontSize: 38,
-    height: 0.95,
-    letterSpacing: -1.1,
+    fontSize: 34,
+    height: 1.05,
+    letterSpacing: -0.6,
     fontWeight: FontWeight.w800,
+    fontVariations: [FontVariation('wght', 800), FontVariation('opsz', 34)],
   );
+
+  /// Remarque courte (libellé de promotion) : plus de manuscrit, du Manrope.
   static const handNote = TextStyle(
     fontFamily: AppFonts.hand,
-    color: AppColors.terracotta,
-    fontSize: 20,
-    height: 1,
+    color: AppColors.primary,
+    fontSize: 14,
+    height: 1.2,
     fontWeight: FontWeight.w700,
+    fontVariations: [FontVariation('wght', 700)],
   );
   static const stamp = TextStyle(
-    fontFamily: AppFonts.display,
+    fontFamily: AppFonts.body,
     fontSize: 11,
-    letterSpacing: 0.9,
+    letterSpacing: 0.4,
     fontWeight: FontWeight.w800,
+    fontVariations: [FontVariation('wght', 800)],
+  );
+
+  /// [style] au poids [weight] (100 à 800), sur l'axe `wght` de la police.
+  static TextStyle weighted(TextStyle style, int weight) => style.copyWith(
+    fontWeight: FontWeight.values[(weight ~/ 100 - 1).clamp(0, 8)],
+    fontVariations: [
+      FontVariation('wght', weight.toDouble()),
+      for (final variation in style.fontVariations ?? const <FontVariation>[])
+        if (variation.axis != 'wght') variation,
+    ],
   );
 
   const AppTextStyles._();
 }
 
-/// Ombre « imprimée » : décalage franc, sans flou.
+/// Ombre franche, sans flou. Réservée à ce qui flotte : le design à plat
+/// n'en met plus sur les cartes.
 List<BoxShadow> inkShadow({double offset = 3, Color color = AppColors.ink}) => [
   BoxShadow(color: color, offset: Offset(0, offset)),
 ];
 
 class AppTheme {
   static ThemeData get light {
-    const inkSide = BorderSide(color: AppColors.ink, width: 1.5);
-    final buttonShape = RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(AppSpacing.space12),
-      side: inkSide,
+    final comparo = ComparoColors.light;
+    const controlRadius = BorderRadius.all(
+      Radius.circular(ComparoDims.radiusMd),
     );
-    const buttonText = TextStyle(
-      fontFamily: AppFonts.display,
-      fontSize: 16,
-      fontWeight: FontWeight.w600,
-    );
+    const controlShape = RoundedRectangleBorder(borderRadius: controlRadius);
+    const minimumSize = Size(ComparoDims.targetMin, ComparoDims.targetPrimary);
+    OutlineInputBorder inputBorder(Color color, double width) =>
+        OutlineInputBorder(
+          borderRadius: controlRadius,
+          borderSide: BorderSide(color: color, width: width),
+        );
 
-    return ThemeData(
-      useMaterial3: true,
-      fontFamily: AppFonts.body,
+    return ComparoTheme.light().copyWith(
       disabledColor: AppColors.disabled,
-      colorScheme:
-          ColorScheme.fromSeed(
-            seedColor: AppColors.primary,
-            brightness: Brightness.light,
-          ).copyWith(
-            primary: AppColors.primary,
-            onPrimary: AppColors.surface,
-            primaryContainer: AppColors.accent,
-            onPrimaryContainer: AppColors.ink,
-            secondary: AppColors.secondary,
-            onSecondary: Colors.white,
-            tertiary: AppColors.accent,
-            onTertiary: AppColors.ink,
-            surface: AppColors.surface,
-            onSurface: AppColors.textPrimary,
-            surfaceContainerHighest: AppColors.disabled,
-            outline: AppColors.border,
-            error: AppColors.error,
-            onError: Colors.white,
-            errorContainer: const Color(0xFFF6D9CE),
-            onErrorContainer: AppColors.ink,
-          ),
-      scaffoldBackgroundColor: AppColors.background,
-      appBarTheme: const AppBarTheme(
+      appBarTheme: AppBarTheme(
         centerTitle: false,
         elevation: 0,
         scrolledUnderElevation: 0,
-        backgroundColor: AppColors.background,
-        foregroundColor: AppColors.ink,
+        backgroundColor: comparo.canvas,
+        foregroundColor: comparo.ink,
         surfaceTintColor: Colors.transparent,
-        titleTextStyle: TextStyle(
-          fontFamily: AppFonts.display,
-          color: AppColors.ink,
-          fontSize: 18,
-          fontWeight: FontWeight.w700,
-        ),
+        titleTextStyle: ComparoText.title.copyWith(color: comparo.ink),
       ),
-      textTheme: const TextTheme(
-        headlineLarge: TextStyle(
-          fontFamily: AppFonts.display,
-          color: AppColors.textPrimary,
-          fontSize: 30,
-          height: 1.05,
-          letterSpacing: -0.6,
-          fontWeight: FontWeight.w800,
-        ),
-        headlineMedium: TextStyle(
-          fontFamily: AppFonts.display,
-          color: AppColors.textPrimary,
-          fontSize: 21,
-          height: 1.15,
-          fontWeight: FontWeight.w700,
-        ),
-        headlineSmall: TextStyle(
-          fontFamily: AppFonts.display,
-          color: AppColors.textPrimary,
+      textTheme: TextTheme(
+        headlineLarge: ComparoText.display.copyWith(color: comparo.ink),
+        headlineMedium: ComparoText.title.copyWith(color: comparo.ink),
+        headlineSmall: ComparoText.title.copyWith(
           fontSize: 18,
-          height: 1.2,
-          fontWeight: FontWeight.w700,
+          color: comparo.ink,
         ),
-        titleLarge: TextStyle(
-          fontFamily: AppFonts.display,
-          color: AppColors.textPrimary,
-          fontSize: 21,
-          fontWeight: FontWeight.w700,
-        ),
-        titleMedium: TextStyle(
-          fontFamily: AppFonts.display,
-          color: AppColors.textPrimary,
-          fontSize: 16,
-          height: 1.2,
-          fontWeight: FontWeight.w600,
-        ),
-        titleSmall: TextStyle(
-          color: AppColors.textPrimary,
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
-        ),
-        bodyLarge: TextStyle(color: AppColors.textPrimary, fontSize: 16),
-        bodyMedium: TextStyle(color: AppColors.textSecondary, fontSize: 14),
-        bodySmall: TextStyle(color: AppColors.textSecondary, fontSize: 14),
-        labelLarge: TextStyle(
-          color: AppColors.textPrimary,
+        titleLarge: ComparoText.title.copyWith(color: comparo.ink),
+        titleMedium: ComparoText.subtitle.copyWith(color: comparo.ink),
+        titleSmall: ComparoText.subtitle.copyWith(
           fontSize: 14,
-          fontWeight: FontWeight.w500,
+          color: comparo.ink,
         ),
-        labelMedium: TextStyle(
-          color: AppColors.textSecondary,
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
+        bodyLarge: ComparoText.body.copyWith(color: comparo.ink),
+        bodyMedium: ComparoText.body.copyWith(
+          fontSize: 14,
+          color: comparo.inkMuted,
         ),
-        labelSmall: TextStyle(
-          color: AppColors.textSecondary,
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
+        bodySmall: ComparoText.caption.copyWith(color: comparo.inkMuted),
+        labelLarge: ComparoText.subtitle.copyWith(
+          fontSize: 14,
+          color: comparo.ink,
         ),
+        labelMedium: ComparoText.label.copyWith(color: comparo.inkMuted),
+        labelSmall: ComparoText.label.copyWith(color: comparo.inkMuted),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          backgroundColor: AppColors.primary,
-          foregroundColor: AppColors.surface,
-          disabledBackgroundColor: AppColors.disabled,
-          disabledForegroundColor: AppColors.textSecondary,
-          minimumSize: const Size(48, 52),
-          shape: buttonShape,
-          textStyle: buttonText,
+          backgroundColor: comparo.primary,
+          foregroundColor: comparo.onPrimary,
+          disabledBackgroundColor: comparo.fill100,
+          disabledForegroundColor: comparo.inkMuted,
+          minimumSize: minimumSize,
+          shape: controlShape,
+          textStyle: ComparoText.subtitle,
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          backgroundColor: AppColors.surface,
-          foregroundColor: AppColors.ink,
-          minimumSize: const Size(48, 52),
-          side: inkSide,
-          shape: buttonShape,
-          textStyle: buttonText,
+          backgroundColor: comparo.paper,
+          foregroundColor: comparo.ink,
+          minimumSize: minimumSize,
+          side: BorderSide(color: comparo.line),
+          shape: controlShape,
+          textStyle: ComparoText.subtitle,
         ),
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          foregroundColor: AppColors.primary,
-          textStyle: const TextStyle(
-            fontFamily: AppFonts.display,
-            fontSize: 14,
-            fontWeight: FontWeight.w700,
-          ),
+          foregroundColor: comparo.tealInk,
+          minimumSize: minimumSize,
+          textStyle: ComparoText.subtitle.copyWith(fontSize: 14),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppSpacing.space12),
-          borderSide: const BorderSide(color: AppColors.ink, width: 1.2),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppSpacing.space12),
-          borderSide: const BorderSide(color: AppColors.ink, width: 1.2),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppSpacing.space12),
-          borderSide: const BorderSide(color: AppColors.primary, width: 2),
-        ),
+        border: inputBorder(comparo.line, 1),
+        enabledBorder: inputBorder(comparo.line, 1),
+        focusedBorder: inputBorder(comparo.primary, 2),
+        errorBorder: inputBorder(comparo.danger, 1),
+        focusedErrorBorder: inputBorder(comparo.danger, 2),
         filled: true,
-        fillColor: AppColors.surface,
+        fillColor: comparo.paper,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.space16,
           vertical: AppSpacing.space12,
         ),
       ),
-      cardTheme: const CardThemeData(
+      cardTheme: CardThemeData(
         elevation: 0,
-        color: AppColors.surface,
+        color: comparo.paper,
         surfaceTintColor: Colors.transparent,
-        margin: EdgeInsets.only(bottom: AppSpacing.space12),
+        margin: const EdgeInsets.only(bottom: AppSpacing.space12),
         shape: RoundedRectangleBorder(
-          side: BorderSide(color: AppColors.ink, width: 1.2),
-          borderRadius: BorderRadius.all(Radius.circular(14)),
+          side: BorderSide(color: comparo.lineSoft),
+          borderRadius: BorderRadius.circular(ComparoDims.radiusCard),
         ),
       ),
       chipTheme: ChipThemeData(
-        backgroundColor: AppColors.surface,
-        selectedColor: AppColors.ink,
-        checkmarkColor: AppColors.accent,
-        side: const BorderSide(color: AppColors.ink, width: 1.2),
+        backgroundColor: comparo.paper,
+        selectedColor: comparo.slate,
+        checkmarkColor: comparo.accent,
+        side: BorderSide(color: comparo.line),
         shape: const StadiumBorder(),
-        labelStyle: TextStyle(
-          fontFamily: AppFonts.body,
-          // A selected chip is ink-filled: its label must turn light.
+        labelStyle: ComparoText.label.copyWith(
+          fontSize: 13,
+          // A selected chip is slate-filled: its label must turn light.
           color: WidgetStateColor.resolveWith(
             (states) => states.contains(WidgetState.selected)
-                ? AppColors.surface
-                : AppColors.ink,
+                ? comparo.paper
+                : comparo.ink,
           ),
-          fontSize: 13,
-          fontWeight: FontWeight.w600,
         ),
-        secondaryLabelStyle: const TextStyle(
-          fontFamily: AppFonts.body,
-          color: AppColors.accent,
+        secondaryLabelStyle: ComparoText.label.copyWith(
           fontSize: 13,
-          fontWeight: FontWeight.w600,
+          color: comparo.accent,
         ),
       ),
-      snackBarTheme: const SnackBarThemeData(
-        backgroundColor: AppColors.ink,
-        contentTextStyle: TextStyle(color: AppColors.surface, fontSize: 14),
+      snackBarTheme: SnackBarThemeData(
+        backgroundColor: comparo.slate,
+        contentTextStyle: ComparoText.body.copyWith(
+          fontSize: 14,
+          color: comparo.paper,
+        ),
         behavior: SnackBarBehavior.floating,
       ),
-      dialogTheme: const DialogThemeData(
-        backgroundColor: AppColors.surface,
+      dialogTheme: DialogThemeData(
+        backgroundColor: comparo.paper,
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
-          side: BorderSide(color: AppColors.ink, width: 1.5),
-          borderRadius: BorderRadius.all(Radius.circular(20)),
+          side: BorderSide(color: comparo.lineSoft),
+          borderRadius: BorderRadius.circular(ComparoDims.radiusLg),
         ),
       ),
-      // Wide screens: the same look as the bottom bar, on the side.
-      navigationRailTheme: const NavigationRailThemeData(
-        backgroundColor: AppColors.surface,
-        indicatorColor: AppColors.accent,
-        indicatorShape: StadiumBorder(
-          side: BorderSide(color: AppColors.ink, width: 1.2),
-        ),
-        selectedIconTheme: IconThemeData(color: AppColors.ink),
-        unselectedIconTheme: IconThemeData(color: AppColors.textSecondary),
-        selectedLabelTextStyle: TextStyle(
-          fontFamily: AppFonts.display,
-          color: AppColors.ink,
-          fontSize: 12,
-          fontWeight: FontWeight.w800,
-        ),
-        unselectedLabelTextStyle: TextStyle(
-          color: AppColors.textSecondary,
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
+      // Wide screens: the same destinations as the bottom bar, on the side.
+      navigationRailTheme: NavigationRailThemeData(
+        backgroundColor: comparo.paper,
+        indicatorColor: comparo.accent,
+        selectedIconTheme: IconThemeData(color: comparo.ink),
+        unselectedIconTheme: IconThemeData(color: comparo.inkMuted),
+        selectedLabelTextStyle: ComparoText.label.copyWith(color: comparo.ink),
+        unselectedLabelTextStyle: ComparoText.label.copyWith(
+          color: comparo.inkMuted,
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: AppColors.surface,
+        backgroundColor: comparo.paper,
         surfaceTintColor: Colors.transparent,
-        indicatorColor: AppColors.accent,
-        indicatorShape: const StadiumBorder(
-          side: BorderSide(color: AppColors.ink, width: 1.2),
-        ),
+        indicatorColor: comparo.accent,
         elevation: 0,
-        iconTheme: WidgetStateProperty.resolveWith(
-          (states) => IconThemeData(
+        labelTextStyle: WidgetStateProperty.resolveWith(
+          (states) => ComparoText.label.copyWith(
             color: states.contains(WidgetState.selected)
-                ? AppColors.ink
-                : AppColors.textSecondary,
+                ? comparo.primary
+                : comparo.inkMuted,
           ),
         ),
-        labelTextStyle: WidgetStateProperty.resolveWith(
-          (states) => states.contains(WidgetState.selected)
-              ? const TextStyle(
-                  fontFamily: AppFonts.display,
-                  color: AppColors.ink,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w800,
-                )
-              : const TextStyle(
-                  color: AppColors.textSecondary,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                ),
-        ),
       ),
-      dividerTheme: const DividerThemeData(color: AppColors.border),
-      progressIndicatorTheme: const ProgressIndicatorThemeData(
-        color: AppColors.primary,
+      dividerTheme: DividerThemeData(color: comparo.lineSoft),
+      progressIndicatorTheme: ProgressIndicatorThemeData(
+        color: comparo.primary,
       ),
     );
   }

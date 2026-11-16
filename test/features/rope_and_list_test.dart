@@ -1,8 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:frontend/features/catalog/models/catalog_product.dart';
 import 'package:frontend/features/commerce/basket_optimisation_screen.dart';
-import 'package:frontend/features/comparison/price_rope.dart';
+import 'package:frontend/features/comparison/comparo_adapters.dart';
 
 Map<String, dynamic> _point(int id, String unitPrice, {bool best = false}) => {
   'offer_id': id,
@@ -50,32 +49,24 @@ void main() {
     expect(product.currentPrices, isEmpty);
   });
 
-  Future<void> pumpRope(WidgetTester tester, List<CurrentPrice> prices) =>
-      tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: SizedBox(
-              width: 300,
-              child: PriceRope(prices: prices, offerCount: 3),
-            ),
-          ),
-        ),
-      );
-
-  testWidgets('the rope shows the range of unit prices', (tester) async {
-    await pumpRope(tester, [
+  test('the corde takes the API prices as the design expects them', () {
+    final offers = priceLineOffers([
       CurrentPrice.fromJson(_point(1, '1000', best: true)),
-      CurrentPrice.fromJson(_point(2, '1380')),
+      CurrentPrice.fromJson(_point(2, '1380.50')),
     ]);
 
-    expect(find.textContaining('3 offres · de 1'), findsOneWidget);
-    expect(find.textContaining('/ kg'), findsOneWidget);
+    expect(offers.map((offer) => offer.price), [1000, 1380.5]);
+    expect(offers.map((offer) => offer.vendor), ['Boutique 1', 'Boutique 2']);
+    expect(offers.map((offer) => offer.id), [1, 2]);
   });
 
-  testWidgets('no rope with a single price', (tester) async {
-    await pumpRope(tester, [CurrentPrice.fromJson(_point(1, '1000'))]);
+  test('a price that is not a number is left off the corde', () {
+    final offers = priceLineOffers([
+      CurrentPrice.fromJson(_point(1, '1000')),
+      CurrentPrice.fromJson(_point(2, 'n/a')),
+    ]);
 
-    expect(find.textContaining('offres'), findsNothing);
+    expect(offers, hasLength(1));
   });
 
   test('"Ma liste" reads each store and the saving', () {

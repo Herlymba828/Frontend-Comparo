@@ -7,7 +7,7 @@ void main() {
     () {
       expect(
         formatPrice('1234567890.123456', 'XAF'),
-        '1\u202f234\u202f567\u202f890,123456 XAF',
+        '1\u00a0234\u00a0567\u00a0890,123456 FCFA',
       );
     },
   );
@@ -15,8 +15,19 @@ void main() {
   test('keeps a known amount visible when its currency is missing', () {
     expect(
       formatPrice('1250.00', null),
-      '1\u202f250,00 — devise non renseignée',
+      '1\u00a0250,00 — devise non renseignée',
     );
+  });
+
+  test('writes the CFA franc as FCFA, without decimals that are zero', () {
+    expect(formatPrice('1650.00', 'XAF'), '1\u00a0650 FCFA');
+    expect(formatPrice('950', 'XAF'), '950 FCFA');
+    // A real decimal is never dropped nor rounded.
+    expect(formatPrice('1234.50', 'XAF'), '1\u00a0234,50 FCFA');
+  });
+
+  test('other currencies keep their cents and their code', () {
+    expect(formatPrice('10.00', 'EUR'), '10,00 EUR');
   });
 
   test('does not render a currency when the amount is missing', () {
@@ -24,8 +35,8 @@ void main() {
   });
 
   test('rounds derived unit prices half up, by currency', () {
-    expect(formatUnitPrice('1900.000000', 'XAF'), '1 900 XAF');
-    expect(formatUnitPrice('1379.500000', 'XAF'), '1 380 XAF');
+    expect(formatUnitPrice('1900.000000', 'XAF'), '1 900 FCFA');
+    expect(formatUnitPrice('1379.500000', 'XAF'), '1 380 FCFA');
     expect(formatUnitPrice('9.995000', 'EUR'), '10,00 EUR');
     expect(formatUnitPrice('0.004', 'EUR'), '0,00 EUR');
   });

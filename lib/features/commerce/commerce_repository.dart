@@ -86,9 +86,11 @@ class CommerceRepository {
     int? pickupLocationId,
     String notes = '',
     bool acceptPriceChanges = false,
+    required String idempotencyKey,
   }) => _api.post(
     'api/orders/checkout/',
     CustomerOrder.fromJson,
+    idempotencyKey: idempotencyKey,
     data: {
       'delivery_mode': deliveryMode,
       'delivery_address_id': addressId,
@@ -127,9 +129,11 @@ class CommerceRepository {
     required String method,
     required String provider,
     String instrumentHint = '',
+    required String idempotencyKey,
   }) => _api.post(
     'api/payments/initiate/',
     Payment.fromJson,
+    idempotencyKey: idempotencyKey,
     data: {
       'order_id': orderId,
       'method': method,
@@ -152,9 +156,11 @@ class CommerceRepository {
     String number, {
     String? amount,
     String reason = '',
+    required String idempotencyKey,
   }) => _api.post(
     'api/payments/$number/refund/',
     Payment.fromJson,
+    idempotencyKey: idempotencyKey,
     data: {'amount': amount, 'reason': reason},
   );
 

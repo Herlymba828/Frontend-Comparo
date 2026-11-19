@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/network/idempotency.dart';
 import '../../core/formatters/price_formatter.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/async_views.dart';
+import '../../core/widgets/text_entry_dialog.dart';
 import '../commerce/commerce_models.dart';
 import '../commerce/commerce_repository.dart';
 import '../commerce/order_sections.dart';
@@ -33,6 +35,8 @@ class _MerchantOrderScreenState extends ConsumerState<MerchantOrderScreen> {
       ..invalidate(orderFulfilmentProvider(widget.orderId))
       ..invalidate(shopOrdersProvider);
   }
+
+  final _actionKeys = ActionKeys();
 
   Future<void> _run(Future<void> Function() action, String success) async {
     setState(() => _busy = true);
@@ -123,52 +127,30 @@ class _MerchantOrderScreenState extends ConsumerState<MerchantOrderScreen> {
     final remaining = payment.amountRemaining.isEmpty
         ? payment.amount
         : payment.amountRemaining;
-    final reason = TextEditingController();
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Rembourser le client ?'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Le montant restant (${formatPrice(remaining, payment.currency)}) '
-              'est remboursé et la commande annulée si elle n’est pas livrée.',
-            ),
-            TextField(
-              controller: reason,
-              maxLength: 200,
-              decoration: const InputDecoration(
-                labelText: 'Motif (communiqué au client)',
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Annuler'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Rembourser'),
-          ),
-        ],
+    final text = await showTextEntry(
+      context,
+      title: 'Rembourser le client ?',
+      label: 'Motif (communiqué au client)',
+      confirmLabel: 'Rembourser',
+      maxLength: 200,
+      intro: Text(
+        'Le montant restant (${formatPrice(remaining, payment.currency)}) '
+        'est remboursé et la commande annulée si elle n’est pas livrée.',
       ),
     );
-    final text = reason.text.trim();
-    reason.dispose();
-    if (ok ?? false) {
-      await _run(
-        () => ref
+    if (text != null) {
+      final reason = text.isEmpty ? 'Remboursement marchand' : text;
+      final action = (payment.number, reason);
+      await _run(() async {
+        await ref
             .read(commerceRepositoryProvider)
             .refundPayment(
               payment.number,
-              reason: text.isEmpty ? 'Remboursement marchand' : text,
-            ),
-        'Remboursement enregistré.',
-      );
+              reason: reason,
+              idempotencyKey: _actionKeys.keyFor(action),
+            );
+        _actionKeys.succeeded(action);
+      }, 'Remboursement enregistré.');
     }
   }
 

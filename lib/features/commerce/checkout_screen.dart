@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/network/idempotency.dart';
 import '../../core/errors/api_exception.dart';
 import '../../core/formatters/price_formatter.dart';
 import '../../core/theme/app_theme.dart';
@@ -33,6 +34,7 @@ class _CheckoutBodyState extends ConsumerState<_CheckoutBody> {
   int? _addressId;
   int? _locationId;
   final _notes = TextEditingController();
+  final _actionKeys = ActionKeys();
   bool _submitting = false;
 
   @override
@@ -132,16 +134,22 @@ class _CheckoutBodyState extends ConsumerState<_CheckoutBody> {
       return;
     }
     setState(() => _submitting = true);
+    final addressId = _mode == 'delivery' ? _addressId : null;
+    final locationId = _mode == 'pickup' ? _locationId : null;
+    final notes = _notes.text.trim();
+    final action = (_mode, addressId, locationId, notes, acceptPriceChanges);
     try {
       final order = await ref
           .read(commerceRepositoryProvider)
           .checkout(
             deliveryMode: _mode,
-            addressId: _mode == 'delivery' ? _addressId : null,
-            pickupLocationId: _mode == 'pickup' ? _locationId : null,
-            notes: _notes.text.trim(),
+            addressId: addressId,
+            pickupLocationId: locationId,
+            notes: notes,
             acceptPriceChanges: acceptPriceChanges,
+            idempotencyKey: _actionKeys.keyFor(action),
           );
+      _actionKeys.succeeded(action);
       ref
         ..invalidate(cartProvider)
         ..invalidate(myOrdersProvider);

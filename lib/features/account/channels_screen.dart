@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/async_views.dart';
+import '../../core/widgets/text_entry_dialog.dart';
 import 'channels_repository.dart';
 
 const _channelIcons = {
@@ -162,31 +163,12 @@ class _ChannelsBodyState extends ConsumerState<_ChannelsBody> {
     required String label,
     required TextInputType keyboard,
   }) async {
-    final controller = TextEditingController();
-    final value = await showDialog<String>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(title),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          keyboardType: keyboard,
-          decoration: InputDecoration(labelText: label),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Annuler'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, controller.text.trim()),
-            child: const Text('Valider'),
-          ),
-        ],
-      ),
+    return showTextEntry(
+      context,
+      title: title,
+      label: label,
+      keyboardType: keyboard,
     );
-    controller.dispose();
-    return value;
   }
 
   Future<void> _unlink(MessagingChannel channel) async {

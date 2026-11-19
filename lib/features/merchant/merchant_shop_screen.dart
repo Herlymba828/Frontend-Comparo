@@ -66,7 +66,7 @@ class MerchantShopScreen extends ConsumerWidget {
         const SizedBox(height: AppSpacing.space12),
         ShopLogoCard(shop: shop),
         const SizedBox(height: AppSpacing.space12),
-        ShopDocumentsCard(shop: shop),
+        ShopApplicationCard(shop: shop),
         const SizedBox(height: AppSpacing.space12),
         SectionCard(
           title: 'Points de retrait',

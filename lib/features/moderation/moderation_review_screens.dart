@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../core/files/protected_file.dart';
 import '../../core/formatters/price_formatter.dart';
 import '../../core/json/json_reader.dart';
 import '../../core/network/json_api.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/async_views.dart';
 import '../../core/widgets/market_widgets.dart';
-import '../merchant/merchant_repository.dart' show ShopDocument;
 
 /// A price far from its product's recent prices (PJ-020): a signal, not a
 /// verdict.
@@ -74,34 +72,6 @@ const severityLabels = {
   'critical': 'Critique',
 };
 
-/// A shop waiting for verification (PJ-022).
-class PendingShop {
-  const PendingShop({
-    required this.id,
-    required this.name,
-    required this.description,
-    required this.phone,
-    required this.email,
-    required this.createdAt,
-  });
-
-  final int id;
-  final String name;
-  final String description;
-  final String phone;
-  final String email;
-  final DateTime? createdAt;
-
-  factory PendingShop.fromJson(Map<String, dynamic> json) => PendingShop(
-    id: json.requireInt('id'),
-    name: json.string('name'),
-    description: json.string('description'),
-    phone: json.string('phone'),
-    email: json.string('email'),
-    createdAt: json.dateOrNull('created_at'),
-  );
-}
-
 final openAnomaliesProvider = FutureProvider.autoDispose<List<PriceAnomaly>>((
   ref,
 ) async {
@@ -114,20 +84,6 @@ final openAnomaliesProvider = FutureProvider.autoDispose<List<PriceAnomaly>>((
   return all.where((anomaly) => anomaly.isOpen).toList();
 });
 
-final shopsToVerifyProvider = FutureProvider.autoDispose<List<PendingShop>>(
-  (ref) => ref
-      .watch(jsonApiProvider)
-      .getAll('api/merchants/to_verify/', PendingShop.fromJson),
-);
-
-/// The verification documents a shop sent (moderators only).
-final pendingShopDocumentsProvider = FutureProvider.autoDispose
-    .family<List<ShopDocument>, int>(
-      (ref, shopId) => ref
-          .watch(jsonApiProvider)
-          .getAll('api/merchants/$shopId/documents/', ShopDocument.fromJson),
-    );
-
 /// Asks a note; null when cancelled. [required] refuses an empty note.
 Future<String?> askNote(
   BuildContext context, {
@@ -135,36 +91,60 @@ Future<String?> askNote(
   required String label,
   bool required = false,
 }) async {
-  final controller = TextEditingController();
   final note = await showDialog<String>(
     context: context,
-    builder: (context) => AlertDialog(
-      title: Text(title),
-      content: TextField(
-        controller: controller,
-        autofocus: true,
-        maxLength: 1000,
-        maxLines: 3,
-        decoration: InputDecoration(labelText: label),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Annuler'),
-        ),
-        FilledButton(
-          onPressed: () => Navigator.pop(context, controller.text.trim()),
-          child: const Text('Valider'),
-        ),
-      ],
-    ),
+    builder: (context) => _NoteDialog(title: title, label: label),
   );
-  controller.dispose();
   if (note != null && required && note.isEmpty && context.mounted) {
     showInfo(context, 'Indiquez un motif.');
     return null;
   }
   return note;
+}
+
+/// The dialog owns its text field: the controller lives as long as the
+/// dialog, including its closing animation (disposing it right after
+/// `showDialog` returns would leave the closing dialog using a dead one).
+class _NoteDialog extends StatefulWidget {
+  const _NoteDialog({required this.title, required this.label});
+
+  final String title;
+  final String label;
+
+  @override
+  State<_NoteDialog> createState() => _NoteDialogState();
+}
+
+class _NoteDialogState extends State<_NoteDialog> {
+  final _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => AlertDialog(
+    title: Text(widget.title),
+    content: TextField(
+      controller: _controller,
+      autofocus: true,
+      maxLength: 1000,
+      maxLines: 3,
+      decoration: InputDecoration(labelText: widget.label),
+    ),
+    actions: [
+      TextButton(
+        onPressed: () => Navigator.pop(context),
+        child: const Text('Annuler'),
+      ),
+      FilledButton(
+        onPressed: () => Navigator.pop(context, _controller.text.trim()),
+        child: const Text('Valider'),
+      ),
+    ],
+  );
 }
 
 class ModerationAnomaliesScreen extends ConsumerStatefulWidget {
@@ -306,181 +286,5 @@ class _ModerationAnomaliesScreenState
               ),
       ),
     );
-  }
-}
-
-class ModerationShopsScreen extends ConsumerStatefulWidget {
-  const ModerationShopsScreen({super.key});
-
-  @override
-  ConsumerState<ModerationShopsScreen> createState() =>
-      _ModerationShopsScreenState();
-}
-
-class _ModerationShopsScreenState extends ConsumerState<ModerationShopsScreen> {
-  final _busy = <int>{};
-
-  Future<void> _decide(PendingShop shop, {required bool verify}) async {
-    final documents = ref.read(pendingShopDocumentsProvider(shop.id)).value;
-    if (verify && documents != null && documents.isEmpty) {
-      final ok = await confirmAction(
-        context,
-        title: 'Vérifier sans justificatif ?',
-        message: '${shop.name} n’a envoyé aucun justificatif.',
-        confirmLabel: 'Vérifier quand même',
-      );
-      if (!ok || !mounted) {
-        return;
-      }
-    }
-    String? reason;
-    if (!verify) {
-      reason = await askNote(
-        context,
-        title: 'Vérification à compléter',
-        label: 'Ce qui manque (envoyé au marchand)',
-        required: true,
-      );
-      if (reason == null || !mounted) {
-        return;
-      }
-    }
-    setState(() => _busy.add(shop.id));
-    try {
-      await ref
-          .read(jsonApiProvider)
-          .send(
-            'api/merchants/${shop.id}/'
-            '${verify ? 'verify' : 'reject_verification'}/',
-            data: verify ? null : {'reason': reason},
-          );
-      if (mounted) {
-        showInfo(
-          context,
-          verify ? 'Boutique vérifiée.' : 'Le marchand est prévenu.',
-        );
-      }
-    } catch (error) {
-      if (mounted) {
-        showApiError(context, error);
-      }
-    } finally {
-      ref.invalidate(shopsToVerifyProvider);
-      if (mounted) {
-        setState(() => _busy.remove(shop.id));
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return RefreshIndicator(
-      onRefresh: () async => ref.invalidate(shopsToVerifyProvider),
-      child: AsyncBody<List<PendingShop>>(
-        value: ref.watch(shopsToVerifyProvider),
-        onRetry: () => ref.invalidate(shopsToVerifyProvider),
-        builder: (shops) => shops.isEmpty
-            ? const EmptyState(
-                icon: Icons.storefront_outlined,
-                title: 'Aucune boutique à vérifier.',
-              )
-            : ListView.separated(
-                physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.all(AppSpacing.space16),
-                itemCount: shops.length,
-                separatorBuilder: (context, index) =>
-                    const SizedBox(height: AppSpacing.space8),
-                itemBuilder: (context, index) {
-                  final shop = shops[index];
-                  final busy = _busy.contains(shop.id);
-                  return SectionCard(
-                    title: shop.name,
-                    children: [
-                      if (shop.description.isNotEmpty) Text(shop.description),
-                      InfoRow(
-                        'Téléphone',
-                        shop.phone.isEmpty ? '—' : shop.phone,
-                      ),
-                      InfoRow('E-mail', shop.email.isEmpty ? '—' : shop.email),
-                      InfoRow('Ouverte le', formatDateTime(shop.createdAt)),
-                      const Divider(),
-                      _ShopDocuments(shop: shop),
-                      const SizedBox(height: AppSpacing.space8),
-                      Wrap(
-                        spacing: AppSpacing.space8,
-                        children: [
-                          OutlinedButton(
-                            onPressed: busy
-                                ? null
-                                : () => _decide(shop, verify: false),
-                            child: const Text('Demander un complément'),
-                          ),
-                          FilledButton(
-                            onPressed: busy
-                                ? null
-                                : () => _decide(shop, verify: true),
-                            child: const Text('Vérifier'),
-                          ),
-                        ],
-                      ),
-                    ],
-                  );
-                },
-              ),
-      ),
-    );
-  }
-}
-
-/// The documents a shop sent for its verification, each one openable.
-class _ShopDocuments extends ConsumerWidget {
-  const _ShopDocuments({required this.shop});
-
-  final PendingShop shop;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final provider = pendingShopDocumentsProvider(shop.id);
-    return ref
-        .watch(provider)
-        .when(
-          loading: () => const LinearProgressIndicator(),
-          error: (error, stackTrace) => Row(
-            children: [
-              Expanded(child: Text(errorText(error))),
-              TextButton(
-                onPressed: () => ref.invalidate(provider),
-                child: const Text('Réessayer'),
-              ),
-            ],
-          ),
-          data: (documents) => documents.isEmpty
-              ? const Text('Aucun justificatif envoyé.')
-              : Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Justificatifs',
-                      style: Theme.of(context).textTheme.titleSmall,
-                    ),
-                    for (final document in documents)
-                      ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        leading: const Icon(Icons.description_outlined),
-                        title: Text(document.kindLabel),
-                        subtitle: Text(
-                          'Envoyé le ${formatDateTime(document.createdAt)}',
-                        ),
-                        trailing: const Icon(Icons.open_in_new),
-                        onTap: () => openProtectedFile(
-                          context,
-                          ref,
-                          path: document.downloadUrl,
-                          title: '${shop.name} — ${document.kindLabel}',
-                        ),
-                      ),
-                  ],
-                ),
-        );
   }
 }

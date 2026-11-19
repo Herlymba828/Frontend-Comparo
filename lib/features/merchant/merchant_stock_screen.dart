@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/async_views.dart';
 import 'merchant_repository.dart';
+import 'merchant_shell.dart';
 import '../catalog/product_picker_field.dart';
 
 /// Stock declared per product (reserved at order time).
@@ -32,10 +33,10 @@ class MerchantStockScreen extends ConsumerWidget {
     }
 
     return Scaffold(
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: ShopActionButton(
         onPressed: () => edit(),
-        icon: const Icon(Icons.add),
-        label: const Text('Déclarer un stock'),
+        icon: Icons.add,
+        label: 'Déclarer un stock',
       ),
       body: RefreshIndicator(
         onRefresh: () async => ref.invalidate(shopStockProvider(shopId)),
@@ -64,7 +65,10 @@ class MerchantStockScreen extends ConsumerWidget {
                               ? null
                               : Text('Quantité : ${line.quantity}'),
                           trailing: StatusStamp(line.status),
-                          onTap: () => edit(line: line),
+                          onTap: () => whenShopCanPublish(
+                            context,
+                            () => edit(line: line),
+                          ),
                         ),
                       ),
                   ],

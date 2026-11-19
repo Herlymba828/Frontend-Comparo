@@ -20,6 +20,7 @@ class Shop {
     required this.email,
     required this.status,
     required this.isVerified,
+    this.isActive = true,
     this.logoUrl = '',
   });
 
@@ -30,6 +31,13 @@ class Shop {
   final String email;
   final String status;
   final bool isVerified;
+
+  /// False once the team suspends or closes the shop.
+  final bool isActive;
+
+  /// Same rule as the API: only a verified, active shop publishes prices,
+  /// offers and stock.
+  bool get canPublish => isVerified && isActive;
 
   /// Public address of the shop logo; empty without one.
   final String logoUrl;
@@ -42,46 +50,9 @@ class Shop {
     email: json.string('email'),
     status: json.string('status', 'pending'),
     isVerified: json.flag('is_verified'),
+    isActive: json.flag('is_active', true),
     logoUrl: json.string('logo_url'),
   );
-}
-
-/// Kinds of verification documents, with their French labels.
-const shopDocumentKinds = {
-  'identity': 'Pièce d’identité du gérant',
-  'registration': 'Registre du commerce (RCCM)',
-  'tax': 'Numéro fiscal (NIF)',
-  'address': 'Justificatif d’adresse du commerce',
-  'other': 'Autre justificatif',
-};
-
-/// A document sent for the shop verification; private to the owner and the
-/// moderators.
-class ShopDocument {
-  const ShopDocument({
-    required this.id,
-    required this.kind,
-    required this.kindLabel,
-    required this.downloadUrl,
-    this.createdAt,
-  });
-
-  final int id;
-  final String kind;
-  final String kindLabel;
-  final String downloadUrl;
-  final DateTime? createdAt;
-
-  factory ShopDocument.fromJson(Map<String, dynamic> json) {
-    final kind = json.string('kind', 'other');
-    return ShopDocument(
-      id: json.requireInt('id'),
-      kind: kind,
-      kindLabel: json.string('kind_label', shopDocumentKinds[kind] ?? kind),
-      downloadUrl: json.string('download_url'),
-      createdAt: json.dateOrNull('created_at'),
-    );
-  }
 }
 
 class ShopOffer {
@@ -194,11 +165,6 @@ final myShopProvider = FutureProvider.autoDispose<Shop?>(
   (ref) => ref.watch(merchantRepositoryProvider).getMyShop(),
 );
 
-/// Verification documents of the caller's shop.
-final shopDocumentsProvider = FutureProvider.autoDispose<List<ShopDocument>>(
-  (ref) => ref.watch(merchantRepositoryProvider).getDocuments(),
-);
-
 final shopOrdersProvider = FutureProvider.autoDispose
     .family<List<CustomerOrder>, int>(
       (ref, shopId) => ref.watch(merchantRepositoryProvider).getOrders(shopId),
@@ -280,7 +246,7 @@ class MerchantRepository {
     data: {'name': name, 'description': description, 'phone': phone},
   );
 
-  // ── Logo and verification documents ───────────────────────────────────
+  // ── Logo (the shop's documents go through its role application) ─────
   Future<void> uploadLogo(UploadFile file) => _api.postForm(
     'api/merchants/me/logo/',
     (json) => json,
@@ -289,20 +255,6 @@ class MerchantRepository {
   );
 
   Future<void> removeLogo() => _api.delete('api/merchants/me/logo/');
-
-  Future<List<ShopDocument>> getDocuments() async =>
-      await _api.getAll('api/merchants/me/documents/', ShopDocument.fromJson);
-
-  Future<void> addDocument(String kind, UploadFile file) => _api.postForm(
-    'api/merchants/me/documents/',
-    (json) => json,
-    fields: {'kind': kind},
-    files: {'file': file.toMultipart()},
-  );
-
-  /// Refused once the shop is verified: its file is kept.
-  Future<void> deleteDocument(int id) =>
-      _api.delete('api/merchants/me/documents/$id/');
 
   Future<void> addLocation(
     int shopId, {

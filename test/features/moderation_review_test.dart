@@ -25,6 +25,6 @@ void main() {
 
   test('the moderation space has its four tabs', () {
     expect(spaceTabIndex(moderationTabs, '/moderation/anomalies'), 2);
-    expect(spaceTabIndex(moderationTabs, '/moderation/shops'), 3);
+    expect(spaceTabIndex(moderationTabs, '/moderation/applications'), 3);
   });
 }

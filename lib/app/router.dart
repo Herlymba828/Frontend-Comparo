@@ -36,8 +36,12 @@ import '../features/merchant/merchant_stock_screen.dart';
 import '../features/moderation/moderation_review_screens.dart';
 import '../features/moderation/moderation_screen.dart';
 import '../features/product/product_screen.dart';
+import '../features/roles/application_screen.dart';
+import '../features/roles/applications_review_screens.dart';
+import '../features/roles/my_roles_screen.dart';
 import '../features/search/search_screen.dart';
 import '../features/stores/stores_screen.dart';
+import '../features/support_agent/support_agent_screens.dart';
 
 int _id(GoRouterState state) =>
     int.tryParse(state.pathParameters['id'] ?? '') ?? 0;
@@ -137,6 +141,15 @@ class AppRouter {
         builder: (context, state) => const FavoritesScreen(),
       ),
       GoRoute(
+        path: '/account/roles',
+        builder: (context, state) => const MyRolesScreen(),
+      ),
+      GoRoute(
+        path: '/account/roles/applications/:id',
+        builder: (context, state) =>
+            ApplicationScreen(applicationId: _id(state)),
+      ),
+      GoRoute(
         path: '/account/channels',
         builder: (context, state) => const ChannelsScreen(),
       ),
@@ -231,6 +244,28 @@ class AppRouter {
         builder: (context, state) =>
             CourierDeliveryScreen(deliveryId: _id(state)),
       ),
+      // ── Support ───────────────────────────────────────────────────────
+      GoRoute(
+        path: '/agent',
+        redirect: (context, state) => '/agent/complaints',
+      ),
+      ShellRoute(
+        builder: (context, state, child) =>
+            SupportShell(location: state.uri.path, child: child),
+        routes: [
+          _tab('/agent/complaints', const AgentComplaintsScreen()),
+          _tab('/agent/tickets', const AgentTicketsScreen()),
+        ],
+      ),
+      GoRoute(
+        path: '/agent/complaints/:id',
+        builder: (context, state) =>
+            AgentComplaintScreen(complaintId: _id(state)),
+      ),
+      GoRoute(
+        path: '/agent/tickets/:id',
+        builder: (context, state) => AgentTicketScreen(ticketId: _id(state)),
+      ),
       // ── Moderation ────────────────────────────────────────────────────
       GoRoute(
         path: '/moderation',
@@ -243,8 +278,14 @@ class AppRouter {
           _tab('/moderation/pending', const ModerationQueueScreen()),
           _tab('/moderation/decided', const ModerationDecisionsScreen()),
           _tab('/moderation/anomalies', const ModerationAnomaliesScreen()),
-          _tab('/moderation/shops', const ModerationShopsScreen()),
+          _tab('/moderation/applications', const ApplicationsQueueScreen()),
+          _tab('/moderation/roles', const RoleGrantsScreen()),
         ],
+      ),
+      GoRoute(
+        path: '/moderation/applications/:id',
+        builder: (context, state) =>
+            ApplicationReviewScreen(applicationId: _id(state)),
       ),
     ],
   );

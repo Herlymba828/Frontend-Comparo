@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/formatters/price_formatter.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/async_views.dart';
+import '../../core/widgets/text_entry_dialog.dart';
 import '../../core/widgets/market_widgets.dart';
 import '../../core/widgets/space_scaffold.dart';
 import '../account/account_repository.dart';
@@ -25,14 +26,21 @@ const moderationTabs = [
     selectedIcon: Icons.report_problem,
   ),
   SpaceTab(
-    'Boutiques',
-    Icons.storefront_outlined,
-    '/moderation/shops',
-    selectedIcon: Icons.storefront,
+    'Candidatures',
+    Icons.how_to_reg_outlined,
+    '/moderation/applications',
+    selectedIcon: Icons.how_to_reg,
+  ),
+  SpaceTab(
+    'Rôles',
+    Icons.admin_panel_settings_outlined,
+    '/moderation/roles',
+    selectedIcon: Icons.admin_panel_settings,
   ),
 ];
 
-/// Moderation space: price reports, anomalies and shops to verify.
+/// Moderation space: price reports, anomalies, role applications and the
+/// roles held by merchants and couriers.
 class ModerationShell extends StatelessWidget {
   const ModerationShell({
     super.key,
@@ -101,38 +109,15 @@ class _ModerationQueueScreenState extends ConsumerState<ModerationQueueScreen> {
 
   /// Reason shown to the contributor; null when cancelled.
   Future<String?> _askReason(String decision) async {
-    final controller = TextEditingController();
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          decision == 'duplicate'
-              ? 'Marquer comme doublon'
-              : 'Refuser le relevé',
-        ),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          maxLength: 300,
-          decoration: const InputDecoration(
-            labelText: 'Motif (communiqué au contributeur)',
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Annuler'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Valider'),
-          ),
-        ],
-      ),
+    final text = await showTextEntry(
+      context,
+      title: decision == 'duplicate'
+          ? 'Marquer comme doublon'
+          : 'Refuser le relevé',
+      label: 'Motif (communiqué au contributeur)',
+      maxLength: 300,
     );
-    final text = controller.text.trim();
-    controller.dispose();
-    if (!(ok ?? false)) {
+    if (text == null) {
       return null;
     }
     if (text.isEmpty && mounted) {

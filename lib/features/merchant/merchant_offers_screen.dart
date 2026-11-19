@@ -4,8 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/formatters/price_formatter.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/async_views.dart';
+import '../../core/widgets/text_entry_dialog.dart';
 import '../../core/widgets/market_widgets.dart';
 import 'merchant_repository.dart';
+import 'merchant_shell.dart';
 import '../catalog/product_picker_field.dart';
 
 /// The shop's prices and the offers customers can order.
@@ -32,8 +34,9 @@ class MerchantOffersScreenState extends ConsumerState<MerchantOffersScreen> {
   Widget build(BuildContext context) {
     final prices = ref.watch(shopPricesProvider(widget.shopId));
     final offers = ref.watch(shopOffersProvider(widget.shopId));
+    final canPublish = shopCanPublish(context);
     return Scaffold(
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: ShopActionButton(
         onPressed: () async {
           final created = await showDialog<bool>(
             context: context,
@@ -43,8 +46,8 @@ class MerchantOffersScreenState extends ConsumerState<MerchantOffersScreen> {
             _refresh();
           }
         },
-        icon: const Icon(Icons.add),
-        label: const Text('Nouvelle offre'),
+        icon: Icons.add,
+        label: 'Nouvelle offre',
       ),
       body: RefreshIndicator(
         onRefresh: () async => _refresh(),
@@ -123,7 +126,9 @@ class MerchantOffersScreenState extends ConsumerState<MerchantOffersScreen> {
                             ),
                           if (price.canBeReplaced)
                             OutlinedButton.icon(
-                              onPressed: () => _replace(price),
+                              onPressed: canPublish
+                                  ? () => _replace(price)
+                                  : null,
                               icon: const Icon(Icons.edit_outlined),
                               label: const Text('Modifier le prix'),
                             ),
@@ -131,7 +136,7 @@ class MerchantOffersScreenState extends ConsumerState<MerchantOffersScreen> {
                               !offer.isActive &&
                               price.status == 'published')
                             FilledButton(
-                              onPressed: _busy.contains(offer.id)
+                              onPressed: !canPublish || _busy.contains(offer.id)
                                   ? null
                                   : () => _publish(offer),
                               child: const Text('Publier l’offre'),
@@ -152,47 +157,19 @@ class MerchantOffersScreenState extends ConsumerState<MerchantOffersScreen> {
   /// A new price replaces this one once validated; the old one stays in the
   /// price history.
   Future<void> _replace(ShopPrice price) async {
-    final controller = TextEditingController(
-      text: price.amount.replaceAll(RegExp(r'\.0+$'), ''),
-    );
-    final amount = await showDialog<String>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Nouveau prix : ${price.productName}'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextField(
-              controller: controller,
-              autofocus: true,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText:
-                    'Prix pour ${formatQuantity(price.quantity)} ${price.unit}',
-                suffixText: price.currency,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.space8),
-            const Text(
-              'L’ancien prix reste dans l’historique. Le nouveau est vérifié '
-              'avant d’être affiché.',
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Annuler'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, controller.text.trim()),
-            child: const Text('Envoyer'),
-          ),
-        ],
+    final amount = await showTextEntry(
+      context,
+      title: 'Nouveau prix : ${price.productName}',
+      label: 'Prix pour ${formatQuantity(price.quantity)} ${price.unit}',
+      confirmLabel: 'Envoyer',
+      initialText: price.amount.replaceAll(RegExp(r'\.0+$'), ''),
+      keyboardType: TextInputType.number,
+      suffixText: price.currency,
+      footer: const Text(
+        'L’ancien prix reste dans l’historique. Le nouveau est vérifié '
+        'avant d’être affiché.',
       ),
     );
-    controller.dispose();
     if (amount == null || amount.isEmpty || !mounted) {
       return;
     }

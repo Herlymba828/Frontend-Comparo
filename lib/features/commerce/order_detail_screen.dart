@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/network/idempotency.dart';
 import '../../core/formatters/price_formatter.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/async_views.dart';
@@ -27,6 +28,7 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
   bool _busy = false;
 
   CommerceRepository get _repo => ref.read(commerceRepositoryProvider);
+  final _actionKeys = ActionKeys();
 
   void _refresh() {
     ref
@@ -173,15 +175,17 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
     if (choice == null) {
       return;
     }
-    await _run(
-      () => _repo.initiatePayment(
+    final action = (order.id, choice.method, choice.provider, choice.phone);
+    await _run(() async {
+      await _repo.initiatePayment(
         orderId: order.id,
         method: choice.method,
         provider: choice.provider,
         instrumentHint: choice.phone,
-      ),
-      'Paiement initié.',
-    );
+        idempotencyKey: _actionKeys.keyFor(action),
+      );
+      _actionKeys.succeeded(action);
+    }, 'Paiement initié.');
   }
 
   Future<void> _cancelPayment(Payment payment) async {

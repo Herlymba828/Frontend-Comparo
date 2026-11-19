@@ -7,6 +7,7 @@ import 'package:frontend/core/files/protected_file.dart';
 import 'package:frontend/core/files/upload_file.dart';
 import 'package:frontend/features/disputes/complaint_attachments.dart';
 import 'package:frontend/features/merchant/merchant_repository.dart';
+import 'package:frontend/features/roles/roles_models.dart';
 
 UploadFile _file(String name, int size) =>
     UploadFile(bytes: Uint8List(size), filename: name);
@@ -88,14 +89,16 @@ void main() {
     expect(shop.logoUrl, endsWith('/api/merchants/3/logo/'));
     expect(Shop.fromJson({'id': 4}).logoUrl, isEmpty);
 
-    final document = ShopDocument.fromJson({
+    final document = ApplicationDocument.fromJson({
       'id': 9,
       'kind': 'tax',
-      'download_url': '/api/merchants/3/documents/9/file/',
+      'kind_label': 'Numéro d\'identification fiscale (NIF)',
+      'status': 'pending',
+      'download_url': '/api/roles/applications/3/documents/9/file/',
       'created_at': '2026-11-07T10:00:00Z',
     });
-    expect(document.kindLabel, 'Numéro fiscal (NIF)');
-    expect(document.downloadUrl, '/api/merchants/3/documents/9/file/');
+    expect(document.kindLabel, 'Numéro d\'identification fiscale (NIF)');
+    expect(document.downloadUrl, '/api/roles/applications/3/documents/9/file/');
   });
 
   test('a complaint piece says who added it', () {

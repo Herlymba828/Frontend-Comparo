@@ -1,41 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
-import '../../core/files/protected_file.dart';
 import '../../core/files/upload_file.dart';
+import '../../core/files/upload_flow.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/async_views.dart';
+import '../roles/roles_models.dart';
+import '../roles/roles_repository.dart';
 import 'merchant_repository.dart';
-
-/// Picks a file then sends it; a refused file only shows why.
-Future<bool> _pickAndSend(
-  BuildContext context, {
-  required bool allowPdf,
-  required int maxBytes,
-  required Future<void> Function(UploadFile file) send,
-}) async {
-  try {
-    final file = await pickUpload(
-      context,
-      allowPdf: allowPdf,
-      maxBytes: maxBytes,
-    );
-    if (file == null) {
-      return false;
-    }
-    await send(file);
-    return true;
-  } on UploadRejected catch (rejected) {
-    if (context.mounted) {
-      showInfo(context, rejected.message);
-    }
-  } catch (error) {
-    if (context.mounted) {
-      showApiError(context, error, 'Envoi impossible.');
-    }
-  }
-  return false;
-}
 
 /// The shop logo, shown to customers next to its offers.
 class ShopLogoCard extends ConsumerWidget {
@@ -83,7 +56,7 @@ class ShopLogoCard extends ConsumerWidget {
           children: [
             TextButton.icon(
               onPressed: () async {
-                final sent = await _pickAndSend(
+                final sent = await pickAndSendUpload(
                   context,
                   allowPdf: false,
                   maxBytes: logoMaxBytes,
@@ -118,120 +91,87 @@ class ShopLogoCard extends ConsumerWidget {
   }
 }
 
-/// Documents the moderators check before verifying the shop.
-class ShopDocumentsCard extends ConsumerWidget {
-  const ShopDocumentsCard({super.key, required this.shop});
+/// The shop's merchant application: its status, what the team asked, and the
+/// way to complete and follow it. The documents are sent there, with the
+/// other requirements of the role; the merchant role comes with the approval.
+class ShopApplicationCard extends ConsumerWidget {
+  const ShopApplicationCard({super.key, required this.shop});
 
   final Shop shop;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final documents = ref.watch(shopDocumentsProvider);
-    final repository = ref.read(merchantRepositoryProvider);
+    final text = Theme.of(context).textTheme;
+    final roles = ref.watch(myRolesProvider);
     return SectionCard(
-      title: 'Justificatifs',
-      trailing: IconButton(
-        tooltip: 'Envoyer un justificatif',
-        icon: const Icon(Icons.note_add_outlined),
-        onPressed: () async {
-          final kind = await _chooseKind(context);
-          if (kind == null || !context.mounted) {
-            return;
-          }
-          final sent = await _pickAndSend(
-            context,
-            allowPdf: true,
-            maxBytes: documentMaxBytes,
-            send: (file) => repository.addDocument(kind, file),
-          );
-          if (sent) {
-            ref.invalidate(shopDocumentsProvider);
-            if (context.mounted) {
-              showInfo(context, 'Justificatif envoyé à la modération.');
-            }
-          }
-        },
-      ),
+      title: 'Candidature marchand',
       children: [
-        Text(
-          shop.isVerified
-              ? 'Boutique vérifiée : vos justificatifs sont conservés.'
-              : 'Pièce d’identité, registre du commerce, numéro fiscal : '
-                    'la modération les examine pour vérifier la boutique. '
-                    'Photo ou PDF, 5 Mo au plus. Seuls vous et la modération '
-                    'les voyez.',
-          style: Theme.of(context).textTheme.bodySmall,
-        ),
-        documents.when(
+        roles.when(
           loading: () => const LinearProgressIndicator(),
-          error: (error, stackTrace) => Text(errorText(error)),
-          data: (items) => items.isEmpty
-              ? const Padding(
-                  padding: EdgeInsets.only(top: AppSpacing.space8),
-                  child: Text('Aucun justificatif envoyé.'),
-                )
-              : Column(
+          error: (error, stackTrace) => Row(
+            children: [
+              Expanded(child: Text(errorText(error))),
+              TextButton(
+                onPressed: () => ref.invalidate(myRolesProvider),
+                child: const Text('Réessayer'),
+              ),
+            ],
+          ),
+          data: (mine) {
+            final application = mine.latestApplicationFor('merchant');
+            if (shop.isVerified && application == null) {
+              return const Text('Boutique vérifiée.');
+            }
+            if (application == null) {
+              return const Text(
+                'Aucune candidature pour cette boutique. Contactez l’aide.',
+              );
+            }
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
                   children: [
-                    for (final document in items)
-                      ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        leading: const Icon(Icons.description_outlined),
-                        title: Text(document.kindLabel),
-                        subtitle: Text(
-                          'Envoyé le ${formatDateTime(document.createdAt)}',
-                        ),
-                        onTap: () => openProtectedFile(
-                          context,
-                          ref,
-                          path: document.downloadUrl,
-                          title: document.kindLabel,
-                        ),
-                        trailing: shop.isVerified
-                            ? null
-                            : IconButton(
-                                tooltip: 'Supprimer ce justificatif',
-                                icon: const Icon(Icons.delete_outline),
-                                onPressed: () async {
-                                  final ok = await confirmAction(
-                                    context,
-                                    title: 'Supprimer ce justificatif ?',
-                                    message: document.kindLabel,
-                                    confirmLabel: 'Supprimer',
-                                  );
-                                  if (!ok) {
-                                    return;
-                                  }
-                                  try {
-                                    await repository.deleteDocument(
-                                      document.id,
-                                    );
-                                    ref.invalidate(shopDocumentsProvider);
-                                  } catch (error) {
-                                    if (context.mounted) {
-                                      showApiError(context, error);
-                                    }
-                                  }
-                                },
-                              ),
-                      ),
+                    const Expanded(child: Text('État du dossier')),
+                    StatusStamp(application.status, labels: roleStatusLabels),
                   ],
                 ),
+                if (application.reviewerMessage.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(top: AppSpacing.space8),
+                    child: Text(application.reviewerMessage),
+                  ),
+                const SizedBox(height: AppSpacing.space8),
+                Text(
+                  shop.isVerified
+                      ? 'Boutique vérifiée : vos justificatifs sont conservés.'
+                      : application.isEditable
+                      ? 'Pièce d’identité, registre du commerce, numéro fiscal, '
+                            'justificatif d’adresse, photo de la devanture : '
+                            'envoyez-les puis soumettez votre dossier. Seuls vous '
+                            'et l’équipe les voyez.'
+                      : 'L’équipe examine votre dossier : vous serez prévenu '
+                            'de la décision.',
+                  style: text.bodySmall,
+                ),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () => context.push(
+                      '/account/roles/applications/${application.id}',
+                    ),
+                    child: Text(
+                      application.isEditable
+                          ? 'Compléter mon dossier'
+                          : 'Suivre mon dossier',
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ],
     );
   }
 }
-
-Future<String?> _chooseKind(BuildContext context) => showDialog<String>(
-  context: context,
-  builder: (context) => SimpleDialog(
-    title: const Text('Quel justificatif ?'),
-    children: [
-      for (final entry in shopDocumentKinds.entries)
-        SimpleDialogOption(
-          onPressed: () => Navigator.pop(context, entry.key),
-          child: Text(entry.value),
-        ),
-    ],
-  ),
-);

@@ -94,12 +94,21 @@ class JsonApi {
     return items;
   }
 
+  /// [idempotencyKey]: sent as the Idempotency-Key header (required by the
+  /// server on checkout, payment and refund; see ActionKeys).
   Future<T> post<T>(
     String path,
     JsonDecoder<T> decode, {
     Map<String, Object?>? data,
+    String? idempotencyKey,
   }) => _guard(() async {
-    final response = await _client.post<dynamic>(path, data: _clean(data));
+    final response = await _client.post<dynamic>(
+      path,
+      data: _clean(data),
+      options: idempotencyKey == null
+          ? null
+          : Options(headers: {'Idempotency-Key': idempotencyKey}),
+    );
     return decode(_map(response.data));
   });
 

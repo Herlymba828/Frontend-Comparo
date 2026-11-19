@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/async_views.dart';
+import '../../core/widgets/text_entry_dialog.dart';
 import '../../core/widgets/space_scaffold.dart';
 import '../identity/data/auth_providers.dart';
 import '../identity/models/auth_user.dart';
@@ -122,6 +123,12 @@ class _AccountMenu extends ConsumerWidget {
             AppSpace.merchant.home,
             subtitle: 'Vendre et recevoir des commandes',
           ),
+        entry(
+          Icons.verified_user_outlined,
+          'Mes rôles et candidatures',
+          '/account/roles',
+          subtitle: 'Devenir coursier, suivre un dossier, voir mes accès',
+        ),
         _Header('Compte'),
         entry(
           Icons.manage_accounts_outlined,
@@ -399,34 +406,16 @@ class _ProfileBodyState extends ConsumerState<_ProfileBody> {
   }
 
   Future<void> _closeAccount() async {
-    final password = TextEditingController();
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Fermer définitivement le compte ?'),
-        content: TextField(
-          controller: password,
-          obscureText: true,
-          autofocus: true,
-          decoration: const InputDecoration(
-            labelText: 'Mot de passe pour confirmer',
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Annuler'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Fermer le compte'),
-          ),
-        ],
-      ),
+    final secret = await showTextEntry(
+      context,
+      title: 'Fermer définitivement le compte ?',
+      label: 'Mot de passe pour confirmer',
+      confirmLabel: 'Fermer le compte',
+      obscureText: true,
+      // A password is kept exactly as typed.
+      trim: false,
     );
-    final secret = password.text;
-    password.dispose();
-    if (!(confirmed ?? false) || !mounted) {
+    if (secret == null || !mounted) {
       return;
     }
     final router = GoRouter.of(context);

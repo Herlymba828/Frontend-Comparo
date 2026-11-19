@@ -62,6 +62,18 @@ class SignedInSession extends AuthSessionController {
   );
 }
 
+/// A signed-in shop owner.
+class MerchantSession extends AuthSessionController {
+  @override
+  Future<AuthUser?> build() async => const AuthUser(
+    id: 2,
+    email: 'boutique@demo.ga',
+    displayName: 'Boutique',
+    emailVerified: true,
+    roles: ['consumer', 'merchant'],
+  );
+}
+
 /// A visitor.
 class VisitorSession extends AuthSessionController {
   @override

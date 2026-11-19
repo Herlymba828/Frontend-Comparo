@@ -13,7 +13,8 @@ enum AppSpace {
   customer('Espace client', Icons.shopping_basket_outlined, '/'),
   merchant('Espace marchand', Icons.storefront_outlined, '/merchant/orders'),
   courier('Espace coursier', Icons.delivery_dining, '/courier/deliveries'),
-  moderation('Modération', Icons.fact_check_outlined, '/moderation/pending');
+  moderation('Modération', Icons.fact_check_outlined, '/moderation/pending'),
+  support('Espace support', Icons.support_agent, '/agent/complaints');
 
   const AppSpace(this.label, this.icon, this.home);
 
@@ -29,12 +30,15 @@ enum AppSpace {
     AppSpace.merchant => 'merchant',
     AppSpace.courier => 'courier',
     AppSpace.moderation => 'moderator',
+    AppSpace.support => 'support',
   };
 
   bool isOpenTo(AuthUser user) => switch (this) {
     AppSpace.customer => true,
     // Admins moderate as well (same rule as the API).
     AppSpace.moderation => user.hasRole('moderator') || user.hasRole('admin'),
+    // Admins handle support as well (same rule as the API).
+    AppSpace.support => user.hasRole('support') || user.hasRole('admin'),
     _ => user.hasRole(role!),
   };
 }
@@ -62,6 +66,7 @@ class SpaceScaffold extends StatelessWidget {
     required this.location,
     required this.child,
     this.showTabs = true,
+    this.roleGate = true,
   });
 
   final AppSpace space;
@@ -71,6 +76,10 @@ class SpaceScaffold extends StatelessWidget {
 
   /// False while the space is not set up yet (a merchant without shop).
   final bool showTabs;
+
+  /// False when any signed-in user may enter: the space itself leads the
+  /// user to the role (the merchant space opens a shop).
+  final bool roleGate;
 
   @override
   Widget build(BuildContext context) {
@@ -93,7 +102,7 @@ class SpaceScaffold extends StatelessWidget {
       child: SignedInGate(
         signInMessage:
             'Connectez-vous pour accéder à votre ${space.label.toLowerCase()}.',
-        builder: (user) => space.isOpenTo(user)
+        builder: (user) => !roleGate || space.isOpenTo(user)
             ? child
             : const EmptyState(
                 icon: Icons.block,

@@ -8,6 +8,7 @@ import '../../core/widgets/async_views.dart';
 import '../../core/widgets/market_widgets.dart';
 import 'commerce_models.dart';
 import 'commerce_repository.dart';
+import '../recommendations/recommendations.dart';
 
 class CartScreen extends StatelessWidget {
   const CartScreen({super.key});
@@ -87,6 +88,7 @@ class _CartBodyState extends ConsumerState<_CartBody> {
                     ),
                   ),
                   const SizedBox(height: AppSpacing.space16),
+                  const CartAdviceCard(),
                   FilledButton.icon(
                     onPressed: _validating ? null : _checkout,
                     icon: _validating

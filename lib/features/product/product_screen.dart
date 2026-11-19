@@ -19,6 +19,7 @@ import '../favorites/favorite_buttons.dart';
 import '../quality/price_flag.dart';
 import '../comparison/trust_line.dart';
 import '../identity/data/auth_providers.dart';
+import '../recommendations/recommendations.dart';
 import '../stores/stores_screen.dart';
 import 'price_evolution.dart';
 import 'product_share.dart';
@@ -266,6 +267,7 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                     },
                   ),
                   const SizedBox(height: AppSpacing.space24),
+                  SubstituteRecommendationsSection(productId: id),
                   AlternativesSection(productId: id),
                   PriceEvolutionSection(productId: id),
                   const SizedBox(height: AppSpacing.space24),

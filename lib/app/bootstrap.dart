@@ -5,8 +5,10 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 import '../core/errors/error_reporter.dart';
 import '../core/errors/global_error_handlers.dart';
 import '../core/errors/sentry_reporting.dart';
+import '../core/network/acting_role.dart';
 import '../features/contributions/report_outbox.dart';
 import 'app.dart';
+import 'router.dart';
 
 // Crash reporting is off until the build sets SENTRY_DSN: then the errors of
 // the global handlers also go to Sentry (see sentry_reporting.dart).
@@ -30,7 +32,18 @@ Future<void> bootstrap({
 void _start(ErrorReporter reporter) {
   // Before anything runs: an error during start-up is reported too.
   installGlobalErrorHandlers(reporter);
-  runApp(const ProviderScope(child: _OfflineSync(child: ComparateurPrixApp())));
+  runApp(
+    ProviderScope(
+      overrides: [
+        // Each request tells the server which space it comes from (the
+        // screen's path): the server limits the user to that role.
+        currentPathProvider.overrideWithValue(
+          () => AppRouter.router.routeInformationProvider.value.uri.path,
+        ),
+      ],
+      child: const _OfflineSync(child: ComparateurPrixApp()),
+    ),
+  );
 }
 
 /// Keeps the offline queue alive for the whole session: reports left from a

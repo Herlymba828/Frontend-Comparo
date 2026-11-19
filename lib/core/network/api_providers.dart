@@ -1,9 +1,12 @@
+import 'dart:developer' as developer;
+
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../features/identity/data/auth_providers.dart';
 import '../../features/identity/data/auth_token_storage.dart';
 import '../config/app_config.dart';
+import 'acting_role.dart';
 import 'api_client.dart';
 
 final authTokenStorageProvider = Provider<AuthTokenStorage>((ref) {
@@ -18,6 +21,12 @@ final apiClientProvider = Provider<Dio>((ref) {
     tokenStorage,
     // Tokens were rejected by the server: reflect the logout in the UI.
     onSessionExpired: () => ref.invalidate(authSessionProvider),
+    actingRole: () {
+      final roles = ref.read(authSessionProvider).value?.roles;
+      return roles == null
+          ? null
+          : actingRoleFor(path: ref.read(currentPathProvider)(), roles: roles);
+    },
   );
   ref.onDispose(client.close);
   return client;
@@ -30,10 +39,35 @@ bool _isAuthPath(String path) =>
     path.endsWith('api/auth/signup/') ||
     path.endsWith('api/auth/refresh/');
 
+/// The session itself is loaded with `api/auth/*`: asking the session for its
+/// roles there would wait on itself, and these routes need no space.
+bool _skipsActingRole(String path) => path.contains('api/auth/');
+
+/// The space is a restriction asked of the server, never a condition for the
+/// request to go out: if it cannot be worked out, the request is sent without
+/// it (the server then applies no restriction) and the cause is logged. Any
+/// failure is caught on purpose, including programming errors: the alternative
+/// is every call of the app failing because of one header.
+String? _readActingRole(String? Function() read) {
+  try {
+    return read();
+  } on Object catch (error) {
+    developer.log(
+      'The acting role could not be read: ${error.runtimeType}',
+      name: 'comparo',
+      level: 900,
+    );
+    return null;
+  }
+}
+
 void configureAuthenticatedApiClient(
   Dio client,
   AuthTokenStorage tokenStorage, {
   void Function()? onSessionExpired,
+
+  /// The role the user acts as on the current screen; null sends no header.
+  String? Function()? actingRole,
 }) {
   Future<String?>? refreshInProgress;
 
@@ -62,6 +96,12 @@ void configureAuthenticatedApiClient(
           final accessToken = await tokenStorage.readAccessToken();
           if (accessToken != null && accessToken.isNotEmpty) {
             options.headers['Authorization'] = 'Bearer $accessToken';
+          }
+          if (actingRole != null && !_skipsActingRole(options.path)) {
+            final role = _readActingRole(actingRole);
+            if (role != null) {
+              options.headers[actingRoleHeader] = role;
+            }
           }
         }
         handler.next(options);

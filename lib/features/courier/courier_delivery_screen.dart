@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/errors/api_exception.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/async_views.dart';
+import '../account/consents_repository.dart';
 import '../commerce/commerce_models.dart';
 import '../stores/stores_repository.dart';
 import 'courier_repository.dart';
@@ -214,7 +216,35 @@ class _CourierDeliveryScreenState extends ConsumerState<CourierDeliveryScreen> {
       }
       return;
     }
-    await _run(() => _repo.updateLocation(id, lat, lon), 'Position partagée.');
+    await _run(() async {
+      try {
+        await _repo.updateLocation(id, lat, lon);
+      } on ApiException catch (error) {
+        // BR-102: the first share asks for the person's agreement.
+        if (error.code != consentRequiredCode || !await _askLocationConsent()) {
+          rethrow;
+        }
+        await _repo.updateLocation(id, lat, lon);
+      }
+    }, 'Position partagée.');
+  }
+
+  /// Asks, then records, the agreement to share the position.
+  Future<bool> _askLocationConsent() async {
+    if (!mounted) {
+      return false;
+    }
+    final agreed = await confirmAction(
+      context,
+      title: 'Partager votre position ?',
+      message: consentExplanations['location']!,
+      confirmLabel: 'Autoriser',
+    );
+    if (!agreed) {
+      return false;
+    }
+    await ref.read(consentsRepositoryProvider).set('location', granted: true);
+    return true;
   }
 
   Future<List<String>?> _ask(

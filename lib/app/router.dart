@@ -5,6 +5,7 @@ import '../core/widgets/app_navigation_bar.dart';
 
 import '../features/account/account_screen.dart';
 import '../features/account/channels_screen.dart';
+import '../features/account/consents_screen.dart';
 import '../features/account/complaint_screen.dart';
 import '../features/account/contributions_screen.dart';
 import '../features/account/support_screen.dart';
@@ -152,6 +153,10 @@ class AppRouter {
       GoRoute(
         path: '/account/channels',
         builder: (context, state) => const ChannelsScreen(),
+      ),
+      GoRoute(
+        path: '/account/privacy',
+        builder: (context, state) => const ConsentsScreen(),
       ),
       GoRoute(
         path: '/notifications',

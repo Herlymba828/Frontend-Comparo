@@ -2,11 +2,11 @@ import 'dart:typed_data';
 
 export 'outbox_store_stub.dart'
     if (dart.library.io) 'outbox_store_io.dart'
+    if (dart.library.js_interop) 'outbox_store_web.dart'
     show createOutboxStore;
 
-/// Durable storage of the operations made offline (PJ-028). Unlike the
-/// cache, nothing here is ever evicted: an entry leaves only once sent or
-/// discarded by the user.
+/// Durable storage of offline operations (PJ-028). Unlike the cache, nothing
+/// here is evicted: an entry leaves only once sent or discarded by the user.
 abstract interface class OutboxStore {
   Future<List<Map<String, dynamic>>> readAll();
 
@@ -17,6 +17,8 @@ abstract interface class OutboxStore {
   Future<Uint8List?> readPhoto(String id);
 
   Future<void> deletePhoto(String id);
+
+  Future<int> totalPhotoBytes();
 }
 
 class MemoryOutboxStore implements OutboxStore {
@@ -39,4 +41,8 @@ class MemoryOutboxStore implements OutboxStore {
 
   @override
   Future<void> deletePhoto(String id) async => photos.remove(id);
+
+  @override
+  Future<int> totalPhotoBytes() async =>
+      photos.values.fold<int>(0, (total, bytes) => total + bytes.length);
 }

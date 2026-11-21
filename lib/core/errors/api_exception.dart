@@ -9,6 +9,7 @@ enum ApiErrorKind {
   timeout,
   http,
   invalidResponse,
+  paginationLimitReached,
 }
 
 class ApiException implements Exception {
@@ -124,6 +125,8 @@ class ApiException implements Exception {
       'Le service est momentanément indisponible. Réessayez.',
     ApiErrorKind.invalidResponse =>
       'La réponse du serveur est invalide. Réessayez plus tard.',
+    ApiErrorKind.paginationLimitReached =>
+      'Il y a trop de résultats pour tout afficher. Affinez votre recherche.',
   };
 
   @override

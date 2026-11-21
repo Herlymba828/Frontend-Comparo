@@ -72,13 +72,16 @@ class JsonApi {
   });
 
   /// Every item of a paginated list, page after page (at most [maxPages]
-  /// pages of 100): screens no longer stop silently at the first page.
+  /// pages of 100). An incomplete result is reported instead of truncated.
   Future<List<T>> getAll<T>(
     String path,
     JsonDecoder<T> decode, {
     Map<String, Object?>? query,
     int maxPages = 10,
   }) async {
+    if (maxPages < 1) {
+      throw ArgumentError.value(maxPages, 'maxPages', 'Must be positive');
+    }
     final items = <T>[];
     for (var page = 1; page <= maxPages; page++) {
       final result = await getPage(
@@ -89,6 +92,9 @@ class JsonApi {
       items.addAll(result.items);
       if (!result.hasNext) {
         break;
+      }
+      if (page == maxPages) {
+        throw const ApiException(kind: ApiErrorKind.paginationLimitReached);
       }
     }
     return items;

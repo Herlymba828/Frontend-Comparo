@@ -219,16 +219,14 @@ class _PriceReportFormState extends ConsumerState<PriceReportForm> {
       return;
     }
     if (failure != null && isOfflineError(failure)) {
-      // No network at the market: the report waits on the phone (PJ-027).
-      await ref.read(reportOutboxProvider.notifier).enqueue(draft);
-      if (!mounted) {
-        return;
-      }
+      // MVP: a price report is recorded online only, never kept on the
+      // device to be sent later. The form stays filled: the user tries
+      // again once connected.
       setState(() => _saving = false);
-      _resetAfterSuccess(
-        message:
-            'Pas de réseau : relevé gardé sur le téléphone. Il partira '
-            'tout seul au retour du réseau (voir « Mes relevés »).',
+      showInfo(
+        context,
+        'Relevé non envoyé : pas de connexion ou service indisponible. '
+        'Votre saisie est conservée, réessayez une fois connecté.',
       );
       return;
     }

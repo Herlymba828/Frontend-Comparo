@@ -7,22 +7,20 @@ import '../../core/formatters/price_formatter.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/cache_status_banner.dart';
 import '../../core/voice/voice_service.dart';
-import '../../core/widgets/market_widgets.dart';
 import '../alerts/create_price_alert_dialog.dart';
-import '../availability/models/merchant_availability.dart';
 import '../catalog/data/catalog_providers.dart';
 import '../catalog/models/catalog_product.dart';
-import '../commerce/commerce_repository.dart';
 import '../comparison/alternatives.dart';
 import '../comparison/models/comparison_offer.dart';
 import '../favorites/favorite_buttons.dart';
-import '../quality/price_flag.dart';
-import '../comparison/trust_line.dart';
 import '../identity/data/auth_providers.dart';
 import '../recommendations/recommendations.dart';
 import '../stores/stores_screen.dart';
 import 'price_evolution.dart';
 import 'product_share.dart';
+import 'product_detail_widgets.dart';
+import 'product_helpers.dart';
+import 'product_offer_widgets.dart';
 
 class ProductScreen extends ConsumerStatefulWidget {
   const ProductScreen({super.key, required this.productId});
@@ -118,7 +116,7 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
             },
             child: productAsync.when(
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (error, stackTrace) => _ProductLoadError(
+              error: (error, stackTrace) => ProductLoadError(
                 message: error is ApiException
                     ? error.userMessage
                     : 'Impossible de charger ce produit.',
@@ -138,7 +136,7 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                 children: [
                   CacheStatusBanner(result: productResult),
                   if (productResult.isFromCache) const SizedBox(height: 12),
-                  _ProductHero(product: productResult.value),
+                  ProductHero(product: productResult.value),
                   const SizedBox(height: AppSpacing.space12),
                   Row(
                     children: [
@@ -182,7 +180,7 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                         child: CircularProgressIndicator(),
                       ),
                     ),
-                    error: (error, stackTrace) => _ProductLoadError(
+                    error: (error, stackTrace) => ProductLoadError(
                       message: error is ApiException
                           ? error.userMessage
                           : 'Impossible de charger les offres.',
@@ -204,11 +202,15 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                       for (final offer in page.results) {
                         final group = (
                           currency:
-                              _nonEmpty(offer.comparisonGroup?.currency) ??
-                              _nonEmpty(offer.currency),
+                              nonEmptyProductValue(
+                                offer.comparisonGroup?.currency,
+                              ) ??
+                              nonEmptyProductValue(offer.currency),
                           unitCode:
-                              _nonEmpty(offer.comparisonGroup?.unitCode) ??
-                              _nonEmpty(offer.unitCode),
+                              nonEmptyProductValue(
+                                offer.comparisonGroup?.unitCode,
+                              ) ??
+                              nonEmptyProductValue(offer.unitCode),
                         );
                         groups.putIfAbsent(group, () => []).add(offer);
                       }
@@ -217,7 +219,7 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
                                 CacheStatusBanner(result: pageResult),
-                                const _NoOffers(),
+                                const NoOffers(),
                               ],
                             )
                           : Column(
@@ -235,7 +237,7 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                                         bottom: 8,
                                       ),
                                       child: Text(
-                                        _groupHeading(
+                                        productGroupHeading(
                                           group.key.currency,
                                           group.value,
                                         ),
@@ -245,13 +247,13 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                                       ),
                                     ),
                                   for (final offer in group.value)
-                                    _OfferCard(
+                                    OfferCard(
                                       offer: offer,
                                       isBest: offer.isBestOffer,
                                     ),
                                 ],
                                 if (page.next != null || page.previous != null)
-                                  _OfferPagination(
+                                  OfferPagination(
                                     currentPage: _offersPage,
                                     count: page.count,
                                     pageSize: 20,
@@ -271,9 +273,9 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                   AlternativesSection(productId: id),
                   PriceEvolutionSection(productId: id),
                   const SizedBox(height: AppSpacing.space24),
-                  _AvailabilitySection(productId: id),
+                  AvailabilitySection(productId: id),
                   const SizedBox(height: AppSpacing.space24),
-                  _ProductDetails(product: productResult.value),
+                  ProductDetails(product: productResult.value),
                 ],
               ),
             ),
@@ -317,744 +319,5 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
             .showSnackBar(SnackBar(content: Text(message)));
       }
     }
-  }
-}
-
-class _ProductHero extends StatelessWidget {
-  const _ProductHero({required this.product});
-
-  final CatalogProduct product;
-
-  @override
-  Widget build(BuildContext context) {
-    final currency = product.priceSnapshotCurrency;
-    final price = product.priceSnapshot;
-
-    final hasPrice = price != null && price.trim().isNotEmpty;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        MarketSurface(
-          radius: 18,
-          child: SizedBox(
-            height: 140,
-            width: double.infinity,
-            child: ProductArtwork(
-              url: product.imageUrl,
-              name: product.name,
-              unitSize: 140,
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
-        Text(product.name, style: Theme.of(context).textTheme.headlineLarge),
-        const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: [
-            if (product.category != null)
-              Chip(label: Text(product.category!.name)),
-            if (product.brand != null) Chip(label: Text(product.brand!.name)),
-            if (product.isVerified) const Chip(label: Text('Produit vérifié')),
-          ],
-        ),
-        const SizedBox(height: 18),
-        Row(
-          children: [
-            Flexible(
-              child: PriceTag(
-                label: formatPrice(price, currency),
-                style: AppTextStyles.pricePrimary.copyWith(fontSize: 30),
-                muted: !hasPrice,
-              ),
-            ),
-            if (hasPrice) ...[
-              const SizedBox(width: 12),
-              Flexible(
-                child: Text(
-                  'meilleur prix connu',
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-              ),
-            ],
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-class _AvailabilitySection extends ConsumerWidget {
-  const _AvailabilitySection({required this.productId});
-
-  final int productId;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final availability = ref.watch(productAvailabilityProvider(productId));
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(
-          'Disponibilité chez les marchands',
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
-        const SizedBox(height: 8),
-        availability.when(
-          loading: () => const Padding(
-            padding: EdgeInsets.symmetric(vertical: 12),
-            child: LinearProgressIndicator(),
-          ),
-          error: (error, stackTrace) => Row(
-            children: [
-              Expanded(
-                child: Text(
-                  error is ApiException
-                      ? error.userMessage
-                      : 'Disponibilité indisponible pour le moment.',
-                ),
-              ),
-              IconButton(
-                tooltip: 'Réessayer la disponibilité',
-                onPressed: () =>
-                    ref.invalidate(productAvailabilityProvider(productId)),
-                icon: const Icon(Icons.refresh),
-              ),
-            ],
-          ),
-          data: (result) {
-            final records = result.value.results;
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                CacheStatusBanner(result: result),
-                if (result.isFromCache) const SizedBox(height: 8),
-                if (records.isEmpty)
-                  const Text('Aucune disponibilité relevée pour ce produit.')
-                else
-                  for (final record in records)
-                    _AvailabilityRow(availability: record),
-              ],
-            );
-          },
-        ),
-      ],
-    );
-  }
-}
-
-class _AvailabilityRow extends StatelessWidget {
-  const _AvailabilityRow({required this.availability});
-
-  final MerchantAvailability availability;
-
-  @override
-  Widget build(BuildContext context) {
-    final (label, color) = switch (availability.status) {
-      'available' => ('Disponible', AppColors.primary),
-      'limited' => ('Stock limité', AppColors.warning),
-      'unavailable' => ('Indisponible', AppColors.terracotta),
-      'discontinued' => ('Produit arrêté', AppColors.textSecondary),
-      _ => ('Disponibilité inconnue', AppColors.info),
-    };
-    final quantity = _nonEmpty(availability.quantityAvailable);
-    final observedAt = availability.observedAt ?? availability.updatedAt;
-    final details = [
-      if (quantity != null) 'Quantité : $quantity',
-      if (observedAt != null) 'Relevé le ${_formatDay(observedAt)}',
-    ].join(' · ');
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  availability.merchantName ?? 'Marchand inconnu',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                if (details.isNotEmpty)
-                  Text(details, style: Theme.of(context).textTheme.bodySmall),
-              ],
-            ),
-          ),
-          const SizedBox(width: 8),
-          Flexible(
-            child: StampBadge(label: label, color: color),
-          ),
-        ],
-      ),
-    );
-  }
-
-  String _formatDay(DateTime value) {
-    final local = value.toLocal();
-    return '${local.day.toString().padLeft(2, '0')}/${local.month.toString().padLeft(2, '0')}/${local.year}';
-  }
-}
-
-class _ProductDetails extends StatelessWidget {
-  const _ProductDetails({required this.product});
-
-  final CatalogProduct product;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Détails du produit',
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
-        const SizedBox(height: 8),
-        _InfoRow(
-          label: 'Disponibilité',
-          value: _availabilityLabel(product.availability),
-        ),
-        _InfoRow(label: 'État', value: product.isActive ? 'Actif' : 'Inactif'),
-        _InfoRow(
-          label: 'Vérification du produit',
-          value: product.isVerified ? 'Vérifié' : 'Non confirmée',
-        ),
-        if (product.priceSnapshotUpdatedAt != null) ...[
-          _InfoRow(
-            label: 'Mise à jour du prix catalogue',
-            value: _formatDate(product.priceSnapshotUpdatedAt!),
-          ),
-        ],
-        if (product.description != null && product.description!.isNotEmpty) ...[
-          const SizedBox(height: 12),
-          Text(
-            product.description!,
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-        ],
-      ],
-    );
-  }
-
-  String _availabilityLabel(String value) => switch (value) {
-    'available' => 'Disponible',
-    'unavailable' => 'Indisponible',
-    'unknown' => 'Disponibilité inconnue',
-    _ => value,
-  };
-
-  String _formatDate(DateTime value) {
-    final local = value.toLocal();
-    return '${local.day.toString().padLeft(2, '0')}/${local.month.toString().padLeft(2, '0')}/${local.year}';
-  }
-}
-
-class _InfoRow extends StatelessWidget {
-  const _InfoRow({required this.label, required this.value});
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Text.rich(
-        TextSpan(
-          children: [
-            TextSpan(
-              text: '$label : ',
-              style: Theme.of(context).textTheme.labelLarge,
-            ),
-            TextSpan(text: value),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _ProductLoadError extends StatelessWidget {
-  const _ProductLoadError({required this.message, required this.onRetry});
-
-  final String message;
-  final VoidCallback onRetry;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(message, textAlign: TextAlign.center),
-            const SizedBox(height: 12),
-            FilledButton.icon(
-              onPressed: onRetry,
-              icon: const Icon(Icons.refresh),
-              label: const Text('Réessayer'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _NoOffers extends StatelessWidget {
-  const _NoOffers();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.symmetric(vertical: 20),
-      child: Center(child: Text('Aucune offre comparable pour ce produit.')),
-    );
-  }
-}
-
-class _OfferPagination extends StatelessWidget {
-  const _OfferPagination({
-    required this.currentPage,
-    required this.count,
-    required this.pageSize,
-    required this.hasPrevious,
-    required this.hasNext,
-    required this.onPrevious,
-    required this.onNext,
-  });
-
-  final int currentPage;
-  final int count;
-  final int pageSize;
-  final bool hasPrevious;
-  final bool hasNext;
-  final VoidCallback onPrevious;
-  final VoidCallback onNext;
-
-  @override
-  Widget build(BuildContext context) {
-    final pageCount = count == 0 ? 0 : (count / pageSize).ceil();
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        TextButton.icon(
-          onPressed: hasPrevious ? onPrevious : null,
-          icon: const Icon(Icons.chevron_left),
-          label: const Text('Précédent'),
-        ),
-        Text('Page $currentPage sur $pageCount'),
-        TextButton.icon(
-          onPressed: hasNext ? onNext : null,
-          icon: const Icon(Icons.chevron_right),
-          label: const Text('Suivant'),
-        ),
-      ],
-    );
-  }
-}
-
-class _OfferCard extends StatelessWidget {
-  const _OfferCard({required this.offer, this.isBest = false});
-
-  final ComparisonOffer offer;
-
-  /// Offre vérifiée la moins chère de son groupe de comparaison.
-  final bool isBest;
-
-  @override
-  Widget build(BuildContext context) {
-    final normalized = offer.normalizedUnitPrice;
-    final normalizedUnit =
-        _nonEmpty(offer.normalizedUnit?.symbol) ??
-        _nonEmpty(offer.normalizedUnit?.code) ??
-        _nonEmpty(offer.unitSymbol) ??
-        _nonEmpty(offer.unitCode);
-    final normalizedLabel = normalized == null || normalized.isEmpty
-        ? null
-        : [
-            formatUnitPrice(normalized, offer.currency),
-            if (normalizedUnit != null) '/ $normalizedUnit',
-          ].join(' ');
-
-    final source = _nonEmpty(offer.sourceLabel) ?? 'Source inconnue';
-    final freshness = _freshnessLabel(offer.freshness);
-    final observedAt = offer.observedAt != null
-        ? _formatDateTime(offer.observedAt!)
-        : 'Date inconnue';
-    final verification = _verificationLabel(offer.verificationLevel);
-    final availability = _availabilityLabel(offer.availability);
-    final location = _nonEmpty(offer.location);
-    final unit = _nonEmpty(offer.unitSymbol ?? offer.unitCode);
-    final quantity = [formatQuantity(offer.quantity), ?unit].join(' ');
-
-    final comparable = offer.isActive && offer.isCurrentlyValid;
-    final card = MarketSurface(
-      muted: !comparable,
-      padding: const EdgeInsets.fromLTRB(14, 12, 12, 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      offer.merchantName ?? 'Marchand inconnu',
-                      style: Theme.of(context).textTheme.titleMedium,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    if (location != null) ...[
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.location_on_outlined,
-                            size: 14,
-                            color: AppColors.terracotta,
-                          ),
-                          const SizedBox(width: 3),
-                          Expanded(
-                            child: Text(
-                              location,
-                              style: Theme.of(context).textTheme.bodySmall,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                    const SizedBox(height: 8),
-                    StampBadge(
-                      label: offer.isCurrentlyValid
-                          ? 'Offre valide'
-                          : 'Hors période',
-                      color: offer.isCurrentlyValid
-                          ? AppColors.primary
-                          : AppColors.terracotta,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 10),
-              Flexible(
-                child: PriceTag(
-                  label: formatPrice(offer.amount, offer.currency),
-                  style: AppTextStyles.pricePrimary.copyWith(fontSize: 26),
-                  caption: quantity.isEmpty ? null : quantity,
-                  muted: !comparable,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Wrap(
-            spacing: 6,
-            runSpacing: 6,
-            children: [
-              _Badge(
-                icon: availability == 'Disponible'
-                    ? Icons.inventory_2_outlined
-                    : Icons.info_outline,
-                label: 'Disponibilité : $availability',
-              ),
-              // The API's trust line replaces freshness and verification.
-              if (offer.trust == null) ...[
-                _Badge(icon: Icons.schedule, label: 'Fraîcheur : $freshness'),
-                _Badge(icon: Icons.update, label: 'Observé : $observedAt'),
-              ],
-              _Badge(icon: Icons.source, label: 'Source : $source'),
-              if (offer.trust == null)
-                _Badge(
-                  icon: Icons.verified_outlined,
-                  label: 'Prix : $verification',
-                ),
-              _Badge(
-                icon: offer.isActive ? Icons.check_circle : Icons.block,
-                label: offer.isActive ? 'Actif' : 'Inactif',
-                color: offer.isActive
-                    ? AppColors.primary
-                    : AppColors.textSecondary,
-              ),
-            ],
-          ),
-          if (offer.trust case final trust?) ...[
-            const SizedBox(height: 8),
-            TrustLine(trust: trust),
-          ],
-          if (normalizedLabel != null) ...[
-            const SizedBox(height: 8),
-            Text(
-              'Prix unitaire : $normalizedLabel',
-              style: Theme.of(context).textTheme.bodySmall
-                  ?.copyWith(color: AppColors.ink, fontWeight: FontWeight.w600),
-            ),
-          ],
-          if (offer.promotionLabel != null &&
-              offer.promotionLabel!.trim().isNotEmpty) ...[
-            const SizedBox(height: 6),
-            Text(
-              offer.promotionLabel!.trim(),
-              style: AppTextStyles.handNote.copyWith(fontSize: 18),
-            ),
-          ],
-          if (offer.comparisonReasons.isNotEmpty) ...[
-            const SizedBox(height: 6),
-            Wrap(
-              spacing: 4,
-              runSpacing: 4,
-              children: offer.comparisonReasons
-                  .map(
-                    (reason) => _Badge(
-                      icon: Icons.compare_arrows,
-                      label: _reasonLabel(reason),
-                    ),
-                  )
-                  .toList(),
-            ),
-          ],
-          if (comparable) ...[
-            const SizedBox(height: 10),
-            Wrap(
-              alignment: WrapAlignment.end,
-              crossAxisAlignment: WrapCrossAlignment.center,
-              spacing: 8,
-              runSpacing: 4,
-              children: [
-                _FlagPriceButton(offer: offer),
-                if (offer.merchant case final merchantId?)
-                  FavoriteShopButton(merchantId: merchantId),
-                _AddToCartButton(offer: offer),
-              ],
-            ),
-          ],
-        ],
-      ),
-    );
-
-    if (!isBest) {
-      return Padding(padding: const EdgeInsets.only(bottom: 12), child: card);
-    }
-    return Padding(
-      padding: const EdgeInsets.only(top: 18, bottom: 12),
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          card,
-          const Positioned(top: -16, right: 12, child: BestPriceSeal()),
-        ],
-      ),
-    );
-  }
-
-  String _formatDateTime(DateTime value) {
-    final local = value.toLocal();
-    return '${local.day.toString().padLeft(2, '0')}/${local.month.toString().padLeft(2, '0')}/${local.year} ${local.hour.toString().padLeft(2, '0')}:${local.minute.toString().padLeft(2, '0')}';
-  }
-}
-
-String? _nonEmpty(String? value) {
-  final trimmed = value?.trim();
-  return trimmed == null || trimmed.isEmpty ? null : trimmed;
-}
-
-/// En-tête d'un groupe d'offres : unité lisible (symbole plutôt que code
-/// technique) et mention explicite quand le backend n'a pas pu normaliser.
-String _groupHeading(String? currency, List<ComparisonOffer> offers) {
-  final sample = offers.first;
-  final unit =
-      _nonEmpty(sample.normalizedUnit?.symbol) ??
-      _nonEmpty(sample.unitSymbol) ??
-      _nonEmpty(sample.comparisonGroup?.unitCode) ??
-      _nonEmpty(sample.unitCode);
-  final label = [?currency, ?unit].join(' / ');
-  final comparable = offers.any((offer) => offer.comparisonGroup != null);
-  return comparable
-      ? 'Prix comparés en $label'
-      : 'Sans prix unitaire comparable ($label)';
-}
-
-// Libellés alignés sur les choix Django (`Price.Freshness`,
-// `Price.VerificationLevel`, `Price.Availability`).
-String _freshnessLabel(String? value) => switch (value?.toLowerCase()) {
-  'very_recent' => 'Très récente',
-  'recent' => 'Récente',
-  'old' => 'Ancienne',
-  'expire' => 'Expirée',
-  'unknown' => 'Inconnue',
-  null || '' => 'Non renseignée',
-  _ => value!.replaceAll('_', ' '),
-};
-
-String _verificationLabel(String? value) => switch (value?.toLowerCase()) {
-  'none' => 'Non vérifié',
-  'auto' => 'Vérifié automatiquement',
-  'manual' => 'Vérifié manuellement',
-  'official' => 'Source officielle',
-  null || '' => 'Non renseignée',
-  _ => value!.replaceAll('_', ' '),
-};
-
-String _availabilityLabel(String? value) => switch (value?.toLowerCase()) {
-  'available' => 'Disponible',
-  'limited' => 'Stock limité',
-  'unavailable' => 'Indisponible',
-  'unknown' || null || '' => 'Inconnue',
-  _ => value!.replaceAll('_', ' '),
-};
-
-String _reasonLabel(String value) {
-  final normalized = value.toLowerCase();
-  return switch (normalized) {
-    'same_product' => 'Même produit',
-    'strict_equivalence' => 'Équivalence vérifiée',
-    'same_unit' => 'Même unité',
-    'same_currency' => 'Même devise',
-    'no_exact_conversion_to_base_unit' =>
-      'Prix unitaire indisponible : pas de conversion exacte',
-    'ambiguous_base_unit_for_unit_type' =>
-      'Prix unitaire indisponible : unité de base ambiguë',
-    'no_base_unit_for_unit_type' =>
-      'Prix unitaire indisponible : aucune unité de base',
-    'invalid_conversion_factor' =>
-      'Prix unitaire indisponible : conversion invalide',
-    'non_positive_quantity' =>
-      'Prix unitaire indisponible : quantité non valide',
-    _ => value.replaceAll('_', ' '),
-  };
-}
-
-class _Badge extends StatelessWidget {
-  const _Badge({required this.icon, required this.label, this.color});
-
-  final IconData icon;
-  final String label;
-  final Color? color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-      decoration: BoxDecoration(
-        color: AppColors.background,
-        border: Border.all(color: AppColors.border),
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 12, color: color ?? AppColors.ink),
-          const SizedBox(width: 4),
-          Flexible(
-            child: Text(
-              label,
-              style: Theme.of(context).textTheme.labelSmall
-                  ?.copyWith(color: AppColors.ink, fontSize: 11),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Adds one unit of this offer to the cart (sign-in required).
-/// "Signaler ce prix": tells the moderators a shown price looks wrong.
-class _FlagPriceButton extends ConsumerWidget {
-  const _FlagPriceButton({required this.offer});
-
-  final ComparisonOffer offer;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return TextButton.icon(
-      onPressed: () => showPriceFlagSheet(
-        context,
-        ref,
-        offerId: offer.id,
-        merchantName: offer.merchantName ?? 'ce commerce',
-      ),
-      icon: const Icon(Icons.flag_outlined, size: 18),
-      label: const Text('Signaler ce prix'),
-    );
-  }
-}
-
-class _AddToCartButton extends ConsumerStatefulWidget {
-  const _AddToCartButton({required this.offer});
-
-  final ComparisonOffer offer;
-
-  @override
-  ConsumerState<_AddToCartButton> createState() => _AddToCartButtonState();
-}
-
-class _AddToCartButtonState extends ConsumerState<_AddToCartButton> {
-  bool _adding = false;
-
-  Future<void> _add() async {
-    final user = await ref.read(authSessionProvider.future);
-    if (!mounted) {
-      return;
-    }
-    if (user == null) {
-      context.push('/auth');
-      return;
-    }
-    setState(() => _adding = true);
-    final messenger = ScaffoldMessenger.of(context);
-    final router = GoRouter.of(context);
-    try {
-      await ref
-          .read(commerceRepositoryProvider)
-          .addToCart(
-            productId: widget.offer.product,
-            quantity: '1',
-            offerId: widget.offer.id,
-          );
-      ref.invalidate(cartProvider);
-      messenger.showSnackBar(
-        SnackBar(
-          content: const Text('Ajouté au panier.'),
-          action: SnackBarAction(
-            label: 'Voir le panier',
-            onPressed: () => router.push('/cart'),
-          ),
-        ),
-      );
-    } catch (error) {
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text(
-            error is ApiException
-                ? error.userMessage
-                : 'Impossible d’ajouter cette offre au panier.',
-          ),
-        ),
-      );
-    } finally {
-      if (mounted) {
-        setState(() => _adding = false);
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FilledButton.icon(
-      onPressed: _adding ? null : _add,
-      icon: const Icon(Icons.add_shopping_cart),
-      label: const Text('Ajouter au panier'),
-    );
   }
 }

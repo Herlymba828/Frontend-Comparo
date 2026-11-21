@@ -590,6 +590,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.1.2"
+  idb_shim:
+    dependency: transitive
+    description:
+      name: idb_shim
+      sha256: "507d8f3154fa4e41165941c5aa8509c6bf155bb30f76ba25a00d1e7ba1dd64c9"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.11.3"
   image_picker:
     dependency: "direct main"
     description:
@@ -835,6 +843,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.0"
+  package_info_plus:
+    dependency: transitive
+    description:
+      name: package_info_plus
+      sha256: "73ef2cd5c11a7548f9b7f6fc2a4f6113de2e64aa2a70de63feede95548822908"
+      url: "https://pub.dev"
+    source: hosted
+    version: "10.2.2"
+  package_info_plus_platform_interface:
+    dependency: transitive
+    description:
+      name: package_info_plus_platform_interface
+      sha256: db762cb2f4f25ee60fb6359773861b0f199e00b90d237bd85a76a1e806b46ef4
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.1.0"
   path:
     dependency: transitive
     description:
@@ -979,6 +1003,38 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.4.3"
+  sembast:
+    dependency: "direct main"
+    description:
+      name: sembast
+      sha256: "4f71f8c95105918fa207065429c913f38d0fb05fec9f3a745bbf4c113f5d482b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.10.1"
+  sembast_web:
+    dependency: "direct main"
+    description:
+      name: sembast_web
+      sha256: "46e3a5512d0e53f5a01d15b0ba199260273de7b00d646d6c7012ef999a5201e2"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.4.7"
+  sentry:
+    dependency: transitive
+    description:
+      name: sentry
+      sha256: "490ff077d819c07511e4b1b07bcdf7117a87c3cb10b55b56081ac0a56d85d467"
+      url: "https://pub.dev"
+    source: hosted
+    version: "10.5.0"
+  sentry_flutter:
+    dependency: "direct main"
+    description:
+      name: sentry_flutter
+      sha256: "67e5cb6b78a5b32036472d75d9b553b8ca7e71d46243b79dc9e3e423945a7d9b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "10.5.0"
   share_plus:
     dependency: "direct main"
     description:
@@ -1144,6 +1200,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.3.1"
+  synchronized:
+    dependency: transitive
+    description:
+      name: synchronized
+      sha256: a77637ebe1460f3b48cac89a790d2eb634f0a8593cab0d3f340c6db174ba9b94
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.6.1+1"
   term_glyph:
     dependency: transitive
     description:

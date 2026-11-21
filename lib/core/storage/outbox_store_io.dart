@@ -71,4 +71,16 @@ class FileOutboxStore implements OutboxStore {
       await file.delete();
     }
   }
+
+  @override
+  Future<int> totalPhotoBytes() async {
+    final root = await _root();
+    var total = 0;
+    await for (final entity in root.list(followLinks: false)) {
+      if (entity is File && entity.path.endsWith('.photo')) {
+        total += await entity.length();
+      }
+    }
+    return total;
+  }
 }

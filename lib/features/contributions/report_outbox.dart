@@ -1,19 +1,32 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/errors/api_exception.dart';
-import '../../core/network/connectivity.dart';
 import '../../core/storage/outbox_store.dart';
 import '../account/account_repository.dart';
+import '../identity/data/auth_providers.dart';
 import '../stores/stores_repository.dart';
 import 'price_report_repository.dart';
 
+const maxQueuedReports = 100;
+const maxQueuedPhotoBytes = 50 * 1024 * 1024;
+
 /// Where a report kept offline stands (PJ-028, PJ-029).
 enum QueuedStatus {
+  /// Stored before account ownership was recorded; never sent automatically.
+  unassigned,
+
   /// Waiting for the network.
   pending,
+
+  /// The originating account must sign in again before sending.
+  needsAuthentication,
+
+  /// The server asked the app to wait before trying again.
+  rateLimited,
 
   /// The server finds the price unusual: the user confirms or discards it.
   needsConfirmation,
@@ -29,6 +42,7 @@ enum QueuedStatus {
 class QueuedReport {
   const QueuedReport({
     required this.id,
+    required this.ownerUserId,
     required this.createdAt,
     required this.storeId,
     required this.storeName,
@@ -49,11 +63,15 @@ class QueuedReport {
     this.confirmOutlier = false,
     this.message = '',
     this.attempts = 0,
+    this.retryAtUtc,
     this.journal = const [],
   });
 
   /// Also the report's client reference: a replay never makes a copy.
   final String id;
+
+  /// The account that created this report; null only for pre-migration data.
+  final int? ownerUserId;
 
   /// When the price was seen, sent as its observation time.
   final DateTime createdAt;
@@ -78,6 +96,7 @@ class QueuedReport {
   /// The server's explanation for a report that needs the user.
   final String message;
   final int attempts;
+  final DateTime? retryAtUtc;
 
   /// The last events, newest last (PJ-029: nothing changes silently).
   final List<String> journal;
@@ -89,9 +108,12 @@ class QueuedReport {
     String? message,
     bool? confirmOutlier,
     int? attempts,
+    DateTime? retryAtUtc,
+    bool clearRetryAt = false,
     String? event,
   }) => QueuedReport(
     id: id,
+    ownerUserId: ownerUserId,
     createdAt: createdAt,
     storeId: storeId,
     storeName: storeName,
@@ -112,6 +134,7 @@ class QueuedReport {
     status: status ?? this.status,
     message: message ?? this.message,
     attempts: attempts ?? this.attempts,
+    retryAtUtc: clearRetryAt ? null : retryAtUtc ?? this.retryAtUtc,
     journal: event == null
         ? journal
         : [
@@ -122,6 +145,7 @@ class QueuedReport {
 
   Map<String, dynamic> toJson() => {
     'id': id,
+    'owner_user_id': ownerUserId,
     'created_at': createdAt.toUtc().toIso8601String(),
     'store_id': storeId,
     'store_name': storeName,
@@ -142,35 +166,43 @@ class QueuedReport {
     'status': status.name,
     'message': message,
     'attempts': attempts,
+    'retry_at_utc': retryAtUtc?.toUtc().toIso8601String(),
     'journal': journal,
   };
 
-  factory QueuedReport.fromJson(Map<String, dynamic> json) => QueuedReport(
-    id: json['id'] as String,
-    createdAt: DateTime.parse(json['created_at'] as String),
-    storeId: json['store_id'] as int,
-    storeName: json['store_name'] as String? ?? '',
-    locationMethod: json['location_method'] as String? ?? 'manual',
-    latitude: (json['latitude'] as num?)?.toDouble(),
-    longitude: (json['longitude'] as num?)?.toDouble(),
-    accuracyM: (json['accuracy_m'] as num?)?.toDouble(),
-    productId: json['product_id'] as int?,
-    productName: json['product_name'] as String? ?? '',
-    price: json['price'] as String? ?? '',
-    quantity: json['quantity'] as String? ?? '1',
-    unitCode: json['unit_code'] as String? ?? '',
-    hasPhoto: json['has_photo'] == true,
-    photoName: json['photo_name'] as String? ?? '',
-    displayError: json['display_error'] == true,
-    notes: json['notes'] as String? ?? '',
-    confirmOutlier: json['confirm_outlier'] == true,
-    status:
-        QueuedStatus.values.asNameMap()[json['status']] ?? QueuedStatus.pending,
-    message: json['message'] as String? ?? '',
-    attempts: json['attempts'] as int? ?? 0,
-    journal:
-        (json['journal'] as List?)?.whereType<String>().toList() ?? const [],
-  );
+  factory QueuedReport.fromJson(Map<String, dynamic> json) {
+    final ownerUserId = json['owner_user_id'];
+    final retryAt = json['retry_at_utc'];
+    final status =
+        QueuedStatus.values.asNameMap()[json['status']] ?? QueuedStatus.pending;
+    return QueuedReport(
+      id: json['id'] as String,
+      ownerUserId: ownerUserId is int ? ownerUserId : null,
+      createdAt: DateTime.parse(json['created_at'] as String),
+      storeId: json['store_id'] as int,
+      storeName: json['store_name'] as String? ?? '',
+      locationMethod: json['location_method'] as String? ?? 'manual',
+      latitude: (json['latitude'] as num?)?.toDouble(),
+      longitude: (json['longitude'] as num?)?.toDouble(),
+      accuracyM: (json['accuracy_m'] as num?)?.toDouble(),
+      productId: json['product_id'] as int?,
+      productName: json['product_name'] as String? ?? '',
+      price: json['price'] as String? ?? '',
+      quantity: json['quantity'] as String? ?? '1',
+      unitCode: json['unit_code'] as String? ?? '',
+      hasPhoto: json['has_photo'] == true,
+      photoName: json['photo_name'] as String? ?? '',
+      displayError: json['display_error'] == true,
+      notes: json['notes'] as String? ?? '',
+      confirmOutlier: json['confirm_outlier'] == true,
+      status: ownerUserId is int ? status : QueuedStatus.unassigned,
+      message: json['message'] as String? ?? '',
+      attempts: json['attempts'] as int? ?? 0,
+      retryAtUtc: retryAt is String ? DateTime.tryParse(retryAt) : null,
+      journal:
+          (json['journal'] as List?)?.whereType<String>().toList() ?? const [],
+    );
+  }
 }
 
 /// An offline-safe identifier, also accepted as the server's client reference.
@@ -189,9 +221,16 @@ bool isOfflineError(Object error) =>
     (error.kind == ApiErrorKind.offline ||
         error.kind == ApiErrorKind.network ||
         error.kind == ApiErrorKind.timeout ||
-        (error.statusCode ?? 0) >= 500 ||
-        error.statusCode == 401 ||
-        error.statusCode == 429);
+        (error.statusCode ?? 0) >= 500);
+
+class OutboxCapacityException implements Exception {
+  const OutboxCapacityException(this.message);
+
+  final String message;
+
+  @override
+  String toString() => message;
+}
 
 final outboxStoreProvider = Provider<OutboxStore>((ref) => createOutboxStore());
 
@@ -199,8 +238,13 @@ final reportOutboxProvider = NotifierProvider<ReportOutbox, List<QueuedReport>>(
   ReportOutbox.new,
 );
 
-/// Price reports kept on the phone while offline, sent again when the
-/// network is back (PJ-027 to PJ-029).
+/// Price reports left on this device by earlier versions of the app.
+///
+/// MVP rule: offline, the app only shows cached data; it never records a
+/// price report. Nothing is sent by itself (no send at start-up, on
+/// reconnection or on a timer): the owner sends a left report with the
+/// "Envoyer" button while online, or deletes it. The queue is emptied when
+/// the session ends.
 class ReportOutbox extends Notifier<List<QueuedReport>> {
   late final OutboxStore _store = ref.read(outboxStoreProvider);
   Future<void>? _loading;
@@ -208,7 +252,6 @@ class ReportOutbox extends Notifier<List<QueuedReport>> {
 
   @override
   List<QueuedReport> build() {
-    ref.listen(reconnectProvider, (_, _) => unawaited(sync()));
     _loading = _load();
     return const [];
   }
@@ -221,7 +264,11 @@ class ReportOutbox extends Notifier<List<QueuedReport>> {
   static QueuedReport? _readable(Map<String, dynamic> entry) {
     try {
       return QueuedReport.fromJson(entry);
-    } on Object {
+    } on FormatException catch (error) {
+      debugPrint('Ignoring malformed queued report: $error');
+      return null;
+    } on TypeError catch (error) {
+      debugPrint('Ignoring unreadable queued report: $error');
       return null;
     }
   }
@@ -229,20 +276,42 @@ class ReportOutbox extends Notifier<List<QueuedReport>> {
   Future<void> ready() => _loading ?? Future<void>.value();
 
   Future<void> _save(List<QueuedReport> reports) async {
-    state = reports;
     await _store.writeAll([for (final report in reports) report.toJson()]);
+    state = reports;
   }
 
-  /// Keeps a report made without network, observed now.
+  /// Puts a report in the queue, as earlier versions did offline.
+  ///
+  /// Not used by the app any more (MVP: no report without network); kept to
+  /// build the legacy queues the tests check.
+  @visibleForTesting
   Future<QueuedReport> enqueue(PriceReportDraft draft) async {
     await ready();
+    final ownerUserId = ref.read(activeAccountIdProvider);
+    if (ownerUserId == null) {
+      throw StateError('A signed-in account is required to queue a report.');
+    }
+    if (state.length >= maxQueuedReports) {
+      throw const OutboxCapacityException(
+        'La file hors ligne est pleine. Envoyez ou supprimez des relevés '
+        'avant d’en ajouter.',
+      );
+    }
     final id = newQueueId();
     final photo = draft.photo;
     if (photo != null) {
+      final storedPhotoBytes = await _store.totalPhotoBytes();
+      if (photo.bytes.length > maxQueuedPhotoBytes - storedPhotoBytes) {
+        throw const OutboxCapacityException(
+          'L’espace réservé aux photos hors ligne est plein. Envoyez ou '
+          'supprimez des relevés avant d’ajouter une photo.',
+        );
+      }
       await _store.savePhoto(id, photo.bytes);
     }
     final report = QueuedReport(
       id: id,
+      ownerUserId: ownerUserId,
       // A clock a few minutes ahead would date the price in the future.
       createdAt: DateTime.now().toUtc().subtract(const Duration(minutes: 5)),
       storeId: draft.store.id,
@@ -263,10 +332,17 @@ class ReportOutbox extends Notifier<List<QueuedReport>> {
       confirmOutlier: draft.confirmOutlier,
       status: QueuedStatus.pending,
       journal: [
-        '${DateTime.now().toIso8601String()} Gardé sur le téléphone (hors ligne)',
+        '${DateTime.now().toIso8601String()} Gardé sur cet appareil (hors ligne)',
       ],
     );
-    await _save([...state, report]);
+    try {
+      await _save([...state, report]);
+    } on Exception {
+      if (photo != null) {
+        await _store.deletePhoto(id);
+      }
+      rethrow;
+    }
     return report;
   }
 
@@ -305,6 +381,10 @@ class ReportOutbox extends Notifier<List<QueuedReport>> {
   /// Sends the waiting reports, one by one; stops at the first network failure.
   Future<int> sync() async {
     await ready();
+    final accountId = ref.read(activeAccountIdProvider);
+    if (accountId == null) {
+      return 0;
+    }
     if (_syncing) {
       return 0;
     }
@@ -312,9 +392,26 @@ class ReportOutbox extends Notifier<List<QueuedReport>> {
     var sent = 0;
     try {
       for (final report
-          in state.where((r) => r.status == QueuedStatus.pending).toList()) {
+          in state
+              .where(
+                (report) =>
+                    report.ownerUserId == accountId &&
+                    (report.status == QueuedStatus.pending ||
+                        report.status == QueuedStatus.needsAuthentication ||
+                        report.status == QueuedStatus.rateLimited),
+              )
+              .toList()) {
+        final retryAt = report.retryAtUtc;
+        if (report.status == QueuedStatus.rateLimited &&
+            retryAt != null &&
+            retryAt.isAfter(DateTime.now().toUtc())) {
+          continue; // the server asked to wait: the user tries again later
+        }
         final outcome = await _send(report);
-        if (outcome == _Outcome.offline) {
+        if (outcome == _Outcome.offline ||
+            outcome == _Outcome.rateLimited ||
+            outcome == _Outcome.needsAuthentication ||
+            outcome == _Outcome.accountChanged) {
           break;
         }
         if (outcome == _Outcome.sent) {
@@ -331,12 +428,19 @@ class ReportOutbox extends Notifier<List<QueuedReport>> {
   }
 
   Future<_Outcome> _send(QueuedReport report) async {
+    if (ref.read(activeAccountIdProvider) != report.ownerUserId) {
+      return _Outcome.accountChanged;
+    }
     final attempts = report.attempts + 1;
     try {
+      final draft = await _draft(report);
+      if (ref.read(activeAccountIdProvider) != report.ownerUserId) {
+        return _Outcome.accountChanged;
+      }
       await ref
           .read(priceReportRepositoryProvider)
           .submit(
-            await _draft(report),
+            draft,
             clientReference: report.id,
             observedAt: report.createdAt,
           );
@@ -365,11 +469,58 @@ class ReportOutbox extends Notifier<List<QueuedReport>> {
           event: 'Déjà relevé par quelqu’un d’autre',
         ),
       );
+    } on ApiException catch (error) {
+      if (error.statusCode == 401) {
+        await _replace(
+          report.copyWith(
+            status: QueuedStatus.needsAuthentication,
+            message:
+                'Reconnectez-vous au compte d’origine pour envoyer ce '
+                'relevé.',
+            attempts: attempts,
+            clearRetryAt: true,
+            event: 'Connexion requise pour reprendre l’envoi',
+          ),
+        );
+        return _Outcome.needsAuthentication;
+      }
+      if (error.statusCode == 429) {
+        final retryAt = _rateLimitRetryAt(error, attempts);
+        await _replace(
+          report.copyWith(
+            status: QueuedStatus.rateLimited,
+            message: error.userMessage,
+            attempts: attempts,
+            retryAtUtc: retryAt,
+            event: 'Limité par le serveur : à renvoyer plus tard',
+          ),
+        );
+        return _Outcome.rateLimited;
+      }
+      if (isOfflineError(error)) {
+        await _replace(
+          report.copyWith(
+            attempts: attempts,
+            clearRetryAt: true,
+            event: 'Réseau indisponible, nouvel essai plus tard',
+          ),
+        );
+        return _Outcome.offline;
+      }
+      await _replace(
+        report.copyWith(
+          status: QueuedStatus.rejected,
+          message: errorMessage(error),
+          attempts: attempts,
+          event: 'Refusé par le serveur',
+        ),
+      );
     } on Exception catch (error) {
       if (isOfflineError(error)) {
         await _replace(
           report.copyWith(
             attempts: attempts,
+            clearRetryAt: true,
             event: 'Réseau indisponible, nouvel essai plus tard',
           ),
         );
@@ -385,6 +536,12 @@ class ReportOutbox extends Notifier<List<QueuedReport>> {
       );
     }
     return _Outcome.needsUser;
+  }
+
+  static DateTime _rateLimitRetryAt(ApiException error, int attempts) {
+    final fallbackSeconds = min(300, 5 * (1 << min(attempts - 1, 6)));
+    final seconds = error.retryAfterSeconds ?? fallbackSeconds;
+    return DateTime.now().toUtc().add(Duration(seconds: max(1, seconds)));
   }
 
   static String errorMessage(Object error) =>
@@ -404,6 +561,9 @@ class ReportOutbox extends Notifier<List<QueuedReport>> {
   /// The user confirms an unusual price: it is sent again as confirmed.
   Future<void> confirmUnusual(String id) async {
     final report = state.firstWhere((item) => item.id == id);
+    if (report.ownerUserId != ref.read(activeAccountIdProvider)) {
+      throw StateError('Only the report owner can confirm this report.');
+    }
     await _replace(
       report.copyWith(
         status: QueuedStatus.pending,
@@ -416,7 +576,40 @@ class ReportOutbox extends Notifier<List<QueuedReport>> {
   }
 
   /// The user gives up a report: their decision, never the app's.
-  Future<void> discard(String id) => _remove(id);
+  Future<void> discard(String id) async {
+    final report = state.firstWhere((item) => item.id == id);
+    if (report.ownerUserId != ref.read(activeAccountIdProvider)) {
+      throw StateError('Only the report owner can discard this report.');
+    }
+    await _remove(id);
+  }
+
+  /// Empties the queue and its photos: called when the session ends, so a
+  /// shared device keeps no position, note or photo of the previous account.
+  Future<void> clearAll() async {
+    await ready();
+    for (final report in [...state]) {
+      await _store.deletePhoto(report.id);
+    }
+    await _save(const []);
+  }
+
+  Future<void> discardUnassigned() async {
+    final ids = state
+        .where((report) => report.ownerUserId == null)
+        .map((report) => report.id)
+        .toList();
+    for (final id in ids) {
+      await _remove(id);
+    }
+  }
 }
 
-enum _Outcome { sent, offline, needsUser }
+enum _Outcome {
+  sent,
+  offline,
+  rateLimited,
+  needsAuthentication,
+  accountChanged,
+  needsUser,
+}

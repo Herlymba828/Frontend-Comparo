@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
 import '../core/widgets/app_navigation_bar.dart';
+import 'not_found_screen.dart';
 
 import '../features/account/account_screen.dart';
 import '../features/account/channels_screen.dart';
@@ -44,8 +45,20 @@ import '../features/search/search_screen.dart';
 import '../features/stores/stores_screen.dart';
 import '../features/support_agent/support_agent_screens.dart';
 
+/// The numeric id of a route; [_rejectInvalidId] has already turned back
+/// any address whose id is not a positive number.
 int _id(GoRouterState state) =>
     int.tryParse(state.pathParameters['id'] ?? '') ?? 0;
+
+const _notFoundPath = '/introuvable';
+
+String? _rejectInvalidId(BuildContext context, GoRouterState state) {
+  final id = state.pathParameters['id'];
+  if (id == null) {
+    return null;
+  }
+  return (int.tryParse(id.trim()) ?? 0) < 1 ? _notFoundPath : null;
+}
 
 /// A tab of a role space: switching tabs does not animate like a push.
 GoRoute _tab(String path, Widget child) => GoRoute(
@@ -59,7 +72,13 @@ GoRoute _tab(String path, Widget child) => GoRoute(
 class AppRouter {
   static final GoRouter router = GoRouter(
     initialLocation: '/',
+    redirect: _rejectInvalidId,
+    errorBuilder: (context, state) => const NotFoundScreen(),
     routes: [
+      GoRoute(
+        path: _notFoundPath,
+        builder: (context, state) => const NotFoundScreen(),
+      ),
       // ── Shared ────────────────────────────────────────────────────────
       GoRoute(path: '/auth', builder: (context, state) => const AuthScreen()),
       GoRoute(

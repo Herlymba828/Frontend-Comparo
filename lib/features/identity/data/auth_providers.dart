@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../catalog/data/catalog_providers.dart';
+import '../../contributions/report_outbox.dart';
 import '../models/auth_user.dart';
 import 'auth_repository.dart';
 
@@ -8,6 +9,10 @@ final authSessionProvider =
     AsyncNotifierProvider<AuthSessionController, AuthUser?>(
       AuthSessionController.new,
     );
+
+final activeAccountIdProvider = Provider<int?>(
+  (ref) => ref.watch(authSessionProvider).value?.id,
+);
 
 class AuthSessionController extends AsyncNotifier<AuthUser?> {
   @override
@@ -42,7 +47,7 @@ class AuthSessionController extends AsyncNotifier<AuthUser?> {
   Future<void> endRevokedSession() async {
     await ref.read(authRepositoryProvider).forgetSession();
     state = const AsyncData(null);
-    await ref.read(catalogRepositoryProvider).clearOfflineCache();
+    await _clearDeviceData();
   }
 
   Future<void> logout() async {
@@ -50,8 +55,14 @@ class AuthSessionController extends AsyncNotifier<AuthUser?> {
       await ref.read(authRepositoryProvider).logout();
     } finally {
       state = const AsyncData(null);
-      // Searches and viewed products stay on the device otherwise.
-      await ref.read(catalogRepositoryProvider).clearOfflineCache();
+      await _clearDeviceData();
     }
+  }
+
+  /// Searches, viewed products and reports left on the device (positions,
+  /// notes, photos) would otherwise stay for the next person using it.
+  Future<void> _clearDeviceData() async {
+    await ref.read(catalogRepositoryProvider).clearOfflineCache();
+    await ref.read(reportOutboxProvider.notifier).clearAll();
   }
 }

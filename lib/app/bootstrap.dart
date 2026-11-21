@@ -6,10 +6,12 @@ import '../core/errors/error_reporter.dart';
 import '../core/errors/global_error_handlers.dart';
 import '../core/errors/sentry_reporting.dart';
 import '../core/network/acting_role.dart';
-import '../features/contributions/report_outbox.dart';
 import 'app.dart';
 import 'router.dart';
 
+// MVP: offline, the app only shows cached data. Nothing is sent by itself at
+// start-up or when the network comes back (no write synchronisation).
+//
 // Crash reporting is off until the build sets SENTRY_DSN: then the errors of
 // the global handlers also go to Sentry (see sentry_reporting.dart).
 Future<void> bootstrap({
@@ -41,33 +43,7 @@ void _start(ErrorReporter reporter) {
           () => AppRouter.router.routeInformationProvider.value.uri.path,
         ),
       ],
-      child: const _OfflineSync(child: ComparateurPrixApp()),
+      child: const ComparateurPrixApp(),
     ),
   );
-}
-
-/// Keeps the offline queue alive for the whole session: reports left from a
-/// previous session leave at start, the others when the network is back.
-class _OfflineSync extends ConsumerStatefulWidget {
-  const _OfflineSync({required this.child});
-
-  final Widget child;
-
-  @override
-  ConsumerState<_OfflineSync> createState() => _OfflineSyncState();
-}
-
-class _OfflineSyncState extends ConsumerState<_OfflineSync> {
-  @override
-  void initState() {
-    super.initState();
-    ref.read(reportOutboxProvider.notifier).sync();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // Watching keeps the queue (and its reconnection listener) alive.
-    ref.watch(reportOutboxProvider);
-    return widget.child;
-  }
 }

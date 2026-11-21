@@ -59,9 +59,7 @@ class AppConfig {
         host == '10.0.2.2' ||
         host.endsWith('.local') ||
         _isPrivateIpv4(host) ||
-        host.startsWith('fc') ||
-        host.startsWith('fd') ||
-        host.startsWith('fe80:');
+        _isPrivateIpv6(host);
     if (uri.scheme != 'https' || isLocalHost) {
       throw ArgumentError.value(
         baseUrl,
@@ -69,6 +67,17 @@ class AppConfig {
         'Release builds require a public HTTPS API URL.',
       );
     }
+  }
+
+  /// Unique-local (fc00::/7) and link-local (fe80::/10) addresses. Only an
+  /// IPv6 literal (it has colons): "fd-api.example.com" is a public name.
+  bool _isPrivateIpv6(String host) {
+    if (!host.contains(':')) {
+      return false;
+    }
+    return host.startsWith('fc') ||
+        host.startsWith('fd') ||
+        host.startsWith('fe80:');
   }
 
   bool _isPrivateIpv4(String host) {

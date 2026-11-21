@@ -114,4 +114,38 @@ void main() {
     expect(items, [1, 2, 3]);
     expect(pages, [1, 2, 3]);
   });
+
+  test('getAll reports when the configured page limit truncates results', () {
+    final dio = Dio()
+      ..interceptors.add(
+        InterceptorsWrapper(
+          onRequest: (options, handler) {
+            handler.resolve(
+              Response(
+                requestOptions: options,
+                statusCode: 200,
+                data: {
+                  'count': 300,
+                  'next': 'next',
+                  'results': [
+                    {'id': 1},
+                  ],
+                },
+              ),
+            );
+          },
+        ),
+      );
+
+    expect(
+      JsonApi(dio).getAll('api/orders/', (json) => json['id'] as int),
+      throwsA(
+        isA<ApiException>().having(
+          (error) => error.kind,
+          'kind',
+          ApiErrorKind.paginationLimitReached,
+        ),
+      ),
+    );
+  });
 }

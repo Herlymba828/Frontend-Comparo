@@ -49,4 +49,27 @@ void main() {
       returnsNormally,
     );
   });
+
+  test('a public domain starting with fc or fd is not a private IPv6', () {
+    for (final url in [
+      'https://fd-api.example.com',
+      'https://fc.example.com',
+      'https://fdroid.example.org/api',
+    ]) {
+      final config = AppConfig(baseUrl: url, isRelease: true);
+      expect(() => createApiClient(config), returnsNormally, reason: url);
+    }
+  });
+
+  test('private and link-local IPv6 addresses are still refused', () {
+    for (final url in [
+      'https://[fd12:3456::1]',
+      'https://[fc00::1]:8443',
+      'https://[fe80::1]',
+      'https://[::1]',
+    ]) {
+      final config = AppConfig(baseUrl: url, isRelease: true);
+      expect(() => createApiClient(config), throwsArgumentError, reason: url);
+    }
+  });
 }

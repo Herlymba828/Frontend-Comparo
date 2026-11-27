@@ -88,10 +88,13 @@ class StoreProposalConflict implements Exception {
 }
 
 class ProductSuggestion {
-  const ProductSuggestion(this.id, this.name);
+  const ProductSuggestion(this.id, this.name, {this.proposed = false});
 
   final int id;
   final String name;
+
+  /// Found by the matching (close to what was typed), not by the name search.
+  final bool proposed;
 }
 
 class UnitOption {
@@ -249,6 +252,21 @@ class PriceReportRepository {
         (json) => ProductSuggestion(json.requireInt('id'), json.string('name')),
         query: {'q': text, 'page_size': 6},
       )).items;
+
+  /// Catalogue products close to a free-text label ("HLE DINOR 1L"), best first.
+  /// The server never decides for the person: these are only proposals.
+  Future<List<ProductSuggestion>> matchProducts(String label) => _api.post(
+    'api/catalog/match/',
+    (json) => [
+      for (final candidate in json.maps('candidates'))
+        ProductSuggestion(
+          candidate.requireInt('product_id'),
+          candidate.string('name'),
+          proposed: true,
+        ),
+    ],
+    data: {'label': label, 'limit': 3},
+  );
 
   Future<List<UnitOption>> units() async => (await _api.getPage(
     'api/catalog/units/',

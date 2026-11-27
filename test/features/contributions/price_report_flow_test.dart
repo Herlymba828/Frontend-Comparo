@@ -58,6 +58,8 @@ const _unplaced = ReportStore(
 
 class _FakeReports implements PriceReportRepository {
   _FakeReports({
+    this.searched = const [_rice],
+    this.matches = const [],
     this.nearby = const [_central],
     this.found = const [_central, _annex],
     this.proposal = const StoreProposalResult(
@@ -115,8 +117,18 @@ class _FakeReports implements PriceReportRepository {
   @override
   Future<List<ReportStore>> searchStores(String text) async => found;
 
+  final List<ProductSuggestion> searched;
+  final List<ProductSuggestion> matches;
+  final matchQueries = <String>[];
+
   @override
-  Future<List<ProductSuggestion>> searchProducts(String text) async => [_rice];
+  Future<List<ProductSuggestion>> searchProducts(String text) async => searched;
+
+  @override
+  Future<List<ProductSuggestion>> matchProducts(String label) async {
+    matchQueries.add(label);
+    return matches;
+  }
 
   @override
   Future<List<UnitOption>> units() async => const [
@@ -314,6 +326,105 @@ void main() {
     await tester.tap(find.text('120 m'));
     await tester.pumpAndSettle();
     expect(find.textContaining('à 120 m de vous'), findsOneWidget);
+  });
+
+  group('product proposals', () {
+    const dinor = ProductSuggestion(
+      9,
+      'Huile végétale Dinor 1 L',
+      proposed: true,
+    );
+    final productField = find.widgetWithText(
+      TextFormField,
+      'Produit (nom complet, marque, format)',
+    );
+
+    testWidgets('an abbreviation the name search misses gets a close product', (
+      tester,
+    ) async {
+      final reports = _FakeReports(searched: const [], matches: const [dinor]);
+      await _pump(
+        tester,
+        reports: reports,
+        positions: _FakePositions(granted: true, position: _here),
+      );
+
+      await tester.enterText(productField, 'HLE DINOR 1L');
+      await tester.pump(const Duration(milliseconds: 350));
+      await tester.pumpAndSettle();
+
+      expect(reports.matchQueries, ['HLE DINOR 1L']);
+      expect(find.text('Huile végétale Dinor 1 L'), findsOneWidget);
+      expect(find.text('Proche de ce que vous avez écrit'), findsOneWidget);
+      // The person decides: nothing is chosen for them.
+      expect(find.text('Produit du catalogue'), findsNothing);
+
+      await tester.tap(find.text('Huile végétale Dinor 1 L'));
+      await tester.pumpAndSettle();
+      expect(find.text('Produit du catalogue'), findsOneWidget);
+    });
+
+    testWidgets('a good name search is not doubled by proposals', (
+      tester,
+    ) async {
+      final reports = _FakeReports(
+        searched: const [
+          ProductSuggestion(1, 'Riz A'),
+          ProductSuggestion(2, 'Riz B'),
+          ProductSuggestion(3, 'Riz C'),
+        ],
+        matches: const [dinor],
+      );
+      await _pump(
+        tester,
+        reports: reports,
+        positions: _FakePositions(granted: true, position: _here),
+      );
+
+      await tester.enterText(productField, 'riz parfumé');
+      await tester.pump(const Duration(milliseconds: 350));
+      await tester.pumpAndSettle();
+
+      expect(reports.matchQueries, isEmpty);
+      expect(find.text('Proche de ce que vous avez écrit'), findsNothing);
+    });
+
+    testWidgets('a product already found by name is not proposed twice', (
+      tester,
+    ) async {
+      final reports = _FakeReports(
+        searched: const [ProductSuggestion(9, 'Huile végétale Dinor 1 L')],
+        matches: const [dinor],
+      );
+      await _pump(
+        tester,
+        reports: reports,
+        positions: _FakePositions(granted: true, position: _here),
+      );
+
+      await tester.enterText(productField, 'huile dinor');
+      await tester.pump(const Duration(milliseconds: 350));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Huile végétale Dinor 1 L'), findsOneWidget);
+    });
+
+    testWidgets('a very short text is never sent to the matching', (
+      tester,
+    ) async {
+      final reports = _FakeReports(searched: const [], matches: const [dinor]);
+      await _pump(
+        tester,
+        reports: reports,
+        positions: _FakePositions(granted: true, position: _here),
+      );
+
+      await tester.enterText(productField, 'hle');
+      await tester.pump(const Duration(milliseconds: 350));
+      await tester.pumpAndSettle();
+
+      expect(reports.matchQueries, isEmpty);
+    });
   });
 
   testWidgets('inputs are validated before anything is sent', (tester) async {

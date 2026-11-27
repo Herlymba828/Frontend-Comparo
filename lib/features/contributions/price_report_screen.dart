@@ -39,6 +39,11 @@ class PriceReportForm extends ConsumerStatefulWidget {
   ConsumerState<PriceReportForm> createState() => _PriceReportFormState();
 }
 
+/// The matching is asked only when the name search gives fewer results than
+/// this, and for a label at least this long.
+const _minNameResults = 3;
+const _minMatchLength = 4;
+
 class _PriceReportFormState extends ConsumerState<PriceReportForm> {
   final _form = GlobalKey<FormState>();
   final _product = TextEditingController();
@@ -95,9 +100,23 @@ class _PriceReportFormState extends ConsumerState<PriceReportForm> {
 
   Future<void> _suggest(String query) async {
     try {
-      final found = await ref
-          .read(priceReportRepositoryProvider)
-          .searchProducts(query);
+      final repository = ref.read(priceReportRepositoryProvider);
+      var found = await repository.searchProducts(query);
+      // The name search misses abbreviations ("HLE DINOR 1L"): when it finds
+      // little, ask the matching for close products and add them.
+      if (found.length < _minNameResults && query.length >= _minMatchLength) {
+        try {
+          final close = await repository.matchProducts(query);
+          final known = {for (final product in found) product.id};
+          found = [
+            ...found,
+            for (final product in close)
+              if (!known.contains(product.id)) product,
+          ];
+        } on ApiException {
+          // The proposals are a bonus: the name search result still stands.
+        }
+      }
       if (mounted && _product.text.trim() == query && _picked == null) {
         setState(() => _suggestions = found);
       }
@@ -411,8 +430,16 @@ class _PriceReportFormState extends ConsumerState<PriceReportForm> {
                 for (final suggestion in _suggestions)
                   ListTile(
                     dense: true,
-                    leading: const Icon(Icons.north_west, size: 18),
+                    leading: Icon(
+                      suggestion.proposed
+                          ? Icons.auto_awesome
+                          : Icons.north_west,
+                      size: 18,
+                    ),
                     title: Text(suggestion.name),
+                    subtitle: suggestion.proposed
+                        ? const Text('Proche de ce que vous avez écrit')
+                        : null,
                     onTap: () => _pick(suggestion),
                   ),
               ],

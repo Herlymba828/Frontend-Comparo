@@ -5,6 +5,7 @@ import '../../core/errors/api_exception.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/async_views.dart';
 import '../account/consents_repository.dart';
+import '../commerce/cash_widgets.dart';
 import '../commerce/commerce_models.dart';
 import '../stores/stores_repository.dart';
 import 'courier_repository.dart';
@@ -92,6 +93,15 @@ class _CourierDeliveryScreenState extends ConsumerState<CourierDeliveryScreen> {
                       ),
                   ],
                 ),
+                if (mine && delivery.cashPayment != null) ...[
+                  const SizedBox(height: AppSpacing.space12),
+                  CollectorCashCard(
+                    cash: delivery.cashPayment!,
+                    onChanged: () => ref
+                      ..invalidate(courierDeliveryProvider(widget.deliveryId))
+                      ..invalidate(courierDeliveriesProvider(false)),
+                  ),
+                ],
                 const SizedBox(height: AppSpacing.space12),
                 ..._actions(delivery, mine),
               ],

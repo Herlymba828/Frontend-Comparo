@@ -188,6 +188,10 @@ class Payment {
     this.amountRemaining = '',
     this.failureReason = '',
     this.retryAvailableAt,
+    this.payerConfirmedAt,
+    this.collectorConfirmedAt,
+    this.cashOutcome = '',
+    this.cashDueAt,
   });
 
   final String number;
@@ -210,8 +214,21 @@ class Payment {
   /// After a timeout, when a retry may be sent (null: right away).
   final DateTime? retryAvailableAt;
 
+  /// Cash: when each side said the money changed hands, and the 48-hour limit.
+  final DateTime? payerConfirmedAt;
+  final DateTime? collectorConfirmedAt;
+  final String cashOutcome;
+  final DateTime? cashDueAt;
+
+  bool get isCash => method == 'cash';
+
+  /// A cash payment still waiting for the handover to be confirmed.
+  bool get awaitsHandover => isCash && status == 'pending';
+
+  /// A cash order is already being prepared: it is not cancelled by payment.
   bool get isCancellable =>
-      status == 'pending' || status == 'declined' || status == 'timeout';
+      !isCash &&
+      (status == 'pending' || status == 'declined' || status == 'timeout');
   bool get isRefundable => status == 'captured' || status == 'partial_refund';
 
   factory Payment.fromJson(Map<String, dynamic> json) => Payment(
@@ -230,7 +247,54 @@ class Payment {
     amountRemaining: json.string('amount_remaining'),
     failureReason: json.string('failure_reason'),
     retryAvailableAt: json.dateOrNull('retry_available_at'),
+    payerConfirmedAt: json.dateOrNull('payer_confirmed_at'),
+    collectorConfirmedAt: json.dateOrNull('collector_confirmed_at'),
+    cashOutcome: json.string('cash_outcome'),
+    cashDueAt: json.dateOrNull('cash_due_at'),
   );
+}
+
+/// The cash to collect on an order, as a courier or a merchant sees it.
+class CashSummary {
+  const CashSummary({
+    required this.number,
+    required this.amount,
+    required this.currency,
+    required this.status,
+    required this.payerConfirmed,
+    required this.collectorConfirmed,
+    this.outcome = '',
+    this.dueAt,
+  });
+
+  final String number;
+  final String amount;
+  final String currency;
+  final String status;
+  final bool payerConfirmed;
+  final bool collectorConfirmed;
+  final String outcome;
+  final DateTime? dueAt;
+
+  /// Still to be collected: nothing is closed until both sides confirmed.
+  bool get isWaiting => status == 'pending';
+  bool get isDisputed => outcome == 'disputed';
+
+  static CashSummary? fromJsonOrNull(Object? value) {
+    if (value is! Map<String, dynamic>) {
+      return null;
+    }
+    return CashSummary(
+      number: value.requireString('number'),
+      amount: value.string('amount', '0'),
+      currency: value.string('currency', 'XAF'),
+      status: value.string('status', 'pending'),
+      payerConfirmed: value.flag('payer_confirmed'),
+      collectorConfirmed: value.flag('collector_confirmed'),
+      outcome: value.string('outcome'),
+      dueAt: value.dateOrNull('due_at'),
+    );
+  }
 }
 
 class DeliveryStep {
@@ -265,6 +329,7 @@ class Delivery {
     this.proofPhotoUrl = '',
     this.signatureUrl = '',
     this.steps = const [],
+    this.cashPayment,
   });
 
   final int id;
@@ -283,6 +348,9 @@ class Delivery {
   final String proofPhotoUrl;
   final String signatureUrl;
   final List<DeliveryStep> steps;
+
+  /// Set when the order is paid in cash: what the courier must collect.
+  final CashSummary? cashPayment;
 
   bool get hasProof => proofPhotoUrl.isNotEmpty || signatureUrl.isNotEmpty;
 
@@ -303,6 +371,7 @@ class Delivery {
     proofPhotoUrl: json.string('proof_photo_url'),
     signatureUrl: json.string('recipient_signature_url'),
     steps: json.maps('events').map(DeliveryStep.fromJson).toList(),
+    cashPayment: CashSummary.fromJsonOrNull(json['cash_payment']),
   );
 }
 
@@ -316,11 +385,15 @@ class Pickup {
     this.readyAt,
     this.expiresAt,
     this.collectedAt,
+    this.cashPayment,
   });
 
   final int id;
   final int orderId;
   final String status;
+
+  /// Set when the order is paid in cash: what the merchant must collect.
+  final CashSummary? cashPayment;
 
   /// Only the customer (and admins) receive it.
   final String? code;
@@ -338,6 +411,7 @@ class Pickup {
     readyAt: json.dateOrNull('ready_at'),
     expiresAt: json.dateOrNull('expires_at'),
     collectedAt: json.dateOrNull('collected_at'),
+    cashPayment: CashSummary.fromJsonOrNull(json['cash_payment']),
   );
 }
 
@@ -414,11 +488,11 @@ class ShopLocation {
 const paymentMethodLabels = {
   'mobile_money': 'Mobile Money',
   'card': 'Carte bancaire',
-  'cash': 'Espèces au retrait',
+  'cash': 'Espèces à la remise',
 };
 
 const paymentProviderLabels = {
   'airtel_money': 'Airtel Money',
   'moov_money': 'Moov Money',
-  'manual': 'Paiement manuel',
+  'manual': 'Remise en main propre',
 };

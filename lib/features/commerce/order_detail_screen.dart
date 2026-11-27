@@ -9,6 +9,7 @@ import '../../core/formatters/price_formatter.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/async_views.dart';
 import '../../core/widgets/market_widgets.dart';
+import 'cash_widgets.dart';
 import 'commerce_models.dart';
 import 'commerce_repository.dart';
 import 'order_sections.dart';
@@ -151,15 +152,14 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
           ),
       ],
       children: [
-        if (payment.status == 'pending')
-          Padding(
-            padding: const EdgeInsets.only(top: AppSpacing.space8),
+        if (payment.awaitsHandover)
+          CustomerCashActions(payment: payment, onChanged: _refresh)
+        else if (payment.status == 'pending')
+          const Padding(
+            padding: EdgeInsets.only(top: AppSpacing.space8),
             child: Text(
-              payment.method == 'cash'
-                  ? 'Paiement en espèces au retrait : le marchand le '
-                        'confirmera lors de la remise.'
-                  : 'Validez le paiement sur votre téléphone : la commande '
-                        'sera confirmée dès la réponse du prestataire.',
+              'Validez le paiement sur votre téléphone : la commande '
+              'sera confirmée dès la réponse du prestataire.',
             ),
           ),
       ],
@@ -169,8 +169,7 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
   Future<void> _pay(CustomerOrder order) async {
     final choice = await showDialog<_PaymentChoice>(
       context: context,
-      builder: (context) =>
-          _PaymentMethodDialog(cashAllowed: order.deliveryMode == 'pickup'),
+      builder: (context) => const _PaymentMethodDialog(),
     );
     if (choice == null) {
       return;
@@ -235,10 +234,7 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
 typedef _PaymentChoice = ({String method, String provider, String phone});
 
 class _PaymentMethodDialog extends StatefulWidget {
-  const _PaymentMethodDialog({required this.cashAllowed});
-
-  /// Cash is paid at the shop: only for a pickup order.
-  final bool cashAllowed;
+  const _PaymentMethodDialog();
 
   @override
   State<_PaymentMethodDialog> createState() => _PaymentMethodDialogState();
@@ -277,11 +273,13 @@ class _PaymentMethodDialogState extends State<_PaymentMethodDialog> {
                   value: 'moov_money',
                   title: Text('Moov Money'),
                 ),
-                if (widget.cashAllowed)
-                  const RadioListTile(
-                    value: 'manual',
-                    title: Text('Espèces au retrait'),
+                const RadioListTile(
+                  value: 'manual',
+                  title: Text('Espèces à la remise'),
+                  subtitle: Text(
+                    'Au livreur ou au comptoir ; vous et lui confirmez.',
                   ),
+                ),
               ],
             ),
           ),

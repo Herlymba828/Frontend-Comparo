@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/json/json_reader.dart';
 import '../../core/network/json_api.dart';
+import '../commerce/commerce_models.dart';
 
 /// A complaint as the support team sees it (every complaint, with who filed
 /// it and who handles it).
@@ -21,6 +22,7 @@ class AgentComplaint {
     this.assignedToId,
     this.resolutionOutcome,
     this.resolutionNotes = '',
+    this.cashPayment,
   });
 
   final int id;
@@ -40,6 +42,9 @@ class AgentComplaint {
   final String? resolutionOutcome;
   final String resolutionNotes;
 
+  /// A cash dispute: the payment support has to rule on.
+  final CashSummary? cashPayment;
+
   factory AgentComplaint.fromJson(Map<String, dynamic> json) {
     final resolution = json.mapOrNull('resolution');
     return AgentComplaint(
@@ -57,6 +62,7 @@ class AgentComplaint {
       assignedToId: json.intOrNull('assigned_to'),
       resolutionOutcome: resolution?.stringOrNull('outcome'),
       resolutionNotes: resolution?.string('decision_notes') ?? '',
+      cashPayment: CashSummary.fromJsonOrNull(json['cash_payment']),
     );
   }
 }
@@ -234,6 +240,17 @@ class AgentRepository {
       'remedy_amount': amount,
       'decision_notes': notes,
     },
+  );
+
+  /// Rules on a cash dispute: `collector_at_fault` (the money is deemed
+  /// received, the usual presumption) or `payer_at_fault`.
+  Future<void> arbitrateCash(
+    String paymentNumber, {
+    required String outcome,
+    required String note,
+  }) => _api.send(
+    'api/payments/$paymentNumber/cash/arbitrate/',
+    data: {'outcome': outcome, 'note': note},
   );
 
   // ── Tickets ───────────────────────────────────────────────────────────

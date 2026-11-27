@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/formatters/price_formatter.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/async_views.dart';
 import '../../core/widgets/space_scaffold.dart';
+import '../../core/widgets/text_entry_dialog.dart';
 import '../account/account_repository.dart' show complaintTypeLabels;
+import '../commerce/commerce_models.dart' show CashSummary;
 import '../disputes/complaint_attachments.dart';
 import '../identity/data/auth_providers.dart';
 import '../moderation/moderation_review_screens.dart' show askNote;
@@ -255,6 +258,74 @@ class _ComplaintBodyState extends ConsumerState<_ComplaintBody> {
     );
   }
 
+  Future<void> _arbitrate(String outcome, String title) async {
+    final cash = _complaint.cashPayment!;
+    final note = await showTextEntry(
+      context,
+      title: title,
+      label: 'Motif de la décision',
+      confirmLabel: 'Arbitrer',
+      intro: Text(
+        outcome == 'collector_at_fault'
+            ? 'Le paiement de ${formatPrice(cash.amount, cash.currency)} est '
+                  'réputé reçu. Le litige compte contre celui qui encaisse.'
+            : 'Le paiement est déclaré échoué : le client n’a pas payé.',
+      ),
+    );
+    if (note == null || note.isEmpty || !mounted) {
+      return;
+    }
+    await _run(
+      () => ref
+          .read(agentRepositoryProvider)
+          .arbitrateCash(cash.number, outcome: outcome, note: note),
+      done: 'Arbitrage enregistré.',
+    );
+  }
+
+  Widget _cashCard(CashSummary cash, {required bool canRule}) => SectionCard(
+    title: 'Arbitrage des espèces',
+    children: [
+      InfoRow('Montant', formatPrice(cash.amount, cash.currency)),
+      InfoRow(
+        'Client',
+        cash.payerConfirmed ? 'Le client a confirmé la remise' : 'Silence',
+      ),
+      InfoRow(
+        'Encaisseur',
+        cash.collectorConfirmed
+            ? 'A confirmé la réception'
+            : 'N’a pas confirmé',
+      ),
+      if (!cash.isWaiting)
+        const Text('Ce paiement est clos.')
+      else if (canRule) ...[
+        const SizedBox(height: AppSpacing.space8),
+        Wrap(
+          spacing: AppSpacing.space8,
+          runSpacing: AppSpacing.space8,
+          children: [
+            FilledButton(
+              onPressed: _busy
+                  ? null
+                  : () => _arbitrate(
+                      'collector_at_fault',
+                      'Tort de l’encaisseur',
+                    ),
+              child: const Text('Tort de l’encaisseur'),
+            ),
+            OutlinedButton(
+              onPressed: _busy
+                  ? null
+                  : () => _arbitrate('payer_at_fault', 'Tort du client'),
+              child: const Text('Tort du client'),
+            ),
+          ],
+        ),
+      ],
+    ],
+  );
+
   @override
   Widget build(BuildContext context) {
     final complaint = _complaint;
@@ -292,6 +363,13 @@ class _ComplaintBodyState extends ConsumerState<_ComplaintBody> {
           ],
         ),
         const SizedBox(height: AppSpacing.space12),
+        if (complaint.cashPayment != null) ...[
+          _cashCard(
+            complaint.cashPayment!,
+            canRule: complaint.isOpen && complaint.filedById != widget.agentId,
+          ),
+          const SizedBox(height: AppSpacing.space12),
+        ],
         ComplaintAttachmentsCard(
           complaintId: complaint.id,
           isOpen: complaint.isOpen,

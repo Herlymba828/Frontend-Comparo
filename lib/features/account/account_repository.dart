@@ -114,6 +114,7 @@ const complaintTypeLabels = {
   'merchant_conduct': 'Comportement d’un marchand',
   'counterfeit': 'Contrefaçon suspectée',
   'data_quality': 'Erreur dans le catalogue',
+  'cash_dispute': 'Litige sur des espèces',
   'other': 'Autre',
 };
 

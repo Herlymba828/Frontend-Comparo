@@ -6,6 +6,7 @@ import '../../core/formatters/price_formatter.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/async_views.dart';
 import '../../core/widgets/text_entry_dialog.dart';
+import '../commerce/cash_widgets.dart';
 import '../commerce/commerce_models.dart';
 import '../commerce/commerce_repository.dart';
 import '../commerce/order_sections.dart';
@@ -155,7 +156,18 @@ class _MerchantOrderScreenState extends ConsumerState<MerchantOrderScreen> {
   }
 
   // ── Pickup ──────────────────────────────────────────────────────────────
-  Widget _pickupSection(Pickup? pickup) => PickupCard(
+  Widget _pickupSection(Pickup? pickup) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      _pickupCard(pickup),
+      if (pickup?.cashPayment != null) ...[
+        const SizedBox(height: AppSpacing.space12),
+        CollectorCashCard(cash: pickup!.cashPayment!, onChanged: _refresh),
+      ],
+    ],
+  );
+
+  Widget _pickupCard(Pickup? pickup) => PickupCard(
     pickup: pickup,
     children: [
       if (pickup != null)

@@ -50,6 +50,15 @@ class AuthSessionController extends AsyncNotifier<AuthUser?> {
     await _clearDeviceData();
   }
 
+  /// The server refused the tokens for good (the caller already dropped
+  /// them): sign out here, and wipe what the account left on the device, as
+  /// a sign-out does. Otherwise the next person on a shared phone would find
+  /// the previous account's searches, positions, notes and photos.
+  Future<void> endExpiredSession() async {
+    state = const AsyncData(null);
+    await _clearDeviceData();
+  }
+
   Future<void> logout() async {
     try {
       await ref.read(authRepositoryProvider).logout();

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer' as developer;
 
 import 'package:dio/dio.dart';
@@ -19,8 +20,20 @@ final apiClientProvider = Provider<Dio>((ref) {
   configureAuthenticatedApiClient(
     client,
     tokenStorage,
-    // Tokens were rejected by the server: reflect the logout in the UI.
-    onSessionExpired: () => ref.invalidate(authSessionProvider),
+    // Tokens were rejected by the server: reflect the logout in the UI and
+    // wipe the account's data from the device. A failing wipe is logged, not
+    // thrown: nobody awaits this callback.
+    onSessionExpired: () => unawaited(
+      ref.read(authSessionProvider.notifier).endExpiredSession().catchError((
+        Object error,
+      ) {
+        developer.log(
+          'The device data could not be wiped: ${error.runtimeType}',
+          name: 'comparo',
+          level: 900,
+        );
+      }),
+    ),
     actingRole: () {
       final roles = ref.read(authSessionProvider).value?.roles;
       return roles == null

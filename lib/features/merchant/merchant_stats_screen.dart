@@ -88,23 +88,43 @@ class _MerchantStatsScreenState extends ConsumerState<MerchantStatsScreen> {
       appBar: AppBar(title: const Text('Statistiques')),
       body: SignedInGate(
         role: 'merchant',
-        builder: (user) => ListView(
-          padding: const EdgeInsets.all(AppSpacing.space16),
+        // The period picker stays on top and the result scrolls below it:
+        // AsyncBody's error state is a scrollable itself, so it must not sit
+        // inside another one (unbounded height, nothing drawn).
+        builder: (user) => Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SegmentedButton<int>(
-              segments: [
-                for (final days in statsPeriods)
-                  ButtonSegment(value: days, label: Text('$days jours')),
-              ],
-              selected: {_days},
-              onSelectionChanged: (value) =>
-                  setState(() => _days = value.first),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.space16,
+                AppSpacing.space16,
+                AppSpacing.space16,
+                AppSpacing.space12,
+              ),
+              child: SegmentedButton<int>(
+                segments: [
+                  for (final days in statsPeriods)
+                    ButtonSegment(value: days, label: Text('$days jours')),
+                ],
+                selected: {_days},
+                onSelectionChanged: (value) =>
+                    setState(() => _days = value.first),
+              ),
             ),
-            const SizedBox(height: AppSpacing.space12),
-            AsyncBody<ShopStats>(
-              value: ref.watch(provider),
-              onRetry: () => ref.invalidate(provider),
-              builder: (stats) => _StatsBody(stats: stats),
+            Expanded(
+              child: AsyncBody<ShopStats>(
+                value: ref.watch(provider),
+                onRetry: () => ref.invalidate(provider),
+                builder: (stats) => ListView(
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.space16,
+                    0,
+                    AppSpacing.space16,
+                    AppSpacing.space16,
+                  ),
+                  children: [_StatsBody(stats: stats)],
+                ),
+              ),
             ),
           ],
         ),

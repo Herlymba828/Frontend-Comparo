@@ -1,13 +1,20 @@
+import 'package:comparo_ui/comparo_ui.dart' show PriceLineLayout;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:frontend/features/catalog/models/catalog_product.dart';
 import 'package:frontend/features/commerce/basket_optimisation_screen.dart';
 import 'package:frontend/features/comparison/comparo_adapters.dart';
 
-Map<String, dynamic> _point(int id, String unitPrice, {bool best = false}) => {
+Map<String, dynamic> _point(
+  int id,
+  String unitPrice, {
+  bool best = false,
+  String? amount,
+}) => {
   'offer_id': id,
   'merchant_id': id,
   'merchant_name': 'Boutique $id',
-  'amount': unitPrice,
+  // The price of the pack: equal to the unit price unless the test says so.
+  'amount': amount ?? unitPrice,
   'currency': 'XAF',
   'unit_price': unitPrice,
   'unit': 'kg',
@@ -60,6 +67,30 @@ void main() {
     expect(offers.map((offer) => offer.id), [1, 2]);
   });
 
+  test('the corde places the unit price, not the price of the pack', () {
+    // A 500 g pack at 950 F costs 1900 F/kg; a 1 kg pack at 1500 F costs
+    // 1500 F/kg. The smaller price on the shelf is the dearer one per kg.
+    final offers = priceLineOffers([
+      CurrentPrice.fromJson(_point(1, '1900', amount: '950')),
+      CurrentPrice.fromJson(_point(2, '1500', amount: '1500', best: true)),
+    ]);
+
+    expect(offers.map((offer) => offer.price), [1900, 1500]);
+  });
+
+  test('the cheapest per kg is the one the corde highlights', () {
+    final offers = priceLineOffers([
+      CurrentPrice.fromJson(_point(1, '1900', amount: '950')),
+      CurrentPrice.fromJson(_point(2, '1500', amount: '1500', best: true)),
+    ]);
+
+    final layout = PriceLineLayout(offers, false);
+
+    expect(layout.items.where((item) => item.best), hasLength(1));
+    expect(layout.items.singleWhere((item) => item.best).offer.id, 2);
+    expect(layout.sorted.first.vendor, 'Boutique 2');
+  });
+
   test('a price that is not a number is left off the corde', () {
     final offers = priceLineOffers([
       CurrentPrice.fromJson(_point(1, '1000')),
@@ -67,6 +98,15 @@ void main() {
     ]);
 
     expect(offers, hasLength(1));
+  });
+
+  test('an offer without a readable unit price is left off the corde', () {
+    final offers = priceLineOffers([
+      CurrentPrice.fromJson(_point(1, '1000')),
+      CurrentPrice.fromJson(_point(2, 'n/a', amount: '1200')),
+    ]);
+
+    expect(offers.map((offer) => offer.id), [1]);
   });
 
   test('"Ma liste" reads each store and the saving', () {

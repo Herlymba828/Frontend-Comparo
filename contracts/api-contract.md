@@ -1,10 +1,13 @@
 # Contrat API frontend — brouillon vérifié dans le code
 
-**État :** contrat frontend dérivé des routes, vues et serializers Django
-présents, avec couverture API ciblée ajoutée pour le catalogue, les
-observations, les offres, les disponibilités et l’enveloppe 404. Il décrit le
-comportement observé du backend courant ; toute évolution doit maintenir ces
-tests ou mettre à jour explicitement le contrat.
+**Référence : le schéma OpenAPI généré par le backend.** Les routes, les champs,
+les statuts et les types sont dans `openapi.yaml` (dépôt backend,
+`comparateur-prix/backend/openapi.yaml`), régénéré par
+`python manage.py spectacular --file openapi.yaml` et vérifié à chaque CI : un test
+échoue si le schéma commité ne suit plus le code. Ce document ne le recopie pas.
+Il garde ce que le schéma ne dit pas : les règles transversales ci-dessous et,
+plus bas, des notes sur le catalogue (extraits observés dans le code, à lire
+avec le schéma, qui fait foi en cas de différence).
 
 **Base locale observée :** `http://127.0.0.1:8010` depuis l’hôte. Depuis
 l’émulateur Android, utiliser `http://10.0.2.2:8010`. La production doit
@@ -30,6 +33,33 @@ widgets.
   L’authentification globale utilise JWT, mais aucune authentification n’est
   requise pour ces routes de lecture. Les écritures sont hors du périmètre
   consommateur décrit ici.
+
+## Règles transversales (hors schéma)
+
+- **Authentification** : `POST /api/auth/login/` et `/api/auth/signup/` renvoient
+  une paire de jetons JWT ; `POST /api/auth/refresh/` renouvelle l'accès ;
+  `POST /api/auth/logout/` invalide le jeton de rafraîchissement. L'accès part
+  en `Authorization: Bearer <jeton>`, jamais vers les routes d'authentification.
+- **Espace utilisé** (`X-Acting-Role`) : `consumer`, `courier`, `merchant`,
+  `moderator`, `support` ou `admin`. Sans l'en-tête, le serveur n'ouvre que
+  l'espace consommateur : un rôle détenu s'active en choisissant son espace.
+  Un rôle que le compte ne détient pas, ou qui est suspendu, est refusé (403).
+- **Idempotence** : `POST /api/orders/checkout/`, `POST /api/payments/initiate/`
+  et `POST /api/payments/<numéro>/refund/` exigent `Idempotency-Key` (428
+  `idempotency_key_required` sinon, 400 au-delà de 255 caractères). Rejouer la
+  même clé avec la même requête renvoie la première réponse ; la même clé avec un
+  corps différent donne 422 `idempotency_key_reused` ; une requête identique en
+  cours donne 409. Une action de l'utilisateur garde sa clé jusqu'à son succès.
+- **Limitation de débit** : 429, avec `Retry-After` quand il s'agit d'une limite
+  de débit. Sans cet en-tête, le `detail` du corps explique le verrou (trop
+  d'essais de code) et dit combien attendre.
+- **Paiement** : le retour du prestataire (`POST /api/payments/<numéro>/callback/`)
+  est signé (HMAC-SHA256) et n'est pas appelé par l'app. `POST …/simulate/` n'existe
+  que si `PAYMENT_FAKE_GATEWAY` est actif (développement et tests) : 404 sinon.
+- **Erreurs** : l'enveloppe est `{"error": {"code", "detail", "fields"},
+  "request_id"}` partout, y compris 404, 429 et 5xx. L'app affiche `detail` quand il
+  existe, sinon un texte lié au statut. Une réponse de téléchargement de fichier
+  en erreur n'a pas de corps JSON exploitable : l'app s'appuie alors sur le statut.
 
 ## Routes retenues pour étude frontend
 

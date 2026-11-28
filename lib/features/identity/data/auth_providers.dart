@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../catalog/data/catalog_providers.dart';
-import '../../contributions/report_outbox.dart';
 import '../models/auth_user.dart';
 import 'auth_repository.dart';
 
@@ -68,10 +67,10 @@ class AuthSessionController extends AsyncNotifier<AuthUser?> {
     }
   }
 
-  /// Searches, viewed products and reports left on the device (positions,
-  /// notes, photos) would otherwise stay for the next person using it.
+  /// Searches and viewed products kept for offline reading would otherwise
+  /// stay for the next person using the device. The app writes nothing else
+  /// offline (no report is queued), so the cache is all there is to wipe.
   Future<void> _clearDeviceData() async {
     await ref.read(catalogRepositoryProvider).clearOfflineCache();
-    await ref.read(reportOutboxProvider.notifier).clearAll();
   }
 }

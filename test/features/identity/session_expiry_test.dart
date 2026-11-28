@@ -4,7 +4,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:frontend/core/network/api_providers.dart';
 import 'package:frontend/features/catalog/data/catalog_providers.dart';
 import 'package:frontend/features/catalog/data/catalog_repository.dart';
-import 'package:frontend/features/contributions/report_outbox.dart';
 import 'package:frontend/features/identity/data/auth_providers.dart';
 import 'package:frontend/features/identity/data/auth_repository.dart';
 import 'package:frontend/features/identity/data/auth_token_storage.dart';
@@ -12,13 +11,12 @@ import 'package:frontend/features/identity/models/auth_user.dart';
 
 import '../../support/fake_api.dart';
 
-/// What the device keeps of an account: tokens, searches and viewed products,
-/// reports waiting in the outbox. A refused session must wipe all of it, like
-/// a sign-out: the next person on a shared phone must find none of it.
+/// What the device keeps of an account: tokens, searches and viewed products.
+/// A refused session must wipe all of it, like a sign-out: the next person on
+/// a shared phone must find none of it.
 class _Device {
   int tokenWipes = 0;
   int cacheWipes = 0;
-  int outboxWipes = 0;
 }
 
 class _Tokens implements AuthTokenStorage {
@@ -66,18 +64,6 @@ class _Catalog extends CatalogRepository {
   Future<void> clearOfflineCache() async => device.cacheWipes++;
 }
 
-class _Outbox extends ReportOutbox {
-  _Outbox(this.device);
-
-  final _Device device;
-
-  @override
-  List<QueuedReport> build() => const [];
-
-  @override
-  Future<void> clearAll() async => device.outboxWipes++;
-}
-
 ProviderContainer _container(_Device device) {
   final container = ProviderContainer(
     // No automatic retry: a failing provider must fail once.
@@ -86,7 +72,6 @@ ProviderContainer _container(_Device device) {
       authTokenStorageProvider.overrideWithValue(_Tokens(device)),
       authRepositoryProvider.overrideWithValue(_Auth(device)),
       catalogRepositoryProvider.overrideWithValue(_Catalog(device)),
-      reportOutboxProvider.overrideWith(() => _Outbox(device)),
     ],
   );
   addTearDown(container.dispose);
@@ -103,10 +88,9 @@ void main() {
 
     expect(container.read(authSessionProvider).value, isNull);
     expect(device.cacheWipes, 1);
-    expect(device.outboxWipes, 1);
   });
 
-  test('a refused refresh token wipes the cache and the outbox', () async {
+  test('a refused refresh token wipes the offline cache', () async {
     final device = _Device();
     final container = _container(device);
     await container.read(authSessionProvider.future);
@@ -125,7 +109,6 @@ void main() {
     expect(device.tokenWipes, greaterThanOrEqualTo(1));
     expect(container.read(authSessionProvider).value, isNull);
     expect(device.cacheWipes, 1);
-    expect(device.outboxWipes, 1);
   });
 
   test('a signed-out device is not wiped twice by a late failure', () async {
@@ -136,6 +119,5 @@ void main() {
     await container.read(authSessionProvider.notifier).logout();
 
     expect(device.cacheWipes, 1);
-    expect(device.outboxWipes, 1);
   });
 }

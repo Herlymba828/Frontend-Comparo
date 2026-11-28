@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/errors/api_exception.dart';
+import '../../core/errors/offline_error.dart';
 import '../../core/formatters/price_formatter.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/async_views.dart';
@@ -13,7 +14,6 @@ import '../../core/widgets/market_widgets.dart';
 import '../account/account_repository.dart';
 import 'price_input.dart';
 import 'price_report_repository.dart';
-import 'report_outbox.dart';
 import 'report_store_step.dart';
 
 /// Report a price seen on a shelf: store, product, price, optional photo.

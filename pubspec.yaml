@@ -121,33 +121,5 @@ flutter:
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
 
-  # Direction artistique « Marché & étiquettes » — polices SIL OFL embarquées
-  # (licences dans assets/fonts/OFL-*.txt).
-  fonts:
-    - family: Inter
-      fonts:
-        - asset: assets/fonts/Inter-Regular.ttf
-        - asset: assets/fonts/Inter-Medium.ttf
-          weight: 500
-        - asset: assets/fonts/Inter-SemiBold.ttf
-          weight: 600
-        - asset: assets/fonts/Inter-Bold.ttf
-          weight: 700
-    - family: BricolageGrotesque
-      fonts:
-        - asset: assets/fonts/BricolageGrotesque-SemiBold.ttf
-          weight: 600
-        - asset: assets/fonts/BricolageGrotesque-Bold.ttf
-          weight: 700
-        - asset: assets/fonts/BricolageGrotesque-ExtraBold.ttf
-          weight: 800
-    - family: BigShouldersDisplay
-      fonts:
-        - asset: assets/fonts/BigShouldersDisplay-ExtraBold.ttf
-          weight: 800
-        - asset: assets/fonts/BigShouldersDisplay-Black.ttf
-          weight: 900
-    - family: Caveat
-      fonts:
-        - asset: assets/fonts/Caveat-Bold.ttf
-          weight: 700
+  # No font is bundled by the app itself: AppFonts (lib/core/theme/app_theme.dart)
+  # points to the fonts of the comparo_ui package (Manrope, Bricolage Grotesque).
